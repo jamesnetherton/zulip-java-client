@@ -1,0 +1,18 @@
+{
+  "msg": "",
+  "result": "success",
+  "topics": [
+    {
+      "max_id": 1,
+      "name": "Topic 1"
+    },
+    {
+      "max_id": 2,
+      "name": "Topic 2"
+    },
+    {
+      "max_id": 3,
+      "name": "Topic 3"
+    }
+  ]
+}

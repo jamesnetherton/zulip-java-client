@@ -1,0 +1,14 @@
+== Changelog
+
+=== 0.1.0
+
+Initial `zulip-java-client` release with full support for:
+
+* Message APIs
+* Server & Organization APIs
+* Stream APIs
+* User APIs
+
+There is limited and experimental support for:
+
+* Real time event APIs

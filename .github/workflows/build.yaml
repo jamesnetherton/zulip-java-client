@@ -1,0 +1,69 @@
+name: Zulip Java Client CI
+
+on:
+  push:
+    branches:
+      - '*'
+    paths-ignore:
+      - '**.adoc'
+      - 'LICENSE.txt'
+  pull_request:
+    branches:
+      - '*'
+    paths-ignore:
+      - '**.adoc'
+      - 'LICENSE.txt'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '8', '11', '15' ]
+        mode: [ 'fast-build', 'full-build' ]
+    steps:
+      - name: Checkout Zulip Java Client
+        uses: actions/checkout@v2
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK ${{ matrix.java }}
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: ${{ matrix.java }}
+      - name: Setup Zulip
+        if: matrix.mode == 'full-build'
+        run: |
+          cd src/test/resources/docker/
+          docker-compose up -d
+
+          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost)" != "200" ]
+          do
+            sleep 5
+          done
+
+          ./populatedb.sh
+          cd -
+
+          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost)" != "200" ]
+          do
+            sleep 5
+          done
+
+          echo "key=Qi33q7BwquWgD9HUwm79Sr6Z5WPpGWag" > zuliprc
+          echo "email=test@test.com" >> zuliprc
+          echo "site=https://localhost" >> zuliprc
+          echo "insecure=true" >> zuliprc
+      - name: Build JDK ${{ matrix.java }}
+        run: |
+          ARGS="-DskipITs"
+          if [[ "${{ matrix.mode }}" == "full-build" ]]; then
+            ARGS="-Dtest=ignored -DfailIfNoTests=false"
+          fi
+
+          ./mvnw clean verify -ntp -B ${ARGS}

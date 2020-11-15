@@ -1,0 +1,376 @@
+package com.github.jamesnetherton.zulip.client.api.integration.message;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.github.jamesnetherton.zulip.client.api.common.Operation;
+import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.Anchor;
+import com.github.jamesnetherton.zulip.client.api.message.Emoji;
+import com.github.jamesnetherton.zulip.client.api.message.Message;
+import com.github.jamesnetherton.zulip.client.api.message.MessageFlag;
+import com.github.jamesnetherton.zulip.client.api.message.MessageHistory;
+import com.github.jamesnetherton.zulip.client.api.message.MessageReaction;
+import com.github.jamesnetherton.zulip.client.api.message.MessageType;
+import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
+import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
+import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
+import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
+import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
+import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+
+public class ZulipMessageIT extends ZulipIntegrationTestBase {
+
+    @Test
+    public void messageCrudOperations() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Test Message Stream 1", "Test Message Stream 1"),
+                StreamSubscriptionRequest.of("Test Message Stream 2", "Test Message Stream 2"),
+                StreamSubscriptionRequest.of("Test Message Stream 3", "Test Message Stream 3"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withAnnounce(true)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId("Test Message Stream 2").execute();
+
+        // Create messages using each variant of sendStreamMessage
+        zulip.messages().sendStreamMessage("Test Content", "Test Message Stream 1", "Test Topic 1").execute();
+        zulip.messages().sendStreamMessage("Test Content", streamId, "Test Topic 2").execute();
+
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Stream 1"))
+                .execute();
+
+        assertEquals(2, messages.size());
+        Message message = messages.get(0);
+        assertEquals("Internal", message.getClient());
+        assertEquals("stream events", message.getSubject());
+        assertEquals("Test Message Stream 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        message = messages.get(1);
+        assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Stream 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("Test Topic 1", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Stream 2"))
+                .execute();
+
+        assertEquals(2, messages.size());
+        message = messages.get(0);
+        assertEquals("Internal", message.getClient());
+        assertEquals("stream events", message.getSubject());
+        assertEquals("Test Message Stream 2", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        message = messages.get(1);
+        assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Stream 2", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("Test Topic 2", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        // Update message
+        Long stream3Id = zulip.streams().getStreamId("Test Message Stream 3").execute();
+
+        zulip.messages().editMessage(message.getId())
+                .withStreamId(stream3Id)
+                .withPropagateMode(PropagateMode.CHANGE_ONE)
+                .withSendNotificationToNewThread(true)
+                .withSendNotificationToOldThread(false)
+                .withTopic("Edited Topic")
+                .execute();
+
+        zulip.messages().updateMessageFlags(MessageFlag.STARRED, Operation.ADD, message.getId()).execute();
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Stream 3"))
+                .execute();
+        message = messages.get(1);
+        assertEquals(1, message.getFlags().size());
+        assertEquals(MessageFlag.STARRED, message.getFlags().get(0));
+        assertEquals("Edited Topic", message.getSubject());
+
+        List<MessageHistory> messageHistories = zulip.messages().getMessageHistory(message.getId()).execute();
+        assertEquals(2, messageHistories.size());
+
+        MessageHistory messageHistory = messageHistories.get(1);
+        assertEquals("Edited Topic", messageHistory.getTopic());
+        assertEquals("Test Topic 2", messageHistory.getPreviousTopic());
+
+        // Delete message
+        zulip.messages().deleteMessage(message.getId()).execute();
+
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Stream 2"))
+                .execute();
+
+        assertEquals(1, messages.size());
+    }
+
+    @Test
+    public void reactions() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Test Message Reaction", "Test Message Reaction"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        // Create message
+        long messageId = zulip.messages().sendStreamMessage("Test Content", "Test Message Reaction", "Test Topic 1").execute();
+
+        // Add reaction
+        zulip.messages().addEmojiReaction(messageId, Emoji.PIGLET.getName()).execute();
+
+        // Verify reaction added
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Reaction"))
+                .execute();
+
+        assertEquals(2, messages.size());
+
+        Message message = messages.get(1);
+        List<MessageReaction> reactions = message.getReactions();
+        assertEquals(1, reactions.size());
+        assertEquals("piglet", reactions.get(0).getEmojiName());
+
+        // Delete reaction
+        zulip.messages().deleteEmojiReaction(messageId, Emoji.PIGLET.getName()).execute();
+
+        // Verify reaction removed
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Reaction"))
+                .execute();
+
+        assertEquals(2, messages.size());
+
+        message = messages.get(1);
+        reactions = message.getReactions();
+        assertTrue(reactions.isEmpty());
+    }
+
+    @Test
+    public void fileUpload() throws IOException, ZulipClientException {
+        Path tmpFile = Files.createTempFile("zulip", ".txt");
+        Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
+
+        String url = zulip.messages().fileUpload(tmpFile.toFile()).execute();
+
+        assertTrue(url.matches("/user_uploads/.*/.*/.*/zulip[0-9]+.txt"));
+    }
+
+    @Test
+    public void privateMessages() throws ZulipClientException {
+        // Send private messages
+        long firstMessageId = zulip.messages().sendPrivateMessage("Test Private Message 1", "test@test.com")
+                .execute();
+
+        long secondMessageId = zulip.messages().sendPrivateMessage("Test Private Message 2", ownUser.getUserId())
+                .execute();
+
+        // Get private messages
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("is", "private"))
+                .execute();
+
+        messages = messages.stream()
+                .filter(message -> message.getId() == firstMessageId || message.getId() == secondMessageId)
+                .collect(Collectors.toList());
+
+        assertEquals(2, messages.size());
+
+        Message message = messages.get(0);
+        assertEquals("<p>Test Private Message 1</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertNull(message.getStream());
+        assertEquals(MessageType.PRIVATE, message.getType());
+        assertEquals(firstMessageId, message.getId());
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("Test Tester", message.getSenderFullName());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        message = messages.get(1);
+        assertEquals("<p>Test Private Message 2</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertNull(message.getStream());
+        assertEquals(MessageType.PRIVATE, message.getType());
+        assertEquals(secondMessageId, message.getId());
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("Test Tester", message.getSenderFullName());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        // Delete messages
+        zulip.messages().deleteMessage(firstMessageId).execute();
+        zulip.messages().deleteMessage(secondMessageId).execute();
+
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("is", "private"))
+                .execute();
+
+        messages = messages.stream()
+                .filter(msg -> msg.getId() == firstMessageId || msg.getId() == secondMessageId)
+                .collect(Collectors.toList());
+
+        assertTrue(messages.isEmpty());
+    }
+
+    @Test
+    public void markAsRead() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Mark As Read Stream", "Mark As Read Stream"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        zulip.messages()
+                .sendStreamMessage("content", "Mark As Read Stream", "Test Topic")
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId("Mark As Read Stream").execute();
+
+        zulip.messages().markStreamAsRead(streamId).execute();
+
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Mark As Read Stream"))
+                .execute();
+
+        assertFalse(messages.isEmpty());
+
+        Message message = messages.get(0);
+        List<MessageFlag> flags = message.getFlags();
+        assertFalse(flags.isEmpty());
+
+        MessageFlag flag = flags.get(0);
+        assertEquals(MessageFlag.READ, flag);
+    }
+
+    @Test
+    public void markTopicAsRead() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Mark Topic As Read Stream", "Mark Topic As Read Stream"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        zulip.messages()
+                .sendStreamMessage("content", "Mark Topic As Read Stream", "Test Topic")
+                .execute();
+
+        long streamId = zulip.streams().getStreamId("Mark Topic As Read Stream").execute();
+
+        zulip.messages().markTopicAsRead(streamId, "Test Topic").execute();
+
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Mark Topic As Read Stream"))
+                .execute();
+
+        assertFalse(messages.isEmpty());
+
+        Message message = messages.get(0);
+        List<MessageFlag> flags = message.getFlags();
+        assertFalse(flags.isEmpty());
+
+        MessageFlag flag = flags.get(0);
+        assertEquals(MessageFlag.READ, flag);
+    }
+
+    @Test
+    public void markAllAsRead() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Mark All Read Stream 1", "Mark All Read Stream 1"),
+                StreamSubscriptionRequest.of("Mark All Read Stream 2", "Mark All Read Stream 2"),
+                StreamSubscriptionRequest.of("Mark All Read Stream 3", "Mark All Read Stream 3"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        for (int i = 1; i <= 3; i++) {
+            zulip.messages()
+                    .sendStreamMessage("content", "Mark All Read Stream " + i, "Test Topic")
+                    .execute();
+        }
+
+        zulip.messages().markAllAsRead().execute();
+
+        List<Message> messages = zulip.messages().getMessages(3, 0, Anchor.NEWEST)
+                .execute();
+
+        assertEquals(3, messages.size());
+
+        for (Message message : messages) {
+            List<MessageFlag> flags = message.getFlags();
+            assertFalse(flags.isEmpty());
+
+            MessageFlag flag = flags.get(0);
+            assertEquals(MessageFlag.READ, flag);
+        }
+    }
+
+    @Test
+    public void messageMarkdown() throws ZulipClientException {
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Markdown Stream", "Markdown Stream"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        long messageId = zulip.messages()
+                .sendStreamMessage("**content**", "Markdown Stream", "Test Topic")
+                .execute();
+
+        String markdown = zulip.messages().getMessageMarkdown(messageId).execute();
+        assertEquals("**content**", markdown);
+
+        String rendered = zulip.messages().renderMessage("**content**").execute();
+        assertEquals("<p><strong>content</strong></p>", rendered);
+    }
+}

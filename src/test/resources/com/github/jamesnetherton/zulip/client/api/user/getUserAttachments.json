@@ -1,0 +1,24 @@
+{
+  "attachments": [
+    {
+      "create_time": 1603913066,
+      "id": 1,
+      "messages": [
+        {
+          "date_sent": 1603913066,
+          "id": 1
+        },
+        {
+          "date_sent": 1603913066,
+          "id": 2
+        }
+      ],
+      "name": "12345.jpg",
+      "path_id": "a/foo/bar/12345.jpg",
+      "size": 12345
+    }
+  ],
+  "msg": "",
+  "result": "success",
+  "upload_space_used": 987654321
+}

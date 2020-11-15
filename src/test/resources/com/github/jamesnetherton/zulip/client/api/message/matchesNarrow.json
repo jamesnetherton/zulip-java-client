@@ -1,0 +1,14 @@
+{
+  "messages": {
+    "1": {
+      "match_content": "test content 1",
+      "match_subject": "test subject 1"
+    },
+    "2": {
+      "match_content": "test content 2",
+      "match_subject": "test subject 2"
+    }
+  },
+  "msg": "",
+  "result": "success"
+}

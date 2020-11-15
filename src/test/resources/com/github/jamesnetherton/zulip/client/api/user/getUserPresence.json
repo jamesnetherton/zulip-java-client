@@ -1,0 +1,14 @@
+{
+  "msg": "",
+  "presence": {
+    "ZulipMobile": {
+      "status": "active",
+      "timestamp": 1603913066
+    },
+    "website": {
+      "status": "idle",
+      "timestamp": 1603913066
+    }
+  },
+  "result": "success"
+}

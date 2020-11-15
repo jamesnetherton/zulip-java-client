@@ -1,0 +1,5 @@
+{
+  "code": "BAD_REQUEST",
+  "msg": "Invalid email 'test@test.com'",
+  "result": "error"
+}

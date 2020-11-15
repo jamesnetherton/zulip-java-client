@@ -1,0 +1,24 @@
+{
+  "message_history": [
+    {
+      "content": "content 1",
+      "rendered_content": "<p>content 1</p>",
+      "timestamp": 1603913066,
+      "topic": "topic 1",
+      "user_id": 1
+    },
+    {
+      "content": "content 2",
+      "content_html_diff": "<div>content diff</div>",
+      "prev_content": "content 1",
+      "prev_rendered_content": "<p>content 1</p>",
+      "prev_topic": "topic 1",
+      "rendered_content": "<p>content 2</p>",
+      "timestamp": 1603913066,
+      "topic": "topic 2",
+      "user_id": 2
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

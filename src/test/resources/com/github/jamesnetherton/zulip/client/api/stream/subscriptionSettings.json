@@ -1,0 +1,16 @@
+{
+  "msg": "",
+  "result": "success",
+  "subscription_data": [
+    {
+      "property": "pin_to_top",
+      "stream_id": 1,
+      "value": true
+    },
+    {
+      "property": "color",
+      "stream_id": 1,
+      "value": "#000000"
+    }
+  ]
+}

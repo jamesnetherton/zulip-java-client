@@ -1,0 +1,12 @@
+{
+  "msg": "",
+  "not_removed": [
+    "cheese",
+    "wine"
+  ],
+  "removed": [
+    "foo",
+    "bar"
+  ],
+  "result": "success"
+}

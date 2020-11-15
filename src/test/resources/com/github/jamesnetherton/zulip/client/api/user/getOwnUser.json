@@ -1,0 +1,27 @@
+{
+  "avatar_url": "https://secure.gravatar.com/avatar/af4f06322c177ef4e1e9b2c424986b54?d=identicon&version=1",
+  "avatar_version": 1,
+  "date_joined": "2019-10-20T07:50:53.728864+00:00",
+  "email": "foo@bar.com",
+  "delivery_email": "foo@bar.com",
+  "full_name": "Foo Bar",
+  "is_active": true,
+  "is_admin": true,
+  "is_bot": false,
+  "is_guest": false,
+  "is_owner": false,
+  "max_message_id": 30,
+  "msg": "",
+  "profile_data": {
+    "1": {
+      "rendered_value": "Test Rendered Value 1"
+    },
+    "2": {
+      "rendered_value": "Test Rendered Value 2",
+      "value": "Test Value 2"
+    }
+  },
+  "result": "success",
+  "timezone": "Europe/London",
+  "user_id": 5
+}

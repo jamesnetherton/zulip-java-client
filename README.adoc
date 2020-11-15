@@ -1,0 +1,217 @@
+image:https://github.com/jamesnetherton/zulip-java-client/workflows/Zulip%20Java%20Client%20CI/badge.svg[title="Zulip Java Client CI", link="https://github.com/jamesnetherton/zulip-java-client/actions?query=workflow%3A%22Zulip+Java+Client+CI%22+branch%3Amaster"]
+image:https://img.shields.io/:license-Apache2-blue.svg[title="License", link="http://www.apache.org/licenses/LICENSE-2.0"]
+
+= Zulip Java Client
+
+Java client for the https://zulip.com[Zulip] chat server https://zulip.com/api/rest[REST API].
+
+== Quick start
+
+Here's how to get started with the Zulip Java client and starting making API requests.
+
+=== Dependencies
+
+Add the `zulip-java-client` dependency to your project.
+
+==== Maven
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.github.jamesnetherton</groupId>
+    <artifactId>zulip-java-client</artifactId>
+    <version>0.1.0</vesrsion>
+</dependency>
+----
+
+==== Gradle
+
+[source,groovy]
+----
+dependencies {
+    compile 'com.github.jamesnetherton:zulip-java-client:0.1.0'
+}
+----
+
+=== Instantiate the Zulip client
+
+Create a `Zulip` instance by passing the base URL of the Zulip server, user email address and https://zulip.com/api/api-keys[API key].
+[source,java]
+----
+Zulip zulip = new Zulip("http://yourdomain.zulip.com", "youremail@address.com", "your-api-key")
+----
+
+Now you can start interacting with the Zulip APIs.
+
+[source,java]
+----
+long messageId = zulip.messages()
+    .sendStreamMessage("Hello World!", "Test Stream", "Test Topic")
+    .execute();
+----
+
+When you are finished, it's good practice to close the Zulip client.
+
+[source,java]
+----
+zulip.close();
+----
+
+== Advanced configuration
+
+There are a few ways of customising the Zulip client configuration if you need to configure a proxy server or disable SSL certificate validation.
+
+=== Configuration builder
+[source,java]
+----
+Zulip zulip = new Zulip.Builder()
+    .site(...)
+    .email(...)
+    .apiKey(...)
+    .build();
+----
+
+=== Zuliprc file
+There is the option to use a `zuliprc` file as the configuration source.
+
+Load zuliprc from the user home directory.
+[source,java]
+----
+ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc();
+Zulip zulip = new Zulip(configuration);
+----
+
+Load zuliprc from a specified file.
+[source,java]
+----
+ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(new File("/path/to/zuliprc"));
+Zulip zulip = new Zulip(configuration);
+----
+
+
+The zuliprc file has the following format.
+[source,properties]
+----
+key=API key from the web interface
+email=your email address
+site=your Zulip server base URL
+insecure=whether to disable SSL certificate validation (true or false)
+----
+
+=== Instantiate ZulipConfiguration
+Or instantiate the `ZulipConfiguration` directly.
+[source,java]
+----
+ZulipConfiguration configuration = new ZulipConfiguration("http://a.site.com", "name@email.com", "an-api-key");
+Zulip zulip = new Zulip(configuration);
+----
+
+== API Request Builders
+
+Each API has a request builder object which is used to set the various parameter values expected by the API endpoint.
+
+Mandatory values will always be part of the API request method signature, while optional values can be provided through the 'with' builder methods. 
+
+Here's an example of this with the edit message API.
+
+[source,java]
+----
+zulip.messages().editMessage(1) <1>
+        .withContent("edited content") <2>
+        .withPropagateMode(PropagateMode.CHANGE_ONE)
+        .withSendNotificationToNewThread(true)
+        .withSendNotificationToOldThread(true)
+        .withStreamId(1)
+        .withTopic("different topic")
+        .execute() <3>
+----
+<1> The zulip client object exposes methods which aggregate the REST APIs together under logical groups such as messages, streams & users. The `editMessage` API expects one mandatory parameter - the message id.
+
+<2> Then follows a number of optional API parameters.
+
+<3> The request builder is completed and sent to the Zulip server with the `execute()` method. This *MUST* be called in order for the request to be sent.
+
+Alternatively you can create an instance of the builder object.
+
+[source,java]
+----
+EditMessageApiRequest request = new EditMessageApiRequest(1);
+request.withContent("edited content");
+request.withPropagateMode(PropagateMode.CHANGE_ONE);
+request.withSendNotificationToNewThread(true);
+request.withSendNotificationToOldThread(true);
+request.withStreamId(1);
+request.withTopic("different topic");
+request.execute();
+----
+
+== Exception handling
+
+Zulip API error responses are thrown as `ZulipClientException`. The exception object contains details about the error such as the code and a descriptive message.
+
+[source,java]
+----
+try {
+    zulip.messages.send(..);
+} catch (ZulipClientException e) {
+    System.out.println(e.getMessage());
+    System.out.println(e.getCode());
+}
+----
+
+If you exceed the API request rate limit, then the exception cause will be set to `ZulipRateLimitExceeded`. It contains a method which enables you to get the time at which the rate limit is reset. Note that the value is a https://en.wikipedia.org/wiki/Unix_time[Unix epoch] value.
+
+[source,java]
+----
+try {
+    zulip.messages.send(..);
+} catch (ZulipClientException e) {
+    Throwable cause = e.getCause();
+    if (cause instanceof ZulipRateLimitExceededException) {
+        ZulipRateLimitExceededException rle = (ZulipRateLimitExceededException) cause;
+        System.out.println(rle.getReteLimitReset());
+    }
+}
+----
+
+== Real time events API
+
+There is some limited and experimental support for the Zulip https://zulip.com/api/real-time-events[real-time events API].
+
+At present it is only possible to consume events whenever new messages are posted.
+
+To consume messages posted to all streams.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureMessageEvents(new MessageEventListener() {
+    @Override
+    public void onEvent(Message event) {
+        System.out.println(event.getContent());
+    }
+});
+
+eventPoller.start();
+
+// Do useful app work
+
+eventPoller.stop;
+----
+
+To filter messages you may use one or more https://zulip.com/api/construct-narrow[narrow] expressions.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureMessageEvents(new MessageEventListener() {
+    @Override
+    public void onEvent(Message event) {
+        System.out.println(event.getContent());
+    }
+}, Narrow.of("stream", "my-stream-name"));
+
+eventPoller.start();
+
+// Do useful app work
+
+eventPoller.stop;
+----

@@ -1,0 +1,16 @@
+{
+  "result": "success",
+  "msg": "",
+  "filters": [
+    [
+      "#(?P<id>[0-9]+)",
+      "https:\/\/github.com\/zulip\/zulip\/issues\/%(id)s",
+      1
+    ],
+    [
+      "(?P<id>[0-9a-f]{40})",
+      "https:\/\/github.com\/zulip\/zulip\/commit\/%(id)s",
+      2
+    ]
+  ]
+}

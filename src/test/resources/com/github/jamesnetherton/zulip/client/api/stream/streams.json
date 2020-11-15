@@ -1,0 +1,51 @@
+{
+  "msg": "",
+  "result": "success",
+  "streams": [
+    {
+      "description": "Test Stream Description 1",
+      "date_created": 1603913066,
+      "rendered_description": "<p>Test Stream Description 1<\/p>",
+      "name": "Test Stream Name 1",
+      "stream_id": 1,
+      "invite_only": true,
+      "is_web_public": false,
+      "stream_post_policy": 1,
+      "history_public_to_subscribers": false,
+      "first_message_id": 1,
+      "message_retention_days": 1,
+      "is_default": true,
+      "is_announcement_only": false
+    },
+    {
+      "description": "Test Stream Description 2",
+      "date_created": 1603913066,
+      "rendered_description": "<p>Test Stream Description 2<\/p>",
+      "name": "Test Stream Name 2",
+      "stream_id": 2,
+      "invite_only": true,
+      "is_web_public": false,
+      "stream_post_policy": 2,
+      "history_public_to_subscribers": false,
+      "first_message_id": 2,
+      "message_retention_days": 2,
+      "is_default": true,
+      "is_announcement_only": false
+    },
+    {
+      "description": "Test Stream Description 3",
+      "date_created": 1603913066,
+      "rendered_description": "<p>Test Stream Description 3<\/p>",
+      "name": "Test Stream Name 3",
+      "stream_id": 3,
+      "invite_only": true,
+      "is_web_public": false,
+      "stream_post_policy": 99,
+      "history_public_to_subscribers": false,
+      "first_message_id": 3,
+      "message_retention_days": 3,
+      "is_default": true,
+      "is_announcement_only": false
+    }
+  ]
+}

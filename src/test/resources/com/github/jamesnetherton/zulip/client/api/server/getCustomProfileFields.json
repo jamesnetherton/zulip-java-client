@@ -1,0 +1,62 @@
+{
+  "custom_fields": [
+    {
+      "field_data": "Data 1",
+      "hint": "Hint 1",
+      "id": 1,
+      "name": "Field 1",
+      "order": 1,
+      "type": 1
+    },
+    {
+      "field_data": "Data 2",
+      "hint": "Hint 2",
+      "id": 2,
+      "name": "Field 2",
+      "order": 2,
+      "type": 2
+    },
+    {
+      "field_data": "{\"vim\":{\"text\":\"Vim\",\"order\":\"1\"},\"emacs\":{\"text\":\"Emacs\",\"order\":\"2\"}}",
+      "hint": "Hint 3",
+      "id": 3,
+      "name": "Field 3",
+      "order": 3,
+      "type": 3
+    },
+    {
+      "field_data": "Data 4",
+      "hint": "Hint 4",
+      "id": 4,
+      "name": "Field 4",
+      "order": 4,
+      "type": 4
+    },
+    {
+      "field_data": "Data 5",
+      "hint": "Hint 5",
+      "id": 5,
+      "name": "Field 5",
+      "order": 5,
+      "type": 5
+    },
+    {
+      "field_data": "Data 6",
+      "hint": "Hint 6",
+      "id": 6,
+      "name": "Field 6",
+      "order": 6,
+      "type": 99
+    },
+    {
+      "field_data": "{\"subtype\":\"foo\"}",
+      "hint": "Hint 7",
+      "id": 7,
+      "name": "Field 7",
+      "order": 7,
+      "type": 7
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

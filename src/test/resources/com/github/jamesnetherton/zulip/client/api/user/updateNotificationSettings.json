@@ -1,0 +1,22 @@
+{
+  "enable_stream_desktop_notifications": true,
+  "enable_stream_email_notifications": true,
+  "enable_stream_push_notifications": true,
+  "enable_stream_audible_notifications": true,
+  "notification_sound": "ding",
+  "enable_desktop_notifications": true,
+  "enable_sounds": true,
+  "enable_offline_email_notifications": true,
+  "enable_offline_push_notifications": true,
+  "enable_online_push_notifications": true,
+  "enable_digest_emails": true,
+  "enable_login_emails": true,
+  "message_content_in_email_notifications": true,
+  "pm_content_in_desktop_notifications": true,
+  "wildcard_mentions_notify": true,
+  "desktop_icon_count_display": 2,
+  "realm_name_in_notifications": true,
+  "presence_enabled": true,
+  "msg": "",
+  "result": "success"
+}

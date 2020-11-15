@@ -1,0 +1,65 @@
+{
+  "msg": "",
+  "result": "success",
+  "subscriptions": [
+    {
+      "audible_notifications": true,
+      "color": "#e79ab5",
+      "description": "A Scandinavian country",
+      "rendered_description": "<p>A Scandinavian country</p>",
+      "desktop_notifications": true,
+      "email_address": "Denmark+187b4125ed36d6af8b5d03ef4f65c0cf@zulipdev.com:9981",
+      "invite_only": false,
+      "is_muted": false,
+      "name": "Denmark",
+      "pin_to_top": false,
+      "push_notifications": false,
+      "role": 20,
+      "stream_id": 1,
+      "is_web_public": true,
+      "is_wildcard_mentions_notify": false,
+      "stream_weekly_traffic": 1,
+      "message_retention_days": 30,
+      "history_public_to_subscribers": true,
+      "first_message_id": 1,
+      "email_notifications": true,
+      "date_created": 1604136248,
+      "subscribers": [
+        7,
+        10,
+        11,
+        12,
+        14
+      ]
+    },
+    {
+      "audible_notifications": true,
+      "color": "#e79ab5",
+      "description": "Located in the United Kingdom",
+      "rendered_description": "<p>Located in the United Kingdom</p>",
+      "desktop_notifications": true,
+      "email_address": "Scotland+f5786390183e60a1ccb18374f9d05649@zulipdev.com:9981",
+      "invite_only": false,
+      "is_muted": false,
+      "name": "Scotland",
+      "pin_to_top": false,
+      "push_notifications": false,
+      "role": 50,
+      "stream_id": 3,
+      "is_web_public": true,
+      "is_wildcard_mentions_notify": false,
+      "stream_weekly_traffic": 1,
+      "message_retention_days": 30,
+      "history_public_to_subscribers": true,
+      "first_message_id": 1,
+      "email_notifications": true,
+      "date_created": 1604136248,
+      "subscribers": [
+        7,
+        11,
+        12,
+        14
+      ]
+    }
+  ]
+}

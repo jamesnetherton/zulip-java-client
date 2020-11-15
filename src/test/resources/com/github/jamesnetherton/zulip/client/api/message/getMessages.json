@@ -1,0 +1,104 @@
+{
+  "anchor": 21,
+  "found_anchor": true,
+  "found_newest": true,
+  "messages": [
+    {
+      "avatar_url": "http://avatars.net/foobar",
+      "client": "populate_db",
+      "content": "<p>Some test content</p>",
+      "content_type": "text/html",
+      "display_recipient": [
+        {
+          "email": "test1@zulip.com",
+          "full_name": "Test Name 1",
+          "id": 1,
+          "is_mirror_dummy": false
+        },
+        {
+          "email": "test2@zulip.com",
+          "full_name": "Test Name 2",
+          "id": 2,
+          "is_mirror_dummy": true
+        },
+        {
+          "email": "test3@zulip.com",
+          "full_name": "Test Name 3",
+          "id": 3,
+          "is_mirror_dummy": false
+        }
+      ],
+      "flags": [
+        "collapsed",
+        "has_alert_word",
+        "historical",
+        "mentioned",
+        "read",
+        "starred",
+        "wildcard_mentioned"
+      ],
+      "id": 16,
+      "is_me_message": false,
+      "reactions": [
+        {
+          "emoji_code": "code 1",
+          "emoji_name": "emoji 1",
+          "reaction_type": "unicode_emoji",
+          "user_id": 1
+        },
+        {
+          "emoji_code": "code 2",
+          "emoji_name": "emoji 2",
+          "reaction_type": "realm_emoji",
+          "user_id": 2
+        },
+        {
+          "emoji_code": "code 3",
+          "emoji_name": "emoji 3",
+          "reaction_type": "zulip_extra_emoji",
+          "user_id": 3
+        }
+      ],
+      "recipient_id": 22,
+      "sender_email": "hamlet@zulip.com",
+      "sender_full_name": "King Hamlet",
+      "sender_id": 99,
+      "sender_realm_str": "zulip",
+      "subject": "Test message subject",
+      "submessages": [],
+      "timestamp": 1603913066,
+      "topic_links": [
+        "Topic 1",
+        "Topic 2",
+        "Topic 3"
+      ],
+      "type": "stream"
+    },
+    {
+      "avatar_url": "https://secure.gravatar.com/avatar/6d8cad0fd00256e7b40691d27ddfd466?d=identicon&version=1",
+      "client": "populate_db",
+      "content": "<p>Wait, is this from the frontend js code or backend python code</p>",
+      "content_type": "text/html",
+      "display_recipient": "Verona",
+      "flags": [
+        "read"
+      ],
+      "id": 21,
+      "is_me_message": true,
+      "reactions": [],
+      "recipient_id": 20,
+      "sender_email": "hamlet@zulip.com",
+      "sender_full_name": "King Hamlet",
+      "sender_id": 4,
+      "sender_realm_str": "zulip",
+      "stream_id": 5,
+      "subject": "Verona3",
+      "submessages": [],
+      "timestamp": 1603913066,
+      "topic_links": [],
+      "type": "private"
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

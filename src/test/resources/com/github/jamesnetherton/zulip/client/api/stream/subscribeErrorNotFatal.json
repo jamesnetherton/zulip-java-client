@@ -1,0 +1,9 @@
+{
+  "already_subscribed": {},
+  "msg": "",
+  "result": "success",
+  "subscribed": {},
+  "unauthorized": [
+    "private_stream"
+  ]
+}

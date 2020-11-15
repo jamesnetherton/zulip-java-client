@@ -1,0 +1,26 @@
+{
+  "msg": "",
+  "result": "success",
+  "user_groups": [
+    {
+      "description": "Test Group Description 1",
+      "id": 1,
+      "members": [
+        1,
+        2,
+        3
+      ],
+      "name": "Test Group Name 1"
+    },
+    {
+      "description": "Test Group Description 2",
+      "id": 2,
+      "members": [
+        1,
+        2,
+        3
+      ],
+      "name": "Test Group Name 2"
+    }
+  ]
+}
