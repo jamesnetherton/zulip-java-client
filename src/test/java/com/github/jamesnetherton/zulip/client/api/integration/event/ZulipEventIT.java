@@ -64,6 +64,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 assertEquals("Test Content " + i, messages.get(i));
             }
         } catch (ZulipClientException e) {
+            e.printStackTrace();
             throw e;
         } finally {
             eventPoller.stop();
@@ -118,6 +119,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 count += 2;
             }
         } catch (ZulipClientException e) {
+            e.printStackTrace();
             throw e;
         } finally {
             eventPoller.stop();
