@@ -22,7 +22,7 @@ Add the `zulip-java-client` dependency to your project.
 <dependency>
     <groupId>com.github.jamesnetherton</groupId>
     <artifactId>zulip-java-client</artifactId>
-    <version>0.1.0</vesrsion>
+    <version>0.1.1</vesrsion>
 </dependency>
 ----
 
@@ -31,7 +31,7 @@ Add the `zulip-java-client` dependency to your project.
 [source,groovy]
 ----
 dependencies {
-    compile 'com.github.jamesnetherton:zulip-java-client:0.1.0'
+    compile 'com.github.jamesnetherton:zulip-java-client:0.1.1'
 }
 ----
 
