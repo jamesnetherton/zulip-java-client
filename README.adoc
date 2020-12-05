@@ -37,14 +37,10 @@ dependencies {
 
 === Instantiate the Zulip client
 
-Create a `Zulip` instance by passing the base URL of the Zulip server, user email address and https://zulip.com/api/api-keys[API key].
+Create a `Zulip` instance by passing the user email address, https://zulip.com/api/api-keys[API key] and the base URL of the Zulip server.
 [source,java]
 ----
-Zulip zulip = new Zulip.Builder()
-    .site(...)
-    .email(...)
-    .apiKey(...)
-    .build();
+Zulip zulip = new Zulip("youremail@address.com", "your-api-key", "http://yourdomain.zulip.com")
 ----
 
 Now you can start interacting with the Zulip APIs.

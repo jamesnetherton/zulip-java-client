@@ -9,6 +9,20 @@ import org.junit.jupiter.api.Test;
 public class ZulipTest {
 
     @Test
+    public void createZulip() throws ZulipClientException {
+        Zulip zulip = new Zulip("test@test.com", "test-key", "http://test.com");
+        assertNotNull(zulip);
+    }
+
+    @Test
+    public void invalidZulip() {
+        assertThrows(IllegalArgumentException.class, () -> new Zulip(null, "test-key", "http://test.com"));
+        assertThrows(IllegalArgumentException.class, () -> new Zulip("test@test.com", null, "http://test.com"));
+        assertThrows(IllegalArgumentException.class, () -> new Zulip("test@test.com", "test-key", null));
+        assertThrows(IllegalArgumentException.class, () -> new Zulip("test@test.com", "test-key", "invalid-url"));
+    }
+
+    @Test
     public void zulipBuilder() throws ZulipClientException {
         Zulip zulip = new Zulip.Builder()
                 .email("test@test.com")

@@ -26,7 +26,40 @@ public final class Zulip implements Closeable {
     private final ZulipHttpClient client;
 
     /**
+     * Constructs a new {@link Zulip} instance.
+     *
+     * @param  email                The email address to use for authentication with the Zulip server
+     * @param  apiKey               The API key to use for authentication with the Zulip server
+     * @param  site                 The URL of the Zulip server
+     * @throws ZulipClientException If there was a problem constructing the Zulip client
+     */
+    public Zulip(String email, String apiKey, String site) throws ZulipClientException {
+        try {
+            if (email == null) {
+                throw new IllegalArgumentException("Zulip email cannot be null");
+            }
+
+            if (apiKey == null) {
+                throw new IllegalArgumentException("Zulip api key cannot be null");
+            }
+
+            if (site == null) {
+                throw new IllegalArgumentException("Zulip site url cannot be null");
+            }
+
+            URL zulipApiUrl = ZulipUrlUtils.getZulipApiUrl(site);
+
+            this.client = new ZulipCommonsHttpClient(new ZulipConfiguration(zulipApiUrl, email, apiKey));
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Site must be a valid URL");
+        }
+    }
+
+    /**
      * Constructs a new {@link Zulip} instance with the provided {@link ZulipConfiguration}.
+     *
+     * @param  configuration        The {@link ZulipConfiguration} to use for configuring the Zulip client
+     * @throws ZulipClientException If there was a problem constructing the Zulip client
      */
     public Zulip(ZulipConfiguration configuration) throws ZulipClientException {
         this.client = new ZulipCommonsHttpClient(configuration);
