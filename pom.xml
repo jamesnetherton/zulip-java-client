@@ -20,7 +20,7 @@
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <jackson.version>2.12.4</jackson.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <wiremock-jre8.version>2.29.1</wiremock-jre8.version>
 
         <!-- Plugin versions -->
