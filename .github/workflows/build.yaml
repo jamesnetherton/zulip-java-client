@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8', '11', '15' ]
+        java: [ '8', '11', '16' ]
         mode: [ 'fast-build', 'full-build' ]
     steps:
       - name: Checkout Zulip Java Client
