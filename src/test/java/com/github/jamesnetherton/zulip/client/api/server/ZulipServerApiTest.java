@@ -91,7 +91,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
             assertEquals("/user_avatars/" + i + "/emoji/images/" + i + ".png", emoji.getSourceUrl());
             assertEquals(i, emoji.getAuthorId());
             assertEquals(i, emoji.getId());
-            assertEquals(i == 1 ? false : true, emoji.isDeactivated());
+            assertEquals(i != 1, emoji.isDeactivated());
         }
     }
 

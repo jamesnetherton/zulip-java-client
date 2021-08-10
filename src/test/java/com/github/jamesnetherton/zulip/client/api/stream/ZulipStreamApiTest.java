@@ -6,6 +6,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.POST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -428,10 +429,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         };
 
         // Test subscription settings equality
-        assertFalse(settings[0].equals(settings[1]));
-        assertTrue(settings[0].equals(settings[0]));
-        assertFalse(settings[0].equals(null));
-        assertFalse(settings[0].equals("some wrong value"));
+        assertNotEquals(settings[0], settings[1]);
+        assertEquals(settings[0], settings[0]);
+        assertNotEquals(null, settings[0]);
+        assertNotEquals("some wrong value", settings[0]);
 
         String subscriptionData = JsonUtils.getMapper().writeValueAsString(settings)
                 .replaceAll("\\{", "\\\\{")
