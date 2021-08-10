@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
+import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.ArrayList;
@@ -29,10 +30,11 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
         String streamName = UUID.randomUUID().toString().split("-")[0];
         StreamSubscriptionRequest subscriptionRequest = StreamSubscriptionRequest.of(streamName, streamName);
-        zulip.streams().subscribe(subscriptionRequest).execute();
+        StreamService streamService = zulip.streams();
+        streamService.subscribe(subscriptionRequest).execute();
 
         for (int i = 0; i < 10; i++) {
-            List<Stream> streams = zulip.streams().getAll().execute();
+            List<Stream> streams = streamService.getAll().execute();
             List<Stream> matches = streams.stream()
                     .filter(stream -> stream.getName().equals(streamName))
                     .collect(Collectors.toList());
