@@ -23,7 +23,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
 
     public static final String ANCHOR = "anchor";
     public static final String GRAVATAR = "gravatar";
-    public static final String MARKDOWN = "markdown";
+    public static final String MARKDOWN = "apply_markdown";
     public static final String NARROW = "narrow";
     public static final String NUM_AFTER = "num_after";
     public static final String NUM_BEFORE = "num_before";
