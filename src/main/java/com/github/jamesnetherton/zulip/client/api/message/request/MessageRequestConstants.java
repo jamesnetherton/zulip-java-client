@@ -13,4 +13,7 @@ public class MessageRequestConstants {
     public static final String REACTIONS_API_PATH = MESSAGES_ID_API_PATH + "/reactions";
     public static final String RENDER_MESSAGE_API_PATH = MESSAGES_API_PATH + "/render";
     public static final String USER_UPLOADS_API_PATH = "user_uploads";
+    
+    private MessageRequestConstants() {
+    }
 }
