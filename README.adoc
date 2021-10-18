@@ -91,7 +91,6 @@ ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(new File("/pat
 Zulip zulip = new Zulip(configuration);
 ----
 
-
 The zuliprc file has the following format.
 [source,properties]
 ----
@@ -126,7 +125,7 @@ zulip.messages().editMessage(1) <1>
         .withSendNotificationToOldThread(true)
         .withStreamId(1)
         .withTopic("different topic")
-        .execute() <3>
+        .execute(); <3>
 ----
 <1> The zulip client object exposes methods which aggregate the REST APIs together under logical groups such as messages, streams & users. The `editMessage` API expects one mandatory parameter - the message id.
 
@@ -198,7 +197,7 @@ eventPoller.start();
 
 // Do useful app work
 
-eventPoller.stop;
+eventPoller.stop();
 ----
 
 To filter messages you may use one or more https://zulip.com/api/construct-narrow[narrow] expressions.
@@ -216,5 +215,5 @@ eventPoller.start();
 
 // Do useful app work
 
-eventPoller.stop;
+eventPoller.stop();
 ----
