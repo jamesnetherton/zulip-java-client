@@ -55,6 +55,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         // Retrieve user
         try {
+            // Get by ID
             User user = zulip.users().getUser(createdUser.getUserId()).execute();
             assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
             assertTrue(user.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
@@ -68,6 +69,21 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertFalse(user.isGuest());
             assertFalse(user.isOwner());
             assertTrue(user.getProfileData().isEmpty());
+
+            // Get by email
+            User userByEmail = zulip.users().getUser(createdUser.getEmail()).execute();
+            assertTrue(userByEmail.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
+            assertTrue(userByEmail.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
+            assertEquals(id + "@test.com", userByEmail.getEmail());
+            assertEquals(id, userByEmail.getFullName());
+            assertEquals(1, userByEmail.getAvatarVersion());
+            assertEquals(createdUser.getUserId(), userByEmail.getUserId());
+            assertTrue(userByEmail.isActive());
+            assertFalse(userByEmail.isAdmin());
+            assertFalse(userByEmail.isBot());
+            assertFalse(userByEmail.isGuest());
+            assertFalse(userByEmail.isOwner());
+            assertTrue(userByEmail.getProfileData().isEmpty());
 
             // Update user
             zulip.users().updateUser(createdUser.getUserId())
