@@ -1,19 +1,18 @@
 package com.github.jamesnetherton.zulip.client.api.server;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Defines a Zulip linkifier.
  */
 public class Linkifier {
 
+    @JsonProperty
     private String pattern;
-    private String urlFormatString;
+    @JsonProperty
+    private String urlFormat;
+    @JsonProperty
     private long id;
-
-    public Linkifier(String pattern, String urlFormatString, long id) {
-        this.pattern = pattern;
-        this.urlFormatString = urlFormatString;
-        this.id = id;
-    }
 
     public long getId() {
         return id;
@@ -23,7 +22,7 @@ public class Linkifier {
         return pattern;
     }
 
-    public String getUrlFormatString() {
-        return urlFormatString;
+    public String getUrlFormat() {
+        return urlFormat;
     }
 }

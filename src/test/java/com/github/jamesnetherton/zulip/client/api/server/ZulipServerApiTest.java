@@ -47,25 +47,25 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
     @Test
     public void getLinkifiers() throws Exception {
-        stubZulipResponse(GET, "/realm/filters", Collections.emptyMap(), "getLinkifiers.json");
+        stubZulipResponse(GET, "/realm/linkifiers", Collections.emptyMap(), "getLinkifiers.json");
 
         List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
         assertEquals(2, linkifiers.size());
 
         Linkifier linkifierA = linkifiers.get(0);
         assertEquals("#(?P<id>[0-9]+)", linkifierA.getPattern());
-        assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifierA.getUrlFormatString());
+        assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifierA.getUrlFormat());
         assertEquals(1, linkifierA.getId());
 
         Linkifier linkifierB = linkifiers.get(1);
         assertEquals("(?P<id>[0-9a-f]{40})", linkifierB.getPattern());
-        assertEquals("https://github.com/zulip/zulip/commit/%(id)s", linkifierB.getUrlFormatString());
+        assertEquals("https://github.com/zulip/zulip/commit/%(id)s", linkifierB.getUrlFormat());
         assertEquals(2, linkifierB.getId());
     }
 
     @Test
     public void getEmptyLinkifiers() throws Exception {
-        stubZulipResponse(GET, "/realm/filters", Collections.emptyMap(), "getLinkifiersEmpty.json");
+        stubZulipResponse(GET, "/realm/linkifiers", Collections.emptyMap(), "getLinkifiersEmpty.json");
 
         List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
         assertTrue(linkifiers.isEmpty());
@@ -265,7 +265,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void getApiKey() throws Exception {
+    public void getDevelopmentApiKey() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(GetApiKeyApiRequest.USERNAME, "test@test.com")
                 .get();
@@ -273,6 +273,20 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         stubZulipResponse(POST, "/dev_fetch_api_key", params, "getApiKey.json");
 
         String key = zulip.server().getDevelopmentApiKey("test@test.com").execute();
+
+        assertEquals("abc123zxy", key);
+    }
+
+    @Test
+    public void getProductionApiKey() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetApiKeyApiRequest.USERNAME, "test@test.com")
+                .add(GetApiKeyApiRequest.PASSWORD, "test")
+                .get();
+
+        stubZulipResponse(POST, "/fetch_api_key", params, "getApiKey.json");
+
+        String key = zulip.server().getApiKey("test@test.com", "test").execute();
 
         assertEquals("abc123zxy", key);
     }

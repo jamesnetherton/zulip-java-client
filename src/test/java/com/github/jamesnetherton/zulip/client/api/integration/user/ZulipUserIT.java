@@ -95,9 +95,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         User user = zulip.users().getOwnUser().execute();
 
         assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
-        assertTrue(user.getDateJoined().startsWith("2020"));
+        assertTrue(user.getDateJoined().startsWith("2021"));
         assertEquals("test@test.com", user.getEmail());
-        assertEquals("Test Tester", user.getFullName());
+        assertEquals("tester", user.getFullName());
         assertEquals("Europe/London", user.getTimezone());
         assertEquals(1, user.getAvatarVersion());
         assertEquals(ownUser.getUserId(), user.getUserId());

@@ -162,4 +162,16 @@ public class ServerService implements ZulipService {
     public GetApiKeyApiRequest getDevelopmentApiKey(String username) {
         return new GetApiKeyApiRequest(this.client, username);
     }
+
+    /**
+     * Gets a user development API key. Only available for production servers.
+     * This endpoint is not available on development servers.
+     *
+     * @param  username The username to fetch the development API key for
+     * @param  password The password to fetch the development API key for
+     * @return          The {@link GetApiKeyApiRequest} builder object
+     */
+    public GetApiKeyApiRequest getApiKey(String username, String password) {
+        return new GetApiKeyApiRequest(this.client, username, password);
+    }
 }
