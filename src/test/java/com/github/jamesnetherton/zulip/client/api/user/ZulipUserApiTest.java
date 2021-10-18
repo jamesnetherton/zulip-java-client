@@ -301,7 +301,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void getUser() throws Exception {
+    public void getUserById() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(GetUserApiRequest.CLIENT_GRAVATAR, "true")
                 .add(GetUserApiRequest.INCLUDE_CUSTOM_PROFILE_FIELDS, "true")
@@ -310,6 +310,47 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         stubZulipResponse(GET, "/users/1", params, "getUser.json");
 
         User user = zulip.users().getUser(1)
+                .withClientGravatar(true)
+                .withIncludeCustomProfileFields(true)
+                .execute();
+
+        assertEquals("https://secure.gravatar.com/avatar/af4f06322c177ef4e1e9b2c424986b54?d=identicon&version=1",
+                user.getAvatarUrl());
+        assertEquals("2019-10-20T07:50:53.728864+00:00", user.getDateJoined());
+        assertEquals("foo@bar.com", user.getDeliveryEmail());
+        assertEquals("foo@bar.com", user.getEmail());
+        assertEquals("Foo Bar", user.getFullName());
+        assertEquals("Europe/London", user.getTimezone());
+        assertEquals(1, user.getAvatarVersion());
+        assertEquals(5, user.getUserId());
+        assertTrue(user.isActive());
+        assertTrue(user.isAdmin());
+        assertFalse(user.isBot());
+        assertFalse(user.isGuest());
+        assertFalse(user.isOwner());
+
+        Map<String, ProfileData> profileDataMap = user.getProfileData();
+        assertEquals(2, profileDataMap.size());
+
+        ProfileData profileDataA = profileDataMap.get("1");
+        assertNull(profileDataA.getValue());
+        assertEquals("Test Rendered Value 1", profileDataA.getRenderedValue());
+
+        ProfileData profileDataB = profileDataMap.get("2");
+        assertEquals("Test Value 2", profileDataB.getValue());
+        assertEquals("Test Rendered Value 2", profileDataB.getRenderedValue());
+    }
+
+    @Test
+    public void getUserByEmail() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetUserApiRequest.CLIENT_GRAVATAR, "true")
+                .add(GetUserApiRequest.INCLUDE_CUSTOM_PROFILE_FIELDS, "true")
+                .get();
+
+        stubZulipResponse(GET, "/users/test@test.com", params, "getUser.json");
+
+        User user = zulip.users().getUser("test@test.com")
                 .withClientGravatar(true)
                 .withIncludeCustomProfileFields(true)
                 .execute();

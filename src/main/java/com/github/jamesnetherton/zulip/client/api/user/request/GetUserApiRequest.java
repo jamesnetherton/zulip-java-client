@@ -1,5 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.user.request;
 
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_EMAIL;
 import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ID;
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
@@ -13,13 +14,14 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  * Zulip API request builder for getting a user.
  *
  * @see <a href="https://zulip.com/api/get-user">https://zulip.com/api/get-user</a>
+ * @see <a href="https://zulip.com/api/get-user-by-email">https://zulip.com/api/get-user-by-email</a>
  */
 public class GetUserApiRequest extends ZulipApiRequest implements ExecutableApiRequest<User> {
 
     public static final String CLIENT_GRAVATAR = "client_gravatar";
     public static final String INCLUDE_CUSTOM_PROFILE_FIELDS = "include_custom_profile_fields";
 
-    private final long userId;
+    private final String path;
 
     /**
      * Constructs a {@link GetUserApiRequest}.
@@ -29,7 +31,18 @@ public class GetUserApiRequest extends ZulipApiRequest implements ExecutableApiR
      */
     public GetUserApiRequest(ZulipHttpClient client, long userId) {
         super(client);
-        this.userId = userId;
+        this.path = String.format(USERS_WITH_ID, userId);
+    }
+
+    /**
+     * Constructs a {@link GetUserApiRequest}.
+     *
+     * @param client The Zulip HTTP client
+     * @param email  The Zulip display email address of the user to get
+     */
+    public GetUserApiRequest(ZulipHttpClient client, String email) {
+        super(client);
+        this.path = String.format(USERS_WITH_EMAIL, email);
     }
 
     /**
@@ -64,8 +77,7 @@ public class GetUserApiRequest extends ZulipApiRequest implements ExecutableApiR
      */
     @Override
     public User execute() throws ZulipClientException {
-        String path = String.format(USERS_WITH_ID, userId);
-        GetUserApiResponse response = client().get(path, getParams(), GetUserApiResponse.class);
+        GetUserApiResponse response = client().get(this.path, getParams(), GetUserApiResponse.class);
         return new User(response.getUserApiResponse());
     }
 }

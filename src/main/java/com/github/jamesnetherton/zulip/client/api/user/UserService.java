@@ -201,7 +201,7 @@ public class UserService implements ZulipService {
     }
 
     /**
-     * Gets a user.
+     * Gets a user by id.
      *
      * @see           <a href="https://zulip.com/api/get-user">https://zulip.com/api/get-user</a>
      *
@@ -210,6 +210,18 @@ public class UserService implements ZulipService {
      */
     public GetUserApiRequest getUser(long userId) {
         return new GetUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Gets a user by the given Zulip display email address.
+     *
+     * @see          <a href="https://zulip.com/api/get-user-by-email">https://zulip.com/api/get-user-by-email</a>
+     *
+     * @param  email The Zulip display email address of the user to get
+     * @return       The {@link GetUserApiRequest} builder object
+     */
+    public GetUserApiRequest getUser(String email) {
+        return new GetUserApiRequest(this.client, email);
     }
 
     /**
