@@ -71,7 +71,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
         assertEquals("test@test.com", message.getSenderEmail());
-        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("tester", message.getSenderFullName());
         assertEquals("Test Topic 1", message.getSubject());
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
@@ -96,7 +96,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
         assertEquals("test@test.com", message.getSenderEmail());
-        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("tester", message.getSenderFullName());
         assertEquals("Test Topic 2", message.getSubject());
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
@@ -220,7 +220,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(MessageType.PRIVATE, message.getType());
         assertEquals(firstMessageId, message.getId());
         assertEquals("test@test.com", message.getSenderEmail());
-        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("tester", message.getSenderFullName());
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
 
@@ -232,7 +232,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(MessageType.PRIVATE, message.getType());
         assertEquals(secondMessageId, message.getId());
         assertEquals("test@test.com", message.getSenderEmail());
-        assertEquals("Test Tester", message.getSenderFullName());
+        assertEquals("tester", message.getSenderFullName());
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
 

@@ -59,7 +59,7 @@ jobs:
             sleep 5
           done
 
-          echo "key=Qi33q7BwquWgD9HUwm79Sr6Z5WPpGWag" > zuliprc
+          echo "key=o91T8fOkBRLxoknLd0wuPD52g0ojj8hg" > zuliprc
           echo "email=test@test.com" >> zuliprc
           echo "site=https://localhost" >> zuliprc
           echo "insecure=true" >> zuliprc
