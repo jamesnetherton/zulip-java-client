@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.draft.DraftService;
 import com.github.jamesnetherton.zulip.client.api.event.EventService;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
 import com.github.jamesnetherton.zulip.client.api.server.ServerService;
@@ -63,6 +64,15 @@ public final class Zulip implements Closeable {
      */
     public Zulip(ZulipConfiguration configuration) throws ZulipClientException {
         this.client = new ZulipCommonsHttpClient(configuration);
+    }
+
+    /**
+     * Access the collection of draft Zulip APIs.
+     *
+     * @return The {@link DraftService} Zulip draft APIs
+     */
+    public DraftService drafts() {
+        return (DraftService) services.computeIfAbsent(DraftService.class, key -> new DraftService(this.client));
     }
 
     /**
