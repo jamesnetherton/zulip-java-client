@@ -439,4 +439,18 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(1, messageB.getId());
         assertEquals(1603913066000L, messageB.getDateSent().toEpochMilli());
     }
+
+    @Test
+    public void muteUser() throws Exception {
+        stubZulipResponse(POST, "/users/me/muted_users/5", Collections.emptyMap());
+
+        zulip.users().mute(5).execute();
+    }
+
+    @Test
+    public void unmuteUser() throws Exception {
+        stubZulipResponse(DELETE, "/users/me/muted_users/5", Collections.emptyMap());
+
+        zulip.users().unmute(5).execute();
+    }
 }
