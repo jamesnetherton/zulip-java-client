@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetSubscribedStreamsApiRequest;
@@ -20,6 +21,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApi
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamSubscriptionSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -461,4 +463,23 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         assertEquals(2, modified.size());
     }
+
+    @Test
+    public void deleteTopic() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
+                .get();
+
+        stubZulipResponse(POST, "/streams/1/delete_topic", params);
+
+        zulip.streams().deleteTopic(1, "Test Topic").execute();
+    }
+
+    @Test
+    public void archiveStream() throws Exception {
+        stubZulipResponse(DELETE, "/streams/1", Collections.emptyMap());
+
+        zulip.streams().archiveStream(1).execute();
+    }
+
 }

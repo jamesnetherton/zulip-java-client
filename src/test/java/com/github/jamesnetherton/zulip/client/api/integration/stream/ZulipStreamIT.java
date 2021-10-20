@@ -165,4 +165,55 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         zulip.streams().unsubscribe("Test Subscribed").execute();
         assertFalse(zulip.streams().isSubscribed(ownUser.getUserId(), streamId).execute());
     }
+
+    @Test
+    public void deleteStreamTopic() throws ZulipClientException {
+        // Create stream & topic
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Test Stream For Topic", "Test Stream For Topic"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId("Test Stream For Topic").execute();
+
+        List<Topic> topics = zulip.streams().getTopics(streamId).execute();
+        assertEquals(1, topics.size());
+
+        Topic topic = topics.get(0);
+        assertEquals("stream events", topic.getName());
+        assertTrue(topic.getMaxId() > 0);
+
+        // Delete topic
+        zulip.streams().deleteTopic(streamId, topic.getName()).execute();
+
+        // Verify deletion
+        topics = zulip.streams().getTopics(streamId).execute();
+        assertTrue(topics.isEmpty());
+    }
+
+    @Test
+    public void archiveStream() throws ZulipClientException {
+        // Create stream & topic
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of("Test Stream For Topic", "Test Stream For Topic"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId("Test Stream For Topic").execute();
+
+        // Archive stream
+        zulip.streams().archiveStream(streamId).execute();
+
+        // Verify archival
+        List<Stream> streams = zulip.streams().getAll().execute();
+        assertTrue(streams.isEmpty());
+    }
 }

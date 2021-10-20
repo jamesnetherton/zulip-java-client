@@ -9,6 +9,7 @@ public class StreamRequestConstants {
     public static final String SUBSCRIPTIONS = "users/me/subscriptions";
     public static final String MUTED_TOPICS = SUBSCRIPTIONS + "/muted_topics";
     public static final String SUBSCRIPTIONS_PROPERTIES = SUBSCRIPTIONS + "/properties";
+    public static final String TOPIC_DELETE = STREAMS_WITH_ID + "/delete_topic";
     public static final String USER_SUBSCRIPTIONS = "users/%d/subscriptions/%d";
 
     private StreamRequestConstants() {
