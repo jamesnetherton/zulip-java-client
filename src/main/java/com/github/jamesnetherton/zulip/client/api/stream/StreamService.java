@@ -2,7 +2,9 @@ package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.stream.request.ArchiveStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteStreamApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamTopicsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
@@ -174,5 +176,30 @@ public class StreamService implements ZulipService {
      */
     public UpdateStreamSubscriptionSettingsApiRequest updateSubscriptionSettings() {
         return new UpdateStreamSubscriptionSettingsApiRequest(this.client);
+    }
+
+    /**
+     * Deletes a topic.
+     *
+     * @see              <a href="https://zulip.com/api/delete-topic">https://zulip.com/api/delete-topic</a>
+     *
+     * @param  streamId  The id of the stream containing the topic to delete
+     * @param  topicName The name of the topic to delete
+     * @return           The {@link DeleteTopicApiRequest} builder object
+     */
+    public DeleteTopicApiRequest deleteTopic(long streamId, String topicName) {
+        return new DeleteTopicApiRequest(this.client, streamId, topicName);
+    }
+
+    /**
+     * Archives a stream.
+     *
+     * @see             <a href="https://zulip.com/api/archive-stream">https://zulip.com/api/archive-stream</a>
+     *
+     * @param  streamId The id of the stream to archive
+     * @return          The {@link ArchiveStreamApiRequest} builder object
+     */
+    public ArchiveStreamApiRequest archiveStream(long streamId) {
+        return new ArchiveStreamApiRequest(this.client, streamId);
     }
 }
