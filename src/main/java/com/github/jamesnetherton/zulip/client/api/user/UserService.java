@@ -12,9 +12,11 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
@@ -257,5 +259,29 @@ public class UserService implements ZulipService {
      */
     public GetUserAttachmentsApiRequest getUserAttachments() {
         return new GetUserAttachmentsApiRequest(this.client);
+    }
+
+    /**
+     * Mute a user.
+     *
+     * @see           <a href="https://zulip.com/api/mute-user">https://zulip.com/api/mute-user</a>
+     *
+     * @param  userId The id of the user to mute
+     * @return        The {@link MuteUserApiRequest} builder object
+     */
+    public MuteUserApiRequest mute(long userId) {
+        return new MuteUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Unmute a user.
+     *
+     * @see           <a href="https://zulip.com/api/unmute-user">https://zulip.com/api/unmute-user</a>
+     *
+     * @param  userId The id of the user to unmute
+     * @return        The {@link UnmuteUserApiRequest} builder object
+     */
+    public UnmuteUserApiRequest unmute(long userId) {
+        return new UnmuteUserApiRequest(this.client, userId);
     }
 }
