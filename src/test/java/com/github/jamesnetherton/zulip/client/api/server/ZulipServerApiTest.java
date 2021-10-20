@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
@@ -289,5 +290,26 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         String key = zulip.server().getApiKey("test@test.com", "test").execute();
 
         assertEquals("abc123zxy", key);
+    }
+
+    @Test
+    public void addCodePlayground() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddCodePlaygroundApiRequest.NAME, "Test Playground")
+                .add(AddCodePlaygroundApiRequest.PYGMENTS_LANGUAGE, "java")
+                .add(AddCodePlaygroundApiRequest.URL_PREFIX, "https://localhost/prefix")
+                .get();
+
+        stubZulipResponse(POST, "/realm/playgrounds", params, "addCodePlayground.json");
+
+        long id = zulip.server().addCodePlayground("Test Playground", "java", "https://localhost/prefix").execute();
+        assertEquals(1, id);
+    }
+
+    @Test
+    public void removeCodePlayground() throws Exception {
+        stubZulipResponse(DELETE, "/realm/playgrounds/1", Collections.emptyMap());
+
+        zulip.server().removeCodePlayground(1).execute();
     }
 }

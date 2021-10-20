@@ -195,4 +195,10 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
             }
         }
     }
+
+    @Test
+    public void codePlayground() throws Exception {
+        long id = zulip.server().addCodePlayground("test", "java", "http://localhost/java/playground").execute();
+        zulip.server().removeCodePlayground(id).execute();
+    }
 }
