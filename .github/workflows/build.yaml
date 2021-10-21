@@ -25,7 +25,6 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '8', '11', '17' ]
-        mode: [ 'fast-build', 'full-build' ]
     steps:
       - name: Checkout Zulip Java Client
         uses: actions/checkout@v2
@@ -42,7 +41,6 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Setup Zulip
-        if: matrix.mode == 'full-build'
         run: |
           cd src/test/resources/docker/
           docker-compose up -d
@@ -66,9 +64,4 @@ jobs:
           echo "insecure=true" >> zuliprc
       - name: Build JDK ${{ matrix.java }}
         run: |
-          ARGS="-DskipITs"
-          if [[ "${{ matrix.mode }}" == "full-build" ]]; then
-            ARGS="-Dtest=ignored -DfailIfNoTests=false"
-          fi
-
-          ./mvnw clean verify -ntp -B ${ARGS}
+          ./mvnw clean verify -ntp -B
