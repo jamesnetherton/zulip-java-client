@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -14,9 +15,8 @@ public class StreamSubscription {
     @JsonProperty
     private String color;
 
-    // Zulip 4 feature
-    //@JsonProperty
-    //private Instant dateCreated;
+    @JsonProperty
+    private Instant dateCreated;
 
     @JsonProperty
     private String description;
@@ -57,9 +57,8 @@ public class StreamSubscription {
     @JsonProperty
     private String renderedDescription;
 
-    // Zulip 4 feature
-    //@JsonProperty
-    //private int role;
+    @JsonProperty
+    private int role;
 
     @JsonProperty
     private long streamId;
@@ -84,10 +83,9 @@ public class StreamSubscription {
         return color;
     }
 
-    // Zulip 4 feature
-    //public Instant getDateCreated() {
-    //    return dateCreated;
-    //}
+    public Instant getDateCreated() {
+        return dateCreated;
+    }
 
     public String getDescription() {
         return description;
@@ -141,10 +139,9 @@ public class StreamSubscription {
         return renderedDescription;
     }
 
-    // Zulip 4 feature
-    //public int getRole() {
-    //    return role;
-    //}
+    public int getRole() {
+        return role;
+    }
 
     public long getStreamId() {
         return streamId;

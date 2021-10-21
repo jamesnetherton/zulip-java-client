@@ -54,8 +54,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Denmark", subscriptionA.getName());
         assertFalse(subscriptionA.isPinToTop());
         assertFalse(subscriptionA.isPushNotifications());
-        // This is a Zulip 4 feature
-        // assertEquals(20, subscriptionA.getRole());
+        assertEquals(20, subscriptionA.getRole());
         assertEquals(1, subscriptionA.getStreamId());
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
@@ -64,8 +63,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionA.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionA.getFirstMessageId());
         assertTrue(subscriptionA.isEmailNotifications());
-        // This is a Zulip 4 feature
-        // assertEquals(1604136248000L, subscriptionA.getDateCreated().toEpochMilli());
+        assertTrue(subscriptionA.getDateCreated().toEpochMilli() > 0);
         assertEquals(5, subscriptionA.getSubscribers().size());
 
         StreamSubscription subscriptionB = subscriptions.get(1);
@@ -79,8 +77,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Scotland", subscriptionB.getName());
         assertFalse(subscriptionB.isPinToTop());
         assertFalse(subscriptionB.isPushNotifications());
-        // This is a Zulip 4 feature
-        // assertEquals(50, subscriptionB.getRole());
+        assertEquals(50, subscriptionB.getRole());
         assertEquals(3, subscriptionB.getStreamId());
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
@@ -89,8 +86,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionB.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionB.getFirstMessageId());
         assertTrue(subscriptionB.isEmailNotifications());
-        // This is a Zulip 4 feature
-        // assertEquals(1604136248000L, subscriptionB.getDateCreated().toEpochMilli());
+        assertTrue(subscriptionB.getDateCreated().toEpochMilli() > 0);
         assertEquals(4, subscriptionB.getSubscribers().size());
     }
 
@@ -364,8 +360,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             Stream stream = streams.get(i - 1);
             assertEquals("Test Stream Description " + i, stream.getDescription());
             assertEquals("<p>Test Stream Description " + i + "</p>", stream.getRenderedDescription());
-            // This is a Zulip 4 feature
-            // assertEquals(1603913066000L, stream.getDateCreated().toEpochMilli());
+            assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertTrue(stream.isInviteOnly());
             assertEquals("Test Stream Name " + i, stream.getName());
             assertEquals(i, stream.getStreamId());

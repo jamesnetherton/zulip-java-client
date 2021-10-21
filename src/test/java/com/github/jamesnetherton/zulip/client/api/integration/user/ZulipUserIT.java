@@ -37,12 +37,8 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         String id = UUID.randomUUID().toString().split("-")[0];
 
         // Create user
-        zulip.users().createUser(id + "@test.com", id, "T00s3cr3t").execute();
-
-        // This is a zulip 4 feature
-        // if (userId != null) {
-        //    assertTrue(userId > 0);
-        // }
+        long userId = zulip.users().createUser(id + "@test.com", id, "T00s3cr3t").execute();
+        assertTrue(userId > 0);
 
         // Since Zulip 3.x does not return the created user id, use this method to find it
         List<User> users = zulip.users().getAllUsers().execute();

@@ -41,24 +41,8 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users", params, "createUser.json");
 
-        // This is a Zulip 4 feature
-        // zulip.users().createUser("test@test.com", "Test Tester", "abc12345").execute();
-        // assertEquals(25, userId);
-    }
-
-    @Test
-    public void createUserNullResponse() throws Exception {
-        Map<String, StringValuePattern> params = QueryParams.create()
-                .add(CreateUserApiRequest.EMAIL, "test@test.com")
-                .add(CreateUserApiRequest.FULL_NAME, "Test Tester")
-                .add(CreateUserApiRequest.PASSWORD, "abc12345")
-                .get();
-
-        stubZulipResponse(POST, "/users", params, "createUserNullResponse.json");
-
-        // This is a Zulip 4 feature
-        // zulip.users().createUser("test@test.com", "Test Tester", "abc12345").execute();
-        // assertNull(userId);
+        long userId = zulip.users().createUser("test@test.com", "Test Tester", "abc12345").execute();
+        assertEquals(25, userId);
     }
 
     @Test

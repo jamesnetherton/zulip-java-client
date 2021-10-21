@@ -52,10 +52,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             Stream stream = createdStreams.get(i - 1);
             assertEquals("Test Stream " + i, stream.getDescription());
             assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
-            // This is a Zulip 4 feature
-            // if (stream.getDateCreated() != null) {
-            //    assertTrue(stream.getDateCreated().toEpochMilli() > 0);
-            // }
+            assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertFalse(stream.isInviteOnly());
             assertEquals("Test Stream " + i, stream.getName());
             assertTrue(stream.getStreamId() > 0);

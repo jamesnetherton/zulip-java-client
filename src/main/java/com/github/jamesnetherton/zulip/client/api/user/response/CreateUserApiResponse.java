@@ -1,5 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.user.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 
 /**
@@ -9,11 +10,10 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
  */
 public class CreateUserApiResponse extends ZulipApiResponse {
 
-    // Zulip 4 feature
-    //@JsonProperty
-    //private Long userId;
-    //
-    //public Long getUserId() {
-    //    return userId;
-    //}
+    @JsonProperty
+    private Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
 }
