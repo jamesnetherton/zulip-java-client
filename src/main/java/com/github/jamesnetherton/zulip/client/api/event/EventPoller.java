@@ -28,7 +28,7 @@ public class EventPoller {
     private final Narrow[] narrows;
     private volatile EventQueue queue;
     private volatile ExecutorService executor;
-    private volatile boolean started;
+    private volatile Status status = Status.STOPPED;
 
     /**
      * Constructs a {@link EventPoller}.
@@ -50,24 +50,22 @@ public class EventPoller {
      * @throws ZulipClientException if the event polling request was not successful
      */
     public void start() throws ZulipClientException {
-        RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(this.client, narrows);
-        GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(this.client);
-
-        if (!started) {
+        if (status.equals(Status.STOPPED)) {
             LOG.info("EventPoller starting");
+            status = Status.STARTING;
+
+            RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(this.client, narrows);
+            GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(this.client);
 
             queue = createQueue.execute();
             executor = Executors.newSingleThreadExecutor();
-            started = true;
-
-            LOG.info("EventPoller started");
 
             executor.submit(new Runnable() {
                 private long lastEventId = queue.getLastEventId();
 
                 @Override
                 public void run() {
-                    while (started) {
+                    while (status.equals(Status.STARTING) || status.equals(Status.STARTED)) {
                         try {
                             getEvents.withQueueId(queue.getQueueId());
                             getEvents.withLastEventId(lastEventId);
@@ -97,6 +95,9 @@ public class EventPoller {
                     }
                 }
             });
+
+            LOG.info("EventPoller started");
+            status = Status.STARTED;
         }
     }
 
@@ -104,23 +105,31 @@ public class EventPoller {
      * Stops message polling.
      */
     public void stop() {
-        if (started) {
+        if (status.equals(Status.STARTING) || status.equals(Status.STARTED)) {
             try {
                 LOG.info("EventPoller stopping");
-                started = false;
+                status = Status.STOPPING;
                 executor.shutdown();
                 DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
                 deleteQueue.execute();
             } catch (ZulipClientException e) {
                 LOG.warning("Error deleting event queue - " + e.getMessage());
             } finally {
-                executor = null;
                 LOG.info("EventPoller stopped");
+                executor = null;
+                status = Status.STOPPED;
             }
         }
     }
 
     public boolean isStarted() {
-        return started;
+        return status.equals(Status.STARTED);
+    }
+
+    private enum Status {
+        STARTING,
+        STARTED,
+        STOPPING,
+        STOPPED
     }
 }
