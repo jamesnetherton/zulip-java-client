@@ -1,5 +1,6 @@
 package com.github.jamesnetherton.zulip.client.http;
 
+import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class ZulipConfiguration {
     private URL proxyUrl;
     private String proxyUsername;
     private String proxyPassword;
+    private ZulipHttpClientFactory zulipHttpClientFactory = new ZulipCommonsHttpClientFactory();
     private URL zulipUrl;
 
     /**
@@ -30,6 +32,18 @@ public class ZulipConfiguration {
      * @param apiKey   The user API key to use for authentication
      */
     public ZulipConfiguration(URL zulipUrl, String email, String apiKey) {
+        if (zulipUrl == null) {
+            throw new IllegalArgumentException("Zulip site url cannot be null");
+        }
+
+        if (email == null) {
+            throw new IllegalArgumentException("Zulip email cannot be null");
+        }
+
+        if (apiKey == null) {
+            throw new IllegalArgumentException("Zulip api key cannot be null");
+        }
+
         this.zulipUrl = zulipUrl;
         this.email = email;
         this.apiKey = apiKey;
@@ -115,6 +129,22 @@ public class ZulipConfiguration {
 
     public String getProxyPassword() {
         return proxyPassword;
+    }
+
+    /**
+     * The {@link ZulipHttpClientFactory} to use for configuring the {@link ZulipHttpClient}.
+     *
+     * @param zulipHttpClientFactory The client factory implementation to use
+     */
+    public void setZulipHttpClientFactory(ZulipHttpClientFactory zulipHttpClientFactory) {
+        if (zulipHttpClientFactory == null) {
+            throw new IllegalArgumentException("Zulip HTTP client factory cannot be null");
+        }
+        this.zulipHttpClientFactory = zulipHttpClientFactory;
+    }
+
+    public ZulipHttpClientFactory getZulipHttpClientFactory() {
+        return zulipHttpClientFactory;
     }
 
     /**

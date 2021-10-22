@@ -1,12 +1,16 @@
 package com.github.jamesnetherton.zulip.client.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -39,6 +43,7 @@ public class ZulipConfigurationTest {
             assertEquals(KEY, configuration.getApiKey());
             assertEquals(SITE, configuration.getZulipUrl().toString());
             assertTrue(configuration.isInsecure());
+            assertInstanceOf(ZulipCommonsHttpClientFactory.class, configuration.getZulipHttpClientFactory());
         } finally {
             System.setProperty("user.home", oldHome);
         }
@@ -74,6 +79,12 @@ public class ZulipConfigurationTest {
 
         File zuliprc = new File("/invalid");
         assertThrows(IllegalArgumentException.class, () -> ZulipConfiguration.fromZuliprc(zuliprc));
+    }
+
+    @Test
+    public void invalidHttpClientFactory() throws MalformedURLException {
+        ZulipConfiguration configuration = new ZulipConfiguration(ZulipUrlUtils.getZulipApiUrl(SITE), KEY, EMAIL);
+        assertThrows(IllegalArgumentException.class, () -> configuration.setZulipHttpClientFactory(null));
     }
 
     @Test

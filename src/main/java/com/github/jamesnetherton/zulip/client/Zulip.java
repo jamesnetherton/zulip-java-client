@@ -10,7 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.user.UserService;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
-import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClient;
+import com.github.jamesnetherton.zulip.client.http.ZulipHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.Closeable;
 import java.net.MalformedURLException;
@@ -50,7 +50,9 @@ public final class Zulip implements Closeable {
 
             URL zulipApiUrl = ZulipUrlUtils.getZulipApiUrl(site);
 
-            this.client = new ZulipCommonsHttpClient(new ZulipConfiguration(zulipApiUrl, email, apiKey));
+            ZulipConfiguration configuration = new ZulipConfiguration(zulipApiUrl, email, apiKey);
+            ZulipHttpClientFactory factory = configuration.getZulipHttpClientFactory();
+            this.client = factory.createZulipHttpClient(configuration);
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Site must be a valid URL");
         }
@@ -63,7 +65,11 @@ public final class Zulip implements Closeable {
      * @throws ZulipClientException If there was a problem constructing the Zulip client
      */
     public Zulip(ZulipConfiguration configuration) throws ZulipClientException {
-        this.client = new ZulipCommonsHttpClient(configuration);
+        if (configuration == null) {
+            throw new IllegalArgumentException("Zulip configuration cannot be null");
+        }
+        ZulipHttpClientFactory factory = configuration.getZulipHttpClientFactory();
+        this.client = factory.createZulipHttpClient(configuration);
     }
 
     /**
@@ -139,6 +145,7 @@ public final class Zulip implements Closeable {
         private String proxyUsername;
         private String proxyPassword;
         private String site;
+        private ZulipHttpClientFactory httpClientFactory;
 
         /**
          * Sets the Zulip API key to use for authentication with the Zulip server.
@@ -161,6 +168,18 @@ public final class Zulip implements Closeable {
          */
         public Builder email(String email) {
             this.email = email;
+            return this;
+        }
+
+        /**
+         * Sets a custom {@link ZulipHttpClientFactory} to enable the Zulip client to use an HTTP client other
+         * than the default Apache Commons HTTP client.
+         *
+         * @param  httpClientFactory The {@link ZulipHttpClientFactory} implementation
+         * @return                   This {@link Builder} object
+         */
+        public Builder httpClientFactory(ZulipHttpClientFactory httpClientFactory) {
+            this.httpClientFactory = httpClientFactory;
             return this;
         }
 
@@ -253,6 +272,10 @@ public final class Zulip implements Closeable {
                     configuration.setProxyUrl(new URL(proxyUrl));
                     configuration.setProxyPassword(proxyPassword);
                     configuration.setProxyUsername(proxyUsername);
+                }
+
+                if (httpClientFactory != null) {
+                    configuration.setZulipHttpClientFactory(httpClientFactory);
                 }
 
                 return new Zulip(configuration);

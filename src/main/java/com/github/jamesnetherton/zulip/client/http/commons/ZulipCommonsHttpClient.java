@@ -128,9 +128,9 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
     }
 
     @Override
-    public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, Class<T> responseClass)
+    public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, Class<T> responseAs)
             throws ZulipClientException {
-        return doRequest(new HttpGet(getRequestUri(path, parameters)), responseClass);
+        return doRequest(new HttpGet(getRequestUri(path, parameters)), responseAs);
     }
 
     @Override
