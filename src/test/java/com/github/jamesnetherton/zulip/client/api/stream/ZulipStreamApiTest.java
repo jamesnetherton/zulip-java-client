@@ -291,10 +291,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void updateStream() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateStreamApiRequest.DESCRIPTION, "\"New description\"")
+                .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
-                .add(UpdateStreamApiRequest.NEW_NAME, "\"New name\"")
+                .add(UpdateStreamApiRequest.NEW_NAME, "New name")
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
                 .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();
@@ -314,10 +314,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void updateStreamWithMessageRetentionPolicy() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateStreamApiRequest.DESCRIPTION, "\"New description\"")
+                .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "\"forever\"")
-                .add(UpdateStreamApiRequest.NEW_NAME, "\"New name\"")
+                .add(UpdateStreamApiRequest.NEW_NAME, "New name")
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
                 .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();

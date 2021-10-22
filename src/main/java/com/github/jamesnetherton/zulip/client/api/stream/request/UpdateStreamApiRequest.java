@@ -44,7 +44,8 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @return             This {@link UpdateStreamApiRequest} instance
      */
     public UpdateStreamApiRequest withDescription(String description) {
-        putParamAsJsonString(DESCRIPTION, description);
+        // TODO: Consider adding back support for Zulip 3 requiring the description to be JSON encoded
+        putParam(DESCRIPTION, description);
         return this;
     }
 
@@ -55,7 +56,8 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @return      This {@link UpdateStreamApiRequest} instance
      */
     public UpdateStreamApiRequest withName(String name) {
-        putParamAsJsonString(NEW_NAME, name);
+        // TODO: Consider adding back support for Zulip 3 requiring the name to be JSON encoded
+        putParam(NEW_NAME, name);
         return this;
     }
 
