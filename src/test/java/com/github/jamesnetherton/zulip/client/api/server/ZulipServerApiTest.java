@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
@@ -47,25 +48,25 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
     @Test
     public void getLinkifiers() throws Exception {
-        stubZulipResponse(GET, "/realm/filters", Collections.emptyMap(), "getLinkifiers.json");
+        stubZulipResponse(GET, "/realm/linkifiers", Collections.emptyMap(), "getLinkifiers.json");
 
         List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
         assertEquals(2, linkifiers.size());
 
         Linkifier linkifierA = linkifiers.get(0);
         assertEquals("#(?P<id>[0-9]+)", linkifierA.getPattern());
-        assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifierA.getUrlFormatString());
+        assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifierA.getUrlFormat());
         assertEquals(1, linkifierA.getId());
 
         Linkifier linkifierB = linkifiers.get(1);
         assertEquals("(?P<id>[0-9a-f]{40})", linkifierB.getPattern());
-        assertEquals("https://github.com/zulip/zulip/commit/%(id)s", linkifierB.getUrlFormatString());
+        assertEquals("https://github.com/zulip/zulip/commit/%(id)s", linkifierB.getUrlFormat());
         assertEquals(2, linkifierB.getId());
     }
 
     @Test
     public void getEmptyLinkifiers() throws Exception {
-        stubZulipResponse(GET, "/realm/filters", Collections.emptyMap(), "getLinkifiersEmpty.json");
+        stubZulipResponse(GET, "/realm/linkifiers", Collections.emptyMap(), "getLinkifiersEmpty.json");
 
         List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
         assertTrue(linkifiers.isEmpty());
@@ -265,7 +266,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void getApiKey() throws Exception {
+    public void getDevelopmentApiKey() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(GetApiKeyApiRequest.USERNAME, "test@test.com")
                 .get();
@@ -275,5 +276,40 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         String key = zulip.server().getDevelopmentApiKey("test@test.com").execute();
 
         assertEquals("abc123zxy", key);
+    }
+
+    @Test
+    public void getProductionApiKey() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetApiKeyApiRequest.USERNAME, "test@test.com")
+                .add(GetApiKeyApiRequest.PASSWORD, "test")
+                .get();
+
+        stubZulipResponse(POST, "/fetch_api_key", params, "getApiKey.json");
+
+        String key = zulip.server().getApiKey("test@test.com", "test").execute();
+
+        assertEquals("abc123zxy", key);
+    }
+
+    @Test
+    public void addCodePlayground() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddCodePlaygroundApiRequest.NAME, "Test Playground")
+                .add(AddCodePlaygroundApiRequest.PYGMENTS_LANGUAGE, "java")
+                .add(AddCodePlaygroundApiRequest.URL_PREFIX, "https://localhost/prefix")
+                .get();
+
+        stubZulipResponse(POST, "/realm/playgrounds", params, "addCodePlayground.json");
+
+        long id = zulip.server().addCodePlayground("Test Playground", "java", "https://localhost/prefix").execute();
+        assertEquals(1, id);
+    }
+
+    @Test
+    public void removeCodePlayground() throws Exception {
+        stubZulipResponse(DELETE, "/realm/playgrounds/1", Collections.emptyMap());
+
+        zulip.server().removeCodePlayground(1).execute();
     }
 }

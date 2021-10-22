@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
@@ -10,6 +11,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiReq
 import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -161,5 +163,45 @@ public class ServerService implements ZulipService {
      */
     public GetApiKeyApiRequest getDevelopmentApiKey(String username) {
         return new GetApiKeyApiRequest(this.client, username);
+    }
+
+    /**
+     * Gets a user development API key. Only available for production servers.
+     * This endpoint is not available on development servers.
+     *
+     * @param  username The username to fetch the development API key for
+     * @param  password The password to fetch the development API key for
+     * @return          The {@link GetApiKeyApiRequest} builder object
+     */
+    public GetApiKeyApiRequest getApiKey(String username, String password) {
+        return new GetApiKeyApiRequest(this.client, username, password);
+    }
+
+    /**
+     * Adds a code playground.
+     *
+     * @see                     <a href=
+     *                          "https://zulip.com/api/add-code-playground">https://zulip.com/api/add-code-playground</a>
+     *
+     * @param  name             The name of the playground
+     * @param  pygmentsLanguage The name of the Pygments language lexer for that programming language
+     * @param  urlPrefix        The URL prefix for the playground
+     * @return                  The {@link AddCodePlaygroundApiRequest} builder object
+     */
+    public AddCodePlaygroundApiRequest addCodePlayground(String name, String pygmentsLanguage, String urlPrefix) {
+        return new AddCodePlaygroundApiRequest(this.client, name, pygmentsLanguage, urlPrefix);
+    }
+
+    /**
+     * Removes a code playground.
+     *
+     * @see                     <a href=
+     *                          "https://zulip.com/api/remove-code-playground">https://zulip.com/api/remove-code-playground</a>
+     *
+     * @param  codePlaygroundId The id of the code playground to remove
+     * @return                  The {@link RemoveCodePlaygroundApiRequest} builder object
+     */
+    public RemoveCodePlaygroundApiRequest removeCodePlayground(long codePlaygroundId) {
+        return new RemoveCodePlaygroundApiRequest(this.client, codePlaygroundId);
     }
 }

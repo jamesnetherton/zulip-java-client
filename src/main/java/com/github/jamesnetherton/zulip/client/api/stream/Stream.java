@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 
 /**
  * Defines a Zulip stream.
@@ -10,9 +11,8 @@ public class Stream {
     @JsonProperty
     private boolean isAnnouncementOnly;
 
-    // Zulip 4 feature
-    //@JsonProperty
-    //private Instant dateCreated;
+    @JsonProperty
+    private Instant dateCreated;
 
     @JsonProperty
     private boolean isDefault;
@@ -51,10 +51,9 @@ public class Stream {
         return isAnnouncementOnly;
     }
 
-    // Zulip 4 feature
-    //public Instant getDateCreated() {
-    //     return dateCreated;
-    //}
+    public Instant getDateCreated() {
+        return dateCreated;
+    }
 
     public boolean isDefault() {
         return isDefault;

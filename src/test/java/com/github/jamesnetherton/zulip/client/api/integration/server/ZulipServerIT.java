@@ -40,7 +40,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
             Linkifier linkifier = linkifiers.get(0);
             assertEquals(id, linkifier.getId());
             assertEquals("#(?P<id>[0-9]+)", linkifier.getPattern());
-            assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifier.getUrlFormatString());
+            assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifier.getUrlFormat());
 
             // Delete linkifiers
             zulip.server().deleteLinkifier(id).execute();
@@ -186,7 +186,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     @Test
     public void getApiKey() throws Exception {
         try {
-            String key = zulip.server().getDevelopmentApiKey("test@test.com").execute();
+            String key = zulip.server().getApiKey("test@test.com", "testing123").execute();
             assertFalse(key.isEmpty());
         } catch (ZulipClientException e) {
             // Ignore if dev not enabled
@@ -194,5 +194,11 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 throw e;
             }
         }
+    }
+
+    @Test
+    public void codePlayground() throws Exception {
+        long id = zulip.server().addCodePlayground("test", "java", "http://localhost/java/playground").execute();
+        zulip.server().removeCodePlayground(id).execute();
     }
 }

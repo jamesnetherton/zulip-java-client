@@ -7,7 +7,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
+import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
@@ -101,6 +103,16 @@ public class ZulipApiTestBase {
 
         public QueryParams add(String name, String value) {
             params.put(name, new RegexPattern(value));
+            return this;
+        }
+
+        public QueryParams addAsJsonString(String name, Object value) throws JsonProcessingException {
+            String json = JsonUtils.getMapper().writeValueAsString(value);
+            String sanitized = json.replace("[", "\\[")
+                    .replace("]", "\\]")
+                    .replace("{", "\\{")
+                    .replace("}", "\\}");
+            params.put(name, new RegexPattern(sanitized));
             return this;
         }
 

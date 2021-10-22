@@ -10,8 +10,10 @@ public class UserRequestConstants {
     public static final String USER_GROUPS_WITH_ID = USER_GROUPS + "/%d";
     public static final String USER_GROUPS_MEMBERS = USER_GROUPS_WITH_ID + "/members";
     public static final String USERS = "users";
+    public static final String USERS_WITH_EMAIL = "users/%s";
     public static final String USERS_WITH_ID = "users/%d";
     public static final String USERS_WITH_ME = "users/me";
+    public static final String USERS_MUTED_WITH_ID = USERS_WITH_ME + "/muted_users/%d";
     public static final String USERS_PRESENCE = "users/%s/presence";
     public static final String USERS_REACTIVATE = USERS_WITH_ID + "/reactivate";
 }

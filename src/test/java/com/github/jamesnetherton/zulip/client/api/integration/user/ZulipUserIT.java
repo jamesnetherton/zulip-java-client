@@ -37,12 +37,8 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         String id = UUID.randomUUID().toString().split("-")[0];
 
         // Create user
-        zulip.users().createUser(id + "@test.com", id, "T00s3cr3t").execute();
-
-        // This is a zulip 4 feature
-        // if (userId != null) {
-        //    assertTrue(userId > 0);
-        // }
+        long userId = zulip.users().createUser(id + "@test.com", id, "T00s3cr3t").execute();
+        assertTrue(userId > 0);
 
         // Since Zulip 3.x does not return the created user id, use this method to find it
         List<User> users = zulip.users().getAllUsers().execute();
@@ -55,6 +51,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         // Retrieve user
         try {
+            // Get by ID
             User user = zulip.users().getUser(createdUser.getUserId()).execute();
             assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
             assertTrue(user.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
@@ -68,6 +65,21 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertFalse(user.isGuest());
             assertFalse(user.isOwner());
             assertTrue(user.getProfileData().isEmpty());
+
+            // Get by email
+            User userByEmail = zulip.users().getUser(createdUser.getEmail()).execute();
+            assertTrue(userByEmail.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
+            assertTrue(userByEmail.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
+            assertEquals(id + "@test.com", userByEmail.getEmail());
+            assertEquals(id, userByEmail.getFullName());
+            assertEquals(1, userByEmail.getAvatarVersion());
+            assertEquals(createdUser.getUserId(), userByEmail.getUserId());
+            assertTrue(userByEmail.isActive());
+            assertFalse(userByEmail.isAdmin());
+            assertFalse(userByEmail.isBot());
+            assertFalse(userByEmail.isGuest());
+            assertFalse(userByEmail.isOwner());
+            assertTrue(userByEmail.getProfileData().isEmpty());
 
             // Update user
             zulip.users().updateUser(createdUser.getUserId())
@@ -95,9 +107,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         User user = zulip.users().getOwnUser().execute();
 
         assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
-        assertTrue(user.getDateJoined().startsWith("2020"));
+        assertTrue(user.getDateJoined().startsWith("2021"));
         assertEquals("test@test.com", user.getEmail());
-        assertEquals("Test Tester", user.getFullName());
+        assertEquals("tester", user.getFullName());
         assertEquals("Europe/London", user.getTimezone());
         assertEquals(1, user.getAvatarVersion());
         assertEquals(ownUser.getUserId(), user.getUserId());

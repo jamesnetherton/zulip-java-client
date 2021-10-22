@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.Zulip;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.draft.Draft;
+import com.github.jamesnetherton.zulip.client.api.draft.DraftService;
 import com.github.jamesnetherton.zulip.client.api.event.EventService;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
@@ -117,6 +119,18 @@ public class ZulipIntegrationTestBase {
                 }
             }
         }
+
+        // Clean up drafts
+        List<Draft> drafts = zulip.drafts().getDrafts().execute();
+        if (drafts != null) {
+            for (Draft draft : drafts) {
+                try {
+                    zulip.drafts().deleteDraft(draft.getId()).execute();
+                } catch (ZulipClientException e) {
+                    // Ignore
+                }
+            }
+        }
     }
 
     public static final class ThrottledZulip {
@@ -125,6 +139,10 @@ public class ZulipIntegrationTestBase {
 
         ThrottledZulip(Zulip delegate) {
             this.delegate = delegate;
+        }
+
+        public DraftService drafts() {
+            return (DraftService) throttle(delegate::drafts);
         }
 
         public EventService events() {
