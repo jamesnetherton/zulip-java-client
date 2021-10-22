@@ -1,6 +1,24 @@
 == Changelog
 
+=== 0.2.0
+
+==== Enhancements
+
+Zulip 4 support:
+
+* Draft APIs
+* Mute / unmute user APIs
+* Code playground APIs
+* Delete & archive stream APIs
+* Get user by email APIs
+
+==== Bug fixes
+
+* https://github.com/jamesnetherton/zulip-java-client/pull/95[#95] - Fix markdown URL parameter name in `GetMessagesApiRequest`
+
 === 0.1.1
+
+==== Bug fixes
 
 * https://github.com/jamesnetherton/zulip-java-client/issues/58[#58] - Restore Zulip constructor that takes minimal configuration arguments
 
