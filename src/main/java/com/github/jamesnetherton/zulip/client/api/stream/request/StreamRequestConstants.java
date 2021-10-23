@@ -1,6 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.stream.request;
 
-public class StreamRequestConstants {
+final class StreamRequestConstants {
 
     public static final String STREAM_ID = "get_stream_id";
     public static final String STREAM_TOPICS = "users/me/%d/topics";

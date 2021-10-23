@@ -17,6 +17,5 @@ final class ServerRequestConstants {
     public static final String SERVER_SETTINGS = "server_settings";
 
     private ServerRequestConstants() {
-
     }
 }

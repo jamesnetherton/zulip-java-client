@@ -1,6 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.user.request;
 
-public class UserRequestConstants {
+final class UserRequestConstants {
     public static final String ATTACHMENTS = "attachments";
     public static final String SETTINGS = "settings";
     public static final String SETTINGS_NOTIFICATIONS = SETTINGS + "/notifications";
@@ -16,4 +16,7 @@ public class UserRequestConstants {
     public static final String USERS_MUTED_WITH_ID = USERS_WITH_ME + "/muted_users/%d";
     public static final String USERS_PRESENCE = "users/%s/presence";
     public static final String USERS_REACTIVATE = USERS_WITH_ID + "/reactivate";
+
+    private UserRequestConstants() {
+    }
 }
