@@ -19,7 +19,7 @@
         <!-- Project dependency versions -->
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <jackson.version>2.13.0</jackson.version>
-        <junit.jupiter.version>5.8.1</junit.jupiter.version>
+        <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <slf4j.version>1.7.32</slf4j.version>
         <wiremock-jre8.version>2.31.0</wiremock-jre8.version>
 
