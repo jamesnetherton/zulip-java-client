@@ -107,7 +107,7 @@ public class CustomZulipHttpClientTest extends ZulipApiTestBase {
                 String basicAuth = new String(Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.UTF_8)));
                 StringBuilder endpoint = new StringBuilder();
 
-                endpoint.append(configuration.getZulipUrl().toString() + "/api/v1/" + path + "?");
+                endpoint.append(configuration.getZulipUrl().toString()).append("/api/v1/").append(path).append("?");
                 parameters.forEach((key, value) -> {
                     endpoint.append("&");
                     endpoint.append(key);

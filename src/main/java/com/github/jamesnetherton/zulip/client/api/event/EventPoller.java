@@ -49,7 +49,7 @@ public class EventPoller {
      *
      * @throws ZulipClientException if the event polling request was not successful
      */
-    public void start() throws ZulipClientException {
+    public synchronized void start() throws ZulipClientException {
         if (status.equals(Status.STOPPED)) {
             LOG.info("EventPoller starting");
             status = Status.STARTING;
@@ -75,7 +75,8 @@ public class EventPoller {
                                 listener.onEvent(event.getMessage());
                             }
 
-                            lastEventId = messageEvents.stream().max(Comparator.comparing(o -> Long.valueOf(o.getId()))).get()
+                            lastEventId = messageEvents.stream().max(Comparator.comparing(Event::getId))
+                                    .get()
                                     .getId();
 
                             Thread.sleep(5000);
@@ -104,7 +105,7 @@ public class EventPoller {
     /**
      * Stops message polling.
      */
-    public void stop() {
+    public synchronized void stop() {
         if (status.equals(Status.STARTING) || status.equals(Status.STARTED)) {
             try {
                 LOG.info("EventPoller stopping");
