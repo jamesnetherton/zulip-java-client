@@ -19,7 +19,7 @@ public class GetMessageMarkdownApiRequest extends ZulipApiRequest implements Exe
 
     /**
      * Constructs a {@link GetMessageMarkdownApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to get raw content from
      */
@@ -30,7 +30,7 @@ public class GetMessageMarkdownApiRequest extends ZulipApiRequest implements Exe
 
     /**
      * Executes the Zulip API request for getting raw content from a message.
-     * 
+     *
      * @return                      The message raw content
      * @throws ZulipClientException if the request was not successful
      */

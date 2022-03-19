@@ -19,7 +19,7 @@ public class DeleteLinkifierApiRequest extends ZulipApiRequest implements VoidEx
 
     /**
      * Constructs a {@link DeleteLinkifierApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      * @param id     The id of the linkifier to delete
      */

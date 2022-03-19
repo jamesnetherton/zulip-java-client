@@ -16,7 +16,7 @@ public class ZulipApiRequest {
 
     /**
      * Constructs a {@link ZulipApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      */
     protected ZulipApiRequest(ZulipHttpClient client) {
@@ -25,7 +25,7 @@ public class ZulipApiRequest {
 
     /**
      * Gets the Zulip HTTP client.
-     * 
+     *
      * @return The Zulip HTTP client
      */
     protected ZulipHttpClient client() {
@@ -34,7 +34,7 @@ public class ZulipApiRequest {
 
     /**
      * Gets the map of query parameters that should be passed to the Zulip API request.
-     * 
+     *
      * @return The map of query parameters
      */
     protected Map<String, Object> getParams() {
@@ -43,7 +43,7 @@ public class ZulipApiRequest {
 
     /**
      * Adds a value to the query parameters map.
-     * 
+     *
      * @param key   The name of the query parameter
      * @param value The value of the query parameter
      */
@@ -53,7 +53,7 @@ public class ZulipApiRequest {
 
     /**
      * Adds a value to the query parameters map serialized as a JSON string.
-     * 
+     *
      * @param key   The name of the query parameter
      * @param value The value of the query parameter that should be JSON string serialized
      */

@@ -24,7 +24,7 @@ public class UpdateMessageFlagsApiRequest extends ZulipApiRequest implements Exe
 
     /**
      * Constructs a {@link UpdateMessageFlagsApiRequest}.
-     * 
+     *
      * @param client     The Zulip HTTP client
      * @param flag       The {@link MessageFlag} to add or remove to the messages
      * @param operation  The {@link Operation} to apply for the {@link MessageFlag}
@@ -39,7 +39,7 @@ public class UpdateMessageFlagsApiRequest extends ZulipApiRequest implements Exe
 
     /**
      * Executes The Zulip API request for updating message flags.
-     * 
+     *
      * @return                      List of ids for messages that were modified
      * @throws ZulipClientException if the request was not successful
      */

@@ -31,7 +31,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
     /**
      * Constructs a {@link SendMessageApiRequest} for sending a private message.
-     * 
+     *
      * @param client  The Zulip HTTP client
      * @param content The message content
      * @param to      One or more user email addresses for which the private message should be sent to
@@ -45,7 +45,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
     /**
      * Constructs a {@link SendMessageApiRequest} for sending a private message.
-     * 
+     *
      * @param client  The Zulip HTTP client
      * @param content The message content
      * @param to      One or more user ids for which the private message should be sent to
@@ -59,7 +59,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
     /**
      * Constructs a {@link SendMessageApiRequest} for sending a message to a stream.
-     * 
+     *
      * @param client     The Zulip HTTP client
      * @param content    The message content
      * @param streamName The name of the stream to which the stream should be sent to
@@ -75,7 +75,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
     /**
      * Constructs a {@link SendMessageApiRequest}.
-     * 
+     *
      * @param client   The Zulip HTTP client
      * @param content  The message content
      * @param streamId The id of the stream to which the stream should be sent to
@@ -119,7 +119,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
     /**
      * Executes the Zulip API request for sending a message.
-     * 
+     *
      * @return                      The id of the message
      * @throws ZulipClientException if the request was not successful
      */

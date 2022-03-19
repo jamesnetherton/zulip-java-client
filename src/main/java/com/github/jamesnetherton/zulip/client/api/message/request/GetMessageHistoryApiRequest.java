@@ -21,7 +21,7 @@ public class GetMessageHistoryApiRequest extends ZulipApiRequest implements Exec
 
     /**
      * Constructs a {@link GetMessageHistoryApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to fetch history for
      */
@@ -32,7 +32,7 @@ public class GetMessageHistoryApiRequest extends ZulipApiRequest implements Exec
 
     /**
      * Executes The Zulip API request for retrieving the history of a message.
-     * 
+     *
      * @return                      this list of {@link MessageHistory} items
      * @throws ZulipClientException if the request was not successful
      */

@@ -29,7 +29,7 @@ public class MessageService implements ZulipService {
 
     /**
      * Constructs a {@link MessageService}.
-     * 
+     *
      * @param client The Zulip HTTP client
      */
     public MessageService(ZulipHttpClient client) {
@@ -295,7 +295,7 @@ public class MessageService implements ZulipService {
 
     /**
      * Add or remove personal message flags on a collection of message ids
-     * 
+     *
      * @param  flag       The {@link MessageFlag} to add or remove
      * @param  operation  The {@link Operation} to apply
      * @param  messageIds The message ids to update flags on

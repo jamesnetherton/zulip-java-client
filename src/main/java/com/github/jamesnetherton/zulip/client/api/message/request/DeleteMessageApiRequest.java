@@ -19,7 +19,7 @@ public class DeleteMessageApiRequest extends ZulipApiRequest implements VoidExec
 
     /**
      * Constructs a {@link DeleteMessageApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to delete
      */
@@ -30,7 +30,7 @@ public class DeleteMessageApiRequest extends ZulipApiRequest implements VoidExec
 
     /**
      * Executes the Zulip API request for deleting a message.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

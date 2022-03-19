@@ -30,7 +30,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
 
     /**
      * Constructs a {@link GetMessagesApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      */
     public GetMessagesApiRequest(ZulipHttpClient client) {
@@ -98,7 +98,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      *
      * @see            <a href=
      *                 "https://zulip.com/api/get-messages#parameter-narrow">https://zulip.com/api/get-messages#parameter-narrow</a>
-     * 
+     *
      * @param  narrows One or more {@link Narrow} expressions
      * @return         This {@link GetMessagesApiRequest} instance
      */
@@ -113,7 +113,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      *
      * @see                   <a href=
      *                        "https://zulip.com/api/get-messages#parameter-client_gravatar">https://zulip.com/api/get-messages#parameter-client_gravatar</a>
-     * 
+     *
      * @param  clientGravatar {@code true} if the gravatar should be included in the response. {@code False} if the gravatar
      *                        should not be included
      * @return                This {@link GetMessagesApiRequest} instance
@@ -128,7 +128,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      *
      * @see                  <a href=
      *                       "https://zulip.com/api/get-messages#parameter-apply_markdown">https://zulip.com/api/get-messages#parameter-apply_markdown</a>
-     * 
+     *
      * @param  applyMarkdown {@code true} if to return rendered HTML. {@code false} if markdown should be returned
      * @return               This {@link GetMessagesApiRequest} instance
      */
@@ -139,7 +139,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
 
     /**
      * Executes the Zulip API request for editing a message.
-     * 
+     *
      * @return                      List of {@link Message} objects that matched the search criteria
      * @throws ZulipClientException if the request was not successful
      */

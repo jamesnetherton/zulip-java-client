@@ -92,7 +92,7 @@ public final class Zulip implements Closeable {
 
     /**
      * Access the collection of message Zulip APIs.
-     * 
+     *
      * @return The {@link MessageService} Zulip message APIs
      */
     public MessageService messages() {
@@ -101,7 +101,7 @@ public final class Zulip implements Closeable {
 
     /**
      * Access the collection of server and organization Zulip APIs.
-     * 
+     *
      * @return The {@link ServerService} Zulip server and organization APIs
      */
     public ServerService server() {
@@ -110,7 +110,7 @@ public final class Zulip implements Closeable {
 
     /**
      * Access the collection of stream Zulip APIs.
-     * 
+     *
      * @return The {@link StreamService} Zulip stream APIs
      */
     public StreamService streams() {
@@ -119,7 +119,7 @@ public final class Zulip implements Closeable {
 
     /**
      * Access the collection of user Zulip APIs.
-     * 
+     *
      * @return The {@link UserService} Zulip user APIs
      */
     public UserService users() {
@@ -162,7 +162,7 @@ public final class Zulip implements Closeable {
 
         /**
          * Sets the Zulip email address to use for authentication with the Zulip server.
-         * 
+         *
          * @param  email The user email address
          * @return       This {@link Builder} object
          */
@@ -187,7 +187,7 @@ public final class Zulip implements Closeable {
          * Sets whether the Zulip HTTP client should ignore SSL certificate validation errors.
          *
          * This is not recommended for production use.
-         * 
+         *
          * @param  insecure {@code true} if unknown certificates should be trusted. {@code false} to not trust unknown
          *                  certificates and to receive an exception
          * @return          This {@link Builder} object
@@ -200,7 +200,7 @@ public final class Zulip implements Closeable {
         /**
          * Sets the proxy server URL that the Zulip HTTP client should use when making requests to
          * the Zulip server.
-         * 
+         *
          * @param  proxyUrl The proxy server URL
          * @return          This {@link Builder} object
          */
@@ -212,7 +212,7 @@ public final class Zulip implements Closeable {
         /**
          * Sets the proxy server user name that the Zulip HTTP client should use when making requests to
          * the Zulip server.
-         * 
+         *
          * @param  proxyUsername The proxy server username
          * @return               This {@link Builder} object
          */
@@ -224,7 +224,7 @@ public final class Zulip implements Closeable {
         /**
          * Sets the proxy server password that the Zulip HTTP client should use when making requests to
          * the Zulip server.
-         * 
+         *
          * @param  proxyPassword The proxy server password
          * @return               This {@link Builder} object
          */
@@ -235,7 +235,7 @@ public final class Zulip implements Closeable {
 
         /**
          * Sets the URL of the Zulip server.
-         * 
+         *
          * @param  site The URL of the Zulip server. Note this should be without the /api/v1 suffix.
          * @return      This {@link Builder} object
          */
@@ -246,7 +246,7 @@ public final class Zulip implements Closeable {
 
         /**
          * Builds a new {@link Zulip} instance.
-         * 
+         *
          * @return A new {@link Zulip} client object
          */
         public Zulip build() throws ZulipClientException {

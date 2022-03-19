@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Zulip API request builder for checking if a set of messages matches a narrow.
- * 
+ *
  * @see <a href="https://zulip.com/api/check-narrow-matches">https://zulip.com/api/check-narrow-matches</a>
  * @see <a href="https://zulip.com/api/construct-narrow">https://zulip.com/api/construct-narrow</a>
  */
@@ -26,7 +26,7 @@ public class MatchesNarrowApiRequest extends ZulipApiRequest
 
     /**
      * Constructs a {@link MatchesNarrowApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      */
     public MatchesNarrowApiRequest(ZulipHttpClient client) {
@@ -64,7 +64,7 @@ public class MatchesNarrowApiRequest extends ZulipApiRequest
 
     /**
      * Executes the Zulip API request for checking if a set of messages matches a narrow.
-     * 
+     *
      * @return                      map keyed by message id where the value is a {@link MessageMatch}
      * @throws ZulipClientException if the request was not successful
      */

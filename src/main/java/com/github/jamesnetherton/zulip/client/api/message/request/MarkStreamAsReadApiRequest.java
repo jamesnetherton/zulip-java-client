@@ -20,7 +20,7 @@ public class MarkStreamAsReadApiRequest extends ZulipApiRequest implements VoidE
 
     /**
      * Constructs a {@link MarkStreamAsReadApiRequest}.
-     * 
+     *
      * @param client   The Zulip HTTP client
      * @param streamId The id of the stream to mark as read
      */
@@ -31,7 +31,7 @@ public class MarkStreamAsReadApiRequest extends ZulipApiRequest implements VoidE
 
     /**
      * Executes the Zulip API request for marking a stream as read.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

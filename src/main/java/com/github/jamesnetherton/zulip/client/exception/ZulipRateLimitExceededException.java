@@ -10,7 +10,7 @@ public class ZulipRateLimitExceededException extends Exception {
 
     /**
      * Constructs a {@link ZulipRateLimitExceededException}.
-     * 
+     *
      * @param rateLimitReset The time represented as a Unix time, at which the Zulip rate limit will be reset
      */
     public ZulipRateLimitExceededException(long rateLimitReset) {

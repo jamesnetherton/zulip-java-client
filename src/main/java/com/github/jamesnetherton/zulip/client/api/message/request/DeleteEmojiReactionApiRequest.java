@@ -24,7 +24,7 @@ public class DeleteEmojiReactionApiRequest extends ZulipApiRequest implements Vo
 
     /**
      * Constructs a {@link DeleteEmojiReactionApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to remove the emoji reaction from
      * @param emojiName The name of the emoji to use
@@ -56,7 +56,7 @@ public class DeleteEmojiReactionApiRequest extends ZulipApiRequest implements Vo
      *
      * @see         <a href=
      *              "https://zulip.com/api/add-reaction#parameter-reaction_type">https://zulip.com/api/add-reaction#parameter-reaction_type</a>
-     * 
+     *
      * @param  type The emoji reaction type
      * @return      This {@link DeleteEmojiReactionApiRequest} instance
      */
@@ -67,7 +67,7 @@ public class DeleteEmojiReactionApiRequest extends ZulipApiRequest implements Vo
 
     /**
      * Executes the Zulip API request for removing an emoji reaction from a message.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

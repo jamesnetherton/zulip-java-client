@@ -20,7 +20,7 @@ public class FileUploadApiRequest extends ZulipApiRequest implements ExecutableA
 
     /**
      * Constructs a {@link FileUploadApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      * @param file   The file to upload
      */
@@ -31,7 +31,7 @@ public class FileUploadApiRequest extends ZulipApiRequest implements ExecutableA
 
     /**
      * Executes the Zulip API request for uploading a file.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

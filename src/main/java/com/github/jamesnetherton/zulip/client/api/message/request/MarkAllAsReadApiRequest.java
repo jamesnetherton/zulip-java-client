@@ -17,7 +17,7 @@ public class MarkAllAsReadApiRequest extends ZulipApiRequest implements VoidExec
 
     /**
      * Constructs a {@link MarkAllAsReadApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      */
     public MarkAllAsReadApiRequest(ZulipHttpClient client) {
@@ -26,7 +26,7 @@ public class MarkAllAsReadApiRequest extends ZulipApiRequest implements VoidExec
 
     /**
      * Executes the Zulip API request for marking all messages as read.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

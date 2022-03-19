@@ -27,7 +27,7 @@ public class EditMessageApiRequest extends ZulipApiRequest implements VoidExecut
 
     /**
      * Constructs a {@link EditMessageApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to edit
      */
@@ -124,7 +124,7 @@ public class EditMessageApiRequest extends ZulipApiRequest implements VoidExecut
 
     /**
      * Executes the Zulip API request for editing a message.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

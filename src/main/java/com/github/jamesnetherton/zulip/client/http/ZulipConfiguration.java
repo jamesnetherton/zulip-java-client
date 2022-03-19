@@ -26,7 +26,7 @@ public class ZulipConfiguration {
 
     /**
      * Constructs a {@link ZulipConfiguration}
-     * 
+     *
      * @param zulipUrl The URL of the Zulip server
      * @param email    The user email address to use for authentication
      * @param apiKey   The user API key to use for authentication
@@ -58,7 +58,7 @@ public class ZulipConfiguration {
 
     /**
      * Sets the API key to use for authenticating with the Zulip server
-     * 
+     *
      * @param apiKey The user API key
      */
     public void setApiKey(String apiKey) {
@@ -67,7 +67,7 @@ public class ZulipConfiguration {
 
     /**
      * Sets the email address to use for authenticating with the Zulip server
-     * 
+     *
      * @param email The user email address
      */
     public void setEmail(String email) {
@@ -94,7 +94,7 @@ public class ZulipConfiguration {
 
     /**
      * The full URL to the proxy server that is to be used for Zulip API requests.
-     * 
+     *
      * @param proxyUrl The {@link URL} representing the proxy server URL
      */
     public void setProxyUrl(URL proxyUrl) {
@@ -107,7 +107,7 @@ public class ZulipConfiguration {
 
     /**
      * The proxy server username to authenticate with the proxy server when making Zulip API requests.
-     * 
+     *
      * @param proxyUsername The proxy server username
      */
     public void setProxyUsername(String proxyUsername) {
@@ -120,7 +120,7 @@ public class ZulipConfiguration {
 
     /**
      * The proxy server password to authenticate with the proxy server when making Zulip API requests.
-     * 
+     *
      * @param proxyPassword The proxy server password
      */
     public void setProxyPassword(String proxyPassword) {
@@ -149,7 +149,7 @@ public class ZulipConfiguration {
 
     /**
      * The {@link URL} for the Zulip server. Note this should be the base url without the /api/v1 suffix.
-     * 
+     *
      * @param zulipUrl The Zulip server URL
      */
     public void setZulipUrl(URL zulipUrl) {

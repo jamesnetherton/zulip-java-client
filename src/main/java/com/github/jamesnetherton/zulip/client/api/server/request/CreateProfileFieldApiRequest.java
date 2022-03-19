@@ -17,7 +17,7 @@ import java.util.Map;
  * <p>
  * This endpoint is only available to organization administrators.
  * </p>
- * 
+ *
  * @see <a href="https://zulip.com/api/create-custom-profile-field">https://zulip.com/api/create-custom-profile-field</a>
  */
 public class CreateProfileFieldApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
@@ -57,7 +57,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      * @param  name The name of the profile field
      * @param  hint The help text displayed against the custom field in the Zulip UI
      * @param  data The map that determines the available list options and their order
-     * 
+     *
      *              <pre>
      *              Map&#60;String, Map&#60;String, String&#62;&#62; options = new LinkedHashMap&#60;&#62;();
      *              Map&#60;String, String&#62; option = new LinkedHashMap&#60;&#62;();
@@ -65,7 +65,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      *              option.put("order", "1");
      *              options.put("test", option);
      *              </pre>
-     * 
+     *
      * @return      This {@link CreateProfileFieldApiRequest} instance
      */
     public CreateProfileFieldApiRequest withListOfOptionsFieldType(String name, String hint,
@@ -82,12 +82,12 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      * as not being stable, so this API is best avoided unless you know what you are doing.
      *
      * @param  data The mao that determines the external account type configuration
-     * 
+     *
      *              <pre>
      *              Map&#60;String, String&#62; externalData = new LinkedHashMap&#60;&#62;();
      *              externalData.put("subtype", "github");
      *              </pre>
-     * 
+     *
      * @return      This {@link CreateProfileFieldApiRequest} instance
      */
     public CreateProfileFieldApiRequest withExternalAccountFieldType(Map<String, String> data) {

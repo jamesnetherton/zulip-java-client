@@ -19,7 +19,7 @@ public class RenderMessageApiRequest extends ZulipApiRequest implements Executab
 
     /**
      * Constructs a {@link RenderMessageApiRequest}.
-     * 
+     *
      * @param client  The Zulip HTTP client
      * @param content The content of the message to render as HTML
      */
@@ -30,7 +30,7 @@ public class RenderMessageApiRequest extends ZulipApiRequest implements Executab
 
     /**
      * Executes the Zulip API request for rendering message to HTML.
-     * 
+     *
      * @return                      The rendered message HTML
      * @throws ZulipClientException if the request was not successful
      */

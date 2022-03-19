@@ -13,7 +13,7 @@ public interface ZulipHttpClient {
     /**
      * Performs a HTTP GET request on the given API endpoint pathSegments and URL parameters. The response type is
      * determined by the type provided via the responseAs argument.
-     * 
+     *
      * @param  path       The base pathSegments of the API endpoint
      * @param  parameters Map of URL query parameters that should be used on the API request
      * @param  responseAs The expected class of the API response

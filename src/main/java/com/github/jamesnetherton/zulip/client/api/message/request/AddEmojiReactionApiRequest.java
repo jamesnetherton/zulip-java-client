@@ -24,7 +24,7 @@ public class AddEmojiReactionApiRequest extends ZulipApiRequest implements VoidE
 
     /**
      * Constructs a {@link AddEmojiReactionApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param messageId The id of the message to add the emoji reaction to
      * @param emojiName The name of the emoji to use
@@ -67,7 +67,7 @@ public class AddEmojiReactionApiRequest extends ZulipApiRequest implements VoidE
 
     /**
      * Executes the Zulip API request for adding a emoji reaction to a message.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

@@ -21,7 +21,7 @@ public class MarkTopicAsReadApiRequest extends ZulipApiRequest implements VoidEx
 
     /**
      * Constructs a {@link MarkTopicAsReadApiRequest}.
-     * 
+     *
      * @param client    The Zulip HTTP client
      * @param streamId  The id of stream containing the topic to mark as read
      * @param topicName The name of the topic to mark as read
@@ -34,7 +34,7 @@ public class MarkTopicAsReadApiRequest extends ZulipApiRequest implements VoidEx
 
     /**
      * Executes the Zulip API request for marking a topic as read.
-     * 
+     *
      * @throws ZulipClientException if the request was not successful
      */
     @Override

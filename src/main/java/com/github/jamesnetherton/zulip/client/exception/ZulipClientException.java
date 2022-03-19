@@ -18,7 +18,7 @@ public class ZulipClientException extends Exception {
 
     /**
      * Constructs a {@link ZulipClientException}.
-     * 
+     *
      * @param message The error message received in the Zulip API response
      * @param code    The error code received in the Zulip API response
      */
@@ -29,7 +29,7 @@ public class ZulipClientException extends Exception {
 
     /**
      * Constructs a {@link ZulipClientException}.
-     * 
+     *
      * @param e The cause of the exception
      */
     public ZulipClientException(Exception e) {
@@ -38,7 +38,7 @@ public class ZulipClientException extends Exception {
 
     /**
      * Gets the Zulip error code associated with the exception.
-     * 
+     *
      * @return The Zulip error code
      */
     public String getCode() {

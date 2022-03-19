@@ -21,7 +21,7 @@ public class CreateDraftsApiRequest extends ZulipApiRequest implements Executabl
 
     /**
      * Constructs a {@link CreateDraftsApiRequest}.
-     * 
+     *
      * @param client The Zulip HTTP client
      * @param drafts The drafts to create
      */
