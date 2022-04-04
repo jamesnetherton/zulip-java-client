@@ -27,7 +27,7 @@
         <formatter.plugin.version>2.18.0</formatter.plugin.version>
         <impsort.plugin.version>1.6.2</impsort.plugin.version>
         <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-        <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
+        <maven.failsafe.plugin.version>3.0.0-M6</maven.failsafe.plugin.version>
         <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.3.2</maven.javadoc.plugin.version>
         <maven.release.plugin.version>3.0.0-M5</maven.release.plugin.version>
