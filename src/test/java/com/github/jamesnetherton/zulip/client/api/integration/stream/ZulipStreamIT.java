@@ -31,7 +31,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
@@ -114,7 +114,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
@@ -147,7 +147,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(1, subscribers.size());
 
         String email = subscribers.get(0);
-        assertEquals("test@test.com", email);
+        assertEquals("8", email);
 
         // Get ID
         Long streamId = zulip.streams().getStreamId("Test Subscribed").execute();
@@ -168,7 +168,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
@@ -197,7 +197,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 

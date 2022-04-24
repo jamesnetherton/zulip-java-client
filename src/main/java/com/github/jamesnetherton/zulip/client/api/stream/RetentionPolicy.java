@@ -7,9 +7,10 @@ package com.github.jamesnetherton.zulip.client.api.stream;
  */
 public enum RetentionPolicy {
     /**
-     * Retain messages forever.
+     * Retain unlimited messages.
      */
-    FOREVER,
+    UNLIMITED,
+
     /**
      * Use organization level message retention defaults.
      */

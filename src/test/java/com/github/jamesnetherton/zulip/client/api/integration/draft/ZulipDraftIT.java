@@ -28,7 +28,7 @@ public class ZulipDraftIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withMessageRetention(RetentionPolicy.FOREVER)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 

@@ -44,7 +44,7 @@ public class UpdateUserApiRequest extends ZulipApiRequest implements VoidExecuta
      * @return          This {@link UpdateUserApiRequest} instance
      */
     public UpdateUserApiRequest withFullName(String fullName) {
-        putParamAsJsonString(FULL_NAME, fullName);
+        putParam(FULL_NAME, fullName);
         return this;
     }
 
