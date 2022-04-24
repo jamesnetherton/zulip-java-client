@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.integration.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
@@ -53,7 +54,10 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         try {
             // Get by ID
             User user = zulip.users().getUser(createdUser.getUserId()).execute();
-            assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
+            // TODO: Handle null avatar URL properly
+            // https://github.com/jamesnetherton/zulip-java-client/issues/150
+            assertNull(user.getAvatarUrl());
+            // assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com"));
             assertTrue(user.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
             assertEquals(id + "@test.com", user.getEmail());
             assertEquals(id, user.getFullName());
@@ -68,7 +72,10 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
             // Get by email
             User userByEmail = zulip.users().getUser(createdUser.getEmail()).execute();
-            assertTrue(userByEmail.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
+            // TODO: Handle null avatar URL properly
+            // https://github.com/jamesnetherton/zulip-java-client/issues/150
+            assertNull(user.getAvatarUrl());
+            // assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com"));
             assertTrue(userByEmail.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
             assertEquals(id + "@test.com", userByEmail.getEmail());
             assertEquals(id, userByEmail.getFullName());
@@ -107,7 +114,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         User user = zulip.users().getOwnUser().execute();
 
         assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
-        assertTrue(user.getDateJoined().startsWith("2021"));
+        assertFalse(user.getDateJoined().isEmpty());
         assertEquals("test@test.com", user.getEmail());
         assertEquals("tester", user.getFullName());
         assertEquals("Europe/London", user.getTimezone());
@@ -271,9 +278,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         // Get group
         List<UserGroup> groups = zulip.users().getUserGroups().execute();
-        assertEquals(1, groups.size());
+        assertFalse(groups.isEmpty());
 
-        UserGroup group = groups.get(0);
+        UserGroup group = groups.get(groups.size() - 1);
         assertEquals("Test Group Name", group.getName());
         assertEquals("Test Group Description", group.getDescription());
         assertTrue(group.getId() > 0);
@@ -286,9 +293,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId()).execute();
 
         groups = zulip.users().getUserGroups().execute();
-        assertEquals(1, groups.size());
+        assertFalse(groups.isEmpty());
 
-        group = groups.get(0);
+        group = groups.get(groups.size() - 1);
         assertEquals("Updated Group Name", group.getName());
         assertEquals("Updated Group Description", group.getDescription());
 
@@ -308,7 +315,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().addUsersToGroup(group.getId(), createdUser.getUserId()).execute();
 
         groups = zulip.users().getUserGroups().execute();
-        group = groups.get(0);
+        group = groups.get(groups.size() - 1);
         members = group.getMembers();
         assertEquals(2, members.size());
         assertTrue(members.contains(ownUser.getUserId()));
@@ -318,7 +325,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().removeUsersFromGroup(group.getId(), createdUser.getUserId()).execute();
 
         groups = zulip.users().getUserGroups().execute();
-        group = groups.get(0);
+        group = groups.get(groups.size() - 1);
         members = group.getMembers();
         assertEquals(1, members.size());
         assertTrue(members.contains(ownUser.getUserId()));
@@ -326,6 +333,8 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         // Delete group
         zulip.users().deleteUserGroup(group.getId()).execute();
         groups = zulip.users().getUserGroups().execute();
-        assertTrue(groups.isEmpty());
+        UserGroup matchGroup = group;
+        Optional<UserGroup> match = groups.stream().filter(userGroup -> userGroup.getId() == matchGroup.getId()).findFirst();
+        assertFalse(match.isPresent());
     }
 }

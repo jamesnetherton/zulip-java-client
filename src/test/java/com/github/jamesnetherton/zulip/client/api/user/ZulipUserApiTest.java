@@ -22,7 +22,6 @@ import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusAp
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
-import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
 import java.util.List;
@@ -369,7 +368,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @Test
     public void updateUser() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateUserApiRequest.FULL_NAME, JsonUtils.getMapper().writeValueAsString("Updated User"))
+                .add(UpdateUserApiRequest.FULL_NAME, "Updated User")
                 .add(UpdateUserApiRequest.ROLE, "200")
                 .add(UpdateUserApiRequest.PROFILE_DATA, "\\[\\{\"id\":1,\"value\":\"bar\"\\}\\]")
                 .get();
