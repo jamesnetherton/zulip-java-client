@@ -11,6 +11,7 @@ import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTe
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Emoji;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
+import com.github.jamesnetherton.zulip.client.api.message.MessageEdit;
 import com.github.jamesnetherton.zulip.client.api.message.MessageFlag;
 import com.github.jamesnetherton.zulip.client.api.message.MessageHistory;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReaction;
@@ -126,6 +127,19 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(1, message.getFlags().size());
         assertEquals(MessageFlag.STARRED, message.getFlags().get(0));
         assertEquals("Edited Topic", message.getSubject());
+
+        List<MessageEdit> editHistory = message.getEditHistory();
+        assertEquals(1, editHistory.size());
+        MessageEdit edit = editHistory.get(0);
+        assertNull(edit.getPreviousContent());
+        assertNull(edit.getPreviousRenderedContent());
+        assertEquals(0, edit.getPreviousRenderedContentVersion());
+        assertEquals(streamId, edit.getPreviousStream());
+        assertEquals("Test Topic 2", edit.getPreviousTopic());
+        assertEquals(stream3Id, edit.getStream());
+        assertEquals("Edited Topic", edit.getTopic());
+        assertNotNull(edit.getTimestamp().toEpochMilli());
+        assertEquals(ownUser.getUserId(), edit.getUserId());
 
         List<MessageHistory> messageHistories = zulip.messages().getMessageHistory(message.getId()).execute();
         assertEquals(2, messageHistories.size());
