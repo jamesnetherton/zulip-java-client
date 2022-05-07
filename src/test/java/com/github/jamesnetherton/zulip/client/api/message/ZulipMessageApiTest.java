@@ -234,9 +234,27 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         }
 
         List<String> topicLinks = streamMessage.getTopicLinks();
+        assertEquals(3, topicLinks.size());
+
         for (int i = 1; i <= topicLinks.size(); i++) {
             String topicLink = topicLinks.get(i - 1);
             assertEquals("Topic " + i, topicLink);
+        }
+
+        List<MessageEdit> editHistory = streamMessage.getEditHistory();
+        assertEquals(3, editHistory.size());
+
+        for (int i = 1; i <= editHistory.size(); i++) {
+            MessageEdit edit = editHistory.get(i - 1);
+            assertEquals("Old Content " + i, edit.getPreviousContent());
+            assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
+            assertEquals(i, edit.getPreviousRenderedContentVersion());
+            assertEquals(i, edit.getPreviousStream());
+            assertEquals("Old Topic " + i, edit.getPreviousTopic());
+            assertEquals(i, edit.getStream());
+            assertEquals("New Topic " + i, edit.getTopic());
+            assertEquals(1603913066000L, edit.getTimestamp().toEpochMilli());
+            assertEquals(i, edit.getUserId());
         }
 
         Message privateMessage = messages.get(1);

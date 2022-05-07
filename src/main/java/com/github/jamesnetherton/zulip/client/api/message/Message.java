@@ -25,9 +25,8 @@ public class Message {
     @JsonProperty
     private String contentType;
 
-    private List<MessageRecipient> recipients = new ArrayList<>();
-
-    private String stream;
+    @JsonProperty
+    private List<MessageEdit> editHistory = new ArrayList<>();
 
     @JsonProperty
     private List<MessageFlag> flags;
@@ -40,6 +39,8 @@ public class Message {
 
     @JsonProperty
     private List<MessageReaction> reactions;
+
+    private List<MessageRecipient> recipients = new ArrayList<>();
 
     @JsonProperty
     private long recipientId;
@@ -55,6 +56,8 @@ public class Message {
 
     @JsonProperty("sender_realm_str")
     private String senderRealm;
+
+    private String stream;
 
     @JsonProperty
     private String subject;
@@ -102,6 +105,10 @@ public class Message {
 
     public String getContentType() {
         return contentType;
+    }
+
+    public List<MessageEdit> getEditHistory() {
+        return editHistory;
     }
 
     public List<MessageRecipient> getRecipients() {
