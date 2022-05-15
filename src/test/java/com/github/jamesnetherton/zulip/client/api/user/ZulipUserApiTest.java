@@ -61,6 +61,13 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void deactivateOwnUser() throws Exception {
+        stubZulipResponse(DELETE, "/users/me", Collections.emptyMap());
+
+        zulip.users().deactivateOwnUser().execute();
+    }
+
+    @Test
     public void setTyping() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SetTypingStatusApiRequest.OPERATION, TypingOperation.START.toString())
