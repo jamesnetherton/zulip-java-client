@@ -4,6 +4,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
@@ -63,6 +64,17 @@ public class UserService implements ZulipService {
      */
     public DeactivateUserApiRequest deactivate(long userId) {
         return new DeactivateUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Deactivates the user who invokes this endpoint.
+     *
+     * @see    <a href="https://zulip.com/api/deactivate-own-user">https://zulip.com/api/deactivate-own-user</a>
+     *
+     * @return The {@link DeactivateOwnUserApiRequest} builder object
+     */
+    public DeactivateOwnUserApiRequest deactivateOwnUser() {
+        return new DeactivateOwnUserApiRequest(this.client);
     }
 
     /**
