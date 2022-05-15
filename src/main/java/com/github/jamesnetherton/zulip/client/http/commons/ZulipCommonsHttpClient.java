@@ -199,7 +199,7 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
             }
 
             if (!zulipApiResponse.isSuccess()) {
-                throw new ZulipClientException(zulipApiResponse.getMessage(), zulipApiResponse.getCode());
+                throw new ZulipClientException(zulipApiResponse.getResponseMessage(), zulipApiResponse.getResponseCode());
             }
 
             return responseAs.cast(zulipApiResponse);

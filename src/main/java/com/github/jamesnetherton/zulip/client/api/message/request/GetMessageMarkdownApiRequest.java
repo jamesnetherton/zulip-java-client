@@ -4,15 +4,16 @@ import static com.github.jamesnetherton.zulip.client.api.message.request.Message
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.message.response.GetMessageMarkdownApiResponse;
+import com.github.jamesnetherton.zulip.client.api.message.response.GetMessageApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
  * Zulip API request builder for getting the raw content from a message.
  *
- * @see <a href="https://zulip.com/api/get-raw-message">https://zulip.com/api/get-raw-message</a>
+ * @see <a href="https://zulip.com/api/get-message">https://zulip.com/api/get-message</a>
  */
+@Deprecated
 public class GetMessageMarkdownApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String> {
 
     private final long messageId;
@@ -37,7 +38,7 @@ public class GetMessageMarkdownApiRequest extends ZulipApiRequest implements Exe
     @Override
     public String execute() throws ZulipClientException {
         String path = String.format(MESSAGES_ID_API_PATH, messageId);
-        GetMessageMarkdownApiResponse response = client().get(path, getParams(), GetMessageMarkdownApiResponse.class);
+        GetMessageApiResponse response = client().get(path, getParams(), GetMessageApiResponse.class);
         return response.getRawContent();
     }
 }

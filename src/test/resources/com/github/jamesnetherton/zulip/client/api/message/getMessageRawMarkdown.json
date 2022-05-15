@@ -1,0 +1,111 @@
+{
+  "message": {
+    "avatar_url": "http://avatars.net/foobar",
+    "client": "populate_db",
+    "content": "**Some test content**",
+    "content_type": "text/html",
+    "display_recipient": [
+      {
+        "email": "test1@zulip.com",
+        "full_name": "Test Name 1",
+        "id": 1,
+        "is_mirror_dummy": false
+      },
+      {
+        "email": "test2@zulip.com",
+        "full_name": "Test Name 2",
+        "id": 2,
+        "is_mirror_dummy": true
+      },
+      {
+        "email": "test3@zulip.com",
+        "full_name": "Test Name 3",
+        "id": 3,
+        "is_mirror_dummy": false
+      }
+    ],
+    "edit_history": [
+      {
+        "prev_content": "Old Content 1",
+        "prev_rendered_content": "Old Rendered Content 1",
+        "prev_rendered_content_version": 1,
+        "prev_stream": 1,
+        "prev_topic": "Old Topic 1",
+        "stream": 1,
+        "timestamp": 1603913066,
+        "topic": "New Topic 1",
+        "user_id": 1
+      },
+      {
+        "prev_content": "Old Content 2",
+        "prev_rendered_content": "Old Rendered Content 2",
+        "prev_rendered_content_version": 2,
+        "prev_stream": 2,
+        "prev_topic": "Old Topic 2",
+        "stream": 2,
+        "timestamp": 1603913066,
+        "topic": "New Topic 2",
+        "user_id": 2
+      },
+      {
+        "prev_content": "Old Content 3",
+        "prev_rendered_content": "Old Rendered Content 3",
+        "prev_rendered_content_version": 3,
+        "prev_stream": 3,
+        "prev_topic": "Old Topic 3",
+        "stream": 3,
+        "timestamp": 1603913066,
+        "topic": "New Topic 3",
+        "user_id": 3
+      }
+    ],
+    "flags": [
+      "collapsed",
+      "has_alert_word",
+      "historical",
+      "mentioned",
+      "read",
+      "starred",
+      "wildcard_mentioned"
+    ],
+    "id": 16,
+    "is_me_message": false,
+    "reactions": [
+      {
+        "emoji_code": "code 1",
+        "emoji_name": "emoji 1",
+        "reaction_type": "unicode_emoji",
+        "user_id": 1
+      },
+      {
+        "emoji_code": "code 2",
+        "emoji_name": "emoji 2",
+        "reaction_type": "realm_emoji",
+        "user_id": 2
+      },
+      {
+        "emoji_code": "code 3",
+        "emoji_name": "emoji 3",
+        "reaction_type": "zulip_extra_emoji",
+        "user_id": 3
+      }
+    ],
+    "recipient_id": 22,
+    "sender_email": "hamlet@zulip.com",
+    "sender_full_name": "King Hamlet",
+    "sender_id": 99,
+    "sender_realm_str": "zulip",
+    "subject": "Test message subject",
+    "submessages": [],
+    "timestamp": 1603913066,
+    "topic_links": [
+      "Topic 1",
+      "Topic 2",
+      "Topic 3"
+    ],
+    "type": "stream"
+  },
+  "msg": "",
+  "raw_content": "",
+  "result": "success"
+}

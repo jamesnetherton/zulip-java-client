@@ -21,9 +21,10 @@ import com.github.jamesnetherton.zulip.client.api.user.UserService;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import java.io.File;
-import java.net.InetAddress;
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.function.Supplier;
+import javax.net.ssl.SSLHandshakeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -40,12 +41,20 @@ public class ZulipIntegrationTestBase {
 
         configuration = ZulipConfiguration.fromZuliprc(zuliprc);
 
-        boolean zulipAvailable = false;
+        HttpURLConnection connection = null;
+        boolean zulipAvailable = true;
         try {
-            InetAddress address = InetAddress.getByName(configuration.getZulipUrl().getHost());
-            zulipAvailable = address.isReachable(5000);
+            connection = (HttpURLConnection) configuration.getZulipUrl().openConnection();
+            connection.setConnectTimeout(5000);
+            connection.connect();
         } catch (Exception e) {
-            // Host not available
+            if (!(e instanceof SSLHandshakeException)) {
+                zulipAvailable = false;
+            }
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         assumeTrue(zulipAvailable);

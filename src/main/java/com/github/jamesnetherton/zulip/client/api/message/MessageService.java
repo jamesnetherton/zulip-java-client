@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.DeleteEmojiRea
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageMarkdownApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
@@ -118,8 +119,21 @@ public class MessageService implements ZulipService {
      * @param  messageId The id of the message to get raw content
      * @return           The {@link GetMessageMarkdownApiRequest} builder object
      */
+    @Deprecated
     public GetMessageMarkdownApiRequest getMessageMarkdown(long messageId) {
         return new GetMessageMarkdownApiRequest(this.client, messageId);
+    }
+
+    /**
+     * Gets a single message.
+     *
+     * @see              <a href="https://zulip.com/api/get-message">https://zulip.com/api/get-message</a>
+     *
+     * @param  messageId The id of the message to get
+     * @return           The {@link GetMessageApiRequest} builder object
+     */
+    public GetMessageApiRequest getMessage(long messageId) {
+        return new GetMessageApiRequest(this.client, messageId);
     }
 
     /**

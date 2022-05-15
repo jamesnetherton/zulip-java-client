@@ -1,4 +1,34 @@
 {
+  "message": {
+    "avatar_url": "https://secure.gravatar.com/avatar/6d8cad0fd00256e7b40691d27ddfd466?d=identicon&version=1",
+    "client": "populate_db",
+    "content": "Some <b>bold</b> content",
+    "content_type": "text/html",
+    "display_recipient": [
+      {
+        "email": "hamlet@zulip.com",
+        "full_name": "King Hamlet",
+        "id": 1,
+        "is_mirror_dummy": false
+      }
+    ],
+    "flags": [
+      "read"
+    ],
+    "id": 1,
+    "is_me_message": false,
+    "reactions": [],
+    "recipient_id": 1,
+    "sender_email": "hamlet@zulip.com",
+    "sender_full_name": "King Hamlet",
+    "sender_id": 1,
+    "sender_realm_str": "zulip",
+    "subject": "",
+    "submessages": [],
+    "timestamp": 1527921326,
+    "topic_links": [],
+    "type": "private"
+  },
   "msg": "",
   "raw_content": "some **bold** content",
   "result": "success"
