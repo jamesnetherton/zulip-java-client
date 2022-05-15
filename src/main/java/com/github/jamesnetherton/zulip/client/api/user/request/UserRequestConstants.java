@@ -16,6 +16,7 @@ final class UserRequestConstants {
     public static final String USERS_MUTED_WITH_ID = USERS_WITH_ME + "/muted_users/%d";
     public static final String USERS_PRESENCE = "users/%s/presence";
     public static final String USERS_REACTIVATE = USERS_WITH_ID + "/reactivate";
+    public static final String USERS_STATUS = USERS_WITH_ME + "/status";
 
     private UserRequestConstants() {
     }
