@@ -123,6 +123,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertEquals(ownUser.getUserId(), user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
+        assertFalse(user.isBillingAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
         assertTrue(user.isOwner());
