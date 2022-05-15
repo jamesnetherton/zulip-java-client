@@ -267,6 +267,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             assertTrue(user.isActive());
             assertTrue(user.isAdmin());
             assertFalse(user.isBot());
+            assertTrue(user.isBillingAdmin());
             assertFalse(user.isGuest());
             assertFalse(user.isOwner());
 
