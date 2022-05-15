@@ -73,6 +73,8 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withName("Updated Name")
                 .withMessageRetention(30)
                 .withHistoryPublicToSubscribers(true)
+                .withIsPrivate(false)
+                .withWebPublic(false)
                 .withStreamPostPolicy(StreamPostPolicy.ADMIN_ONLY)
                 .execute();
 
