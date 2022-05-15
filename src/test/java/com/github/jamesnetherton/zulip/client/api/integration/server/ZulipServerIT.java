@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.integration.server;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -74,6 +75,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
         CustomEmoji emoji = optional.get();
         assertEquals(emojiName, emoji.getName());
         assertTrue(emoji.getSourceUrl().endsWith(emoji.getId() + ".png"));
+        assertNull(emoji.getStillUrl());
         assertTrue(emoji.getAuthorId() > 0);
         assertTrue(emoji.getId() > 0);
         assertFalse(emoji.isDeactivated());

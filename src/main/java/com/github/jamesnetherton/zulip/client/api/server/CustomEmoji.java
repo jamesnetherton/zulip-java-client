@@ -17,6 +17,9 @@ public class CustomEmoji {
     private String sourceUrl;
 
     @JsonProperty
+    private String stillUrl;
+
+    @JsonProperty
     private boolean deactivated;
 
     @JsonProperty
@@ -32,6 +35,10 @@ public class CustomEmoji {
 
     public String getSourceUrl() {
         return sourceUrl;
+    }
+
+    public String getStillUrl() {
+        return stillUrl;
     }
 
     public boolean isDeactivated() {

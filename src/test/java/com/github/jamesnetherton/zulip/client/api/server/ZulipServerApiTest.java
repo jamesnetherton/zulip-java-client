@@ -90,6 +90,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
             CustomEmoji emoji = emojis.get(i - 1);
             assertEquals("emoji" + i, emoji.getName());
             assertEquals("/user_avatars/" + i + "/emoji/images/" + i + ".png", emoji.getSourceUrl());
+            assertEquals("/user_avatars/" + i + "/emoji/images/still_" + i + ".png", emoji.getStillUrl());
             assertEquals(i, emoji.getAuthorId());
             assertEquals(i, emoji.getId());
             assertEquals(i != 1, emoji.isDeactivated());
