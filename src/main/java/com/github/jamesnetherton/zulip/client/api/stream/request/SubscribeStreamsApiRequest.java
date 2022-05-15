@@ -22,6 +22,7 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String AUTHORIZATION_ERRORS_FATAL = "authorization_errors_fatal";
     public static final String ANNOUNCE = "announce";
     public static final String INVITE_ONLY = "invite_only";
+    public static final String IS_WEB_PUBLIC = "is_web_public";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
@@ -93,6 +94,19 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
      */
     public SubscribeStreamsApiRequest withInviteOnly(boolean inviteOnly) {
         putParam(INVITE_ONLY, inviteOnly);
+        return this;
+    }
+
+    /**
+     * Sets whether any newly created streams will be web-public streams.
+     *
+     * @param  webPublic {@code true} results in any newly created streams created as web0public. {@code false} results in
+     *                   created streams being
+     *                   non web-public
+     * @return           This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withWebPublic(boolean webPublic) {
+        putParam(IS_WEB_PUBLIC, webPublic);
         return this;
     }
 

@@ -31,6 +31,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
+                .withWebPublic(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
