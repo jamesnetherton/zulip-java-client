@@ -80,6 +80,23 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
 
+        message = zulip.messages().getMessage(message.getId()).execute();
+        // TODO: Handle null avatar URL properly
+        // https://github.com/jamesnetherton/zulip-java-client/issues/149
+        assertNull(message.getAvatarUrl());
+        // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Stream 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("tester", message.getSenderFullName());
+        assertEquals("Test Topic 1", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
         messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
                 .withNarrows(Narrow.of("stream", "Test Message Stream 2"))
                 .execute();
@@ -389,6 +406,9 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         String markdown = zulip.messages().getMessageMarkdown(messageId).execute();
         assertEquals("**content**", markdown);
+
+        Message message = zulip.messages().getMessage(messageId).withApplyMarkdown(false).execute();
+        assertEquals("**content**", message.getContent());
 
         String rendered = zulip.messages().renderMessage("**content**").execute();
         assertEquals("<p><strong>content</strong></p>", rendered);

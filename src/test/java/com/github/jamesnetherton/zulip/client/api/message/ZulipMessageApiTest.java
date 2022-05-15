@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
@@ -149,6 +150,174 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     @Test
     public void getMessagesWithEnumAnchor() throws Exception {
         getMessages(Anchor.FIRST_UNREAD);
+    }
+
+    @Test
+    public void getMessage() throws Exception {
+        stubZulipResponse(GET, "/messages/1", "getMessage.json");
+
+        Message message = zulip.messages().getMessage(1).execute();
+        assertEquals("http://avatars.net/foobar", message.getAvatarUrl());
+        assertEquals("populate_db", message.getClient());
+        assertEquals("<p>Some test content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals(16, message.getId());
+        assertFalse(message.isMeMessage());
+        assertEquals(22, message.getRecipientId());
+        assertEquals("hamlet@zulip.com", message.getSenderEmail());
+        assertEquals("King Hamlet", message.getSenderFullName());
+        assertEquals(99, message.getSenderId());
+        assertEquals("zulip", message.getSenderRealm());
+        assertEquals("Test message subject", message.getSubject());
+        assertEquals(1603913066000L, message.getTimestamp().toEpochMilli());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        List<MessageFlag> flags = message.getFlags();
+        assertEquals(MessageFlag.values().length, flags.size());
+
+        List<MessageReaction> reactions = message.getReactions();
+        assertEquals(3, reactions.size());
+
+        for (int i = 1; i <= reactions.size(); i++) {
+            MessageReaction recation = reactions.get(i - 1);
+            assertEquals("code " + i, recation.getEmojiCode());
+            assertEquals("emoji " + i, recation.getEmojiName());
+            assertEquals(i, recation.getUserId());
+
+            if (i == 1) {
+                assertEquals(ReactionType.UNICODE, recation.getReactionType());
+            } else if (i == 2) {
+                assertEquals(ReactionType.REALM, recation.getReactionType());
+            } else if (i == 3) {
+                assertEquals(ReactionType.ZULIP_EXTRA, recation.getReactionType());
+            }
+        }
+
+        List<MessageRecipient> recipients = message.getRecipients();
+        assertEquals(3, recipients.size());
+
+        for (int i = 1; i <= recipients.size(); i++) {
+            MessageRecipient recipient = recipients.get(i - 1);
+            assertEquals("test" + i + "@zulip.com", recipient.getEmail());
+            assertEquals("Test Name " + i, recipient.getFullName());
+            assertEquals(i, recipient.getId());
+
+            if (i != 2) {
+                assertFalse(recipient.isMirrorDummy());
+            } else {
+                assertTrue(recipient.isMirrorDummy());
+            }
+        }
+
+        List<String> topicLinks = message.getTopicLinks();
+        assertEquals(3, topicLinks.size());
+
+        for (int i = 1; i <= topicLinks.size(); i++) {
+            String topicLink = topicLinks.get(i - 1);
+            assertEquals("Topic " + i, topicLink);
+        }
+
+        List<MessageEdit> editHistory = message.getEditHistory();
+        assertEquals(3, editHistory.size());
+
+        for (int i = 1; i <= editHistory.size(); i++) {
+            MessageEdit edit = editHistory.get(i - 1);
+            assertEquals("Old Content " + i, edit.getPreviousContent());
+            assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
+            assertEquals(i, edit.getPreviousRenderedContentVersion());
+            assertEquals(i, edit.getPreviousStream());
+            assertEquals("Old Topic " + i, edit.getPreviousTopic());
+            assertEquals(i, edit.getStream());
+            assertEquals("New Topic " + i, edit.getTopic());
+            assertEquals(1603913066000L, edit.getTimestamp().toEpochMilli());
+            assertEquals(i, edit.getUserId());
+        }
+    }
+
+    @Test
+    public void getMessageWithApplyRawMarkdown() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetMessageApiRequest.APPLY_MARKDOWN, "true")
+                .get();
+
+        stubZulipResponse(GET, "/messages/1", params, "getMessageRawMarkdown.json");
+
+        Message message = zulip.messages().getMessage(1).withApplyMarkdown(true).execute();
+        assertEquals("http://avatars.net/foobar", message.getAvatarUrl());
+        assertEquals("populate_db", message.getClient());
+        assertEquals("**Some test content**", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals(16, message.getId());
+        assertFalse(message.isMeMessage());
+        assertEquals(22, message.getRecipientId());
+        assertEquals("hamlet@zulip.com", message.getSenderEmail());
+        assertEquals("King Hamlet", message.getSenderFullName());
+        assertEquals(99, message.getSenderId());
+        assertEquals("zulip", message.getSenderRealm());
+        assertEquals("Test message subject", message.getSubject());
+        assertEquals(1603913066000L, message.getTimestamp().toEpochMilli());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        List<MessageFlag> flags = message.getFlags();
+        assertEquals(MessageFlag.values().length, flags.size());
+
+        List<MessageReaction> reactions = message.getReactions();
+        assertEquals(3, reactions.size());
+
+        for (int i = 1; i <= reactions.size(); i++) {
+            MessageReaction recation = reactions.get(i - 1);
+            assertEquals("code " + i, recation.getEmojiCode());
+            assertEquals("emoji " + i, recation.getEmojiName());
+            assertEquals(i, recation.getUserId());
+
+            if (i == 1) {
+                assertEquals(ReactionType.UNICODE, recation.getReactionType());
+            } else if (i == 2) {
+                assertEquals(ReactionType.REALM, recation.getReactionType());
+            } else if (i == 3) {
+                assertEquals(ReactionType.ZULIP_EXTRA, recation.getReactionType());
+            }
+        }
+
+        List<MessageRecipient> recipients = message.getRecipients();
+        assertEquals(3, recipients.size());
+
+        for (int i = 1; i <= recipients.size(); i++) {
+            MessageRecipient recipient = recipients.get(i - 1);
+            assertEquals("test" + i + "@zulip.com", recipient.getEmail());
+            assertEquals("Test Name " + i, recipient.getFullName());
+            assertEquals(i, recipient.getId());
+
+            if (i != 2) {
+                assertFalse(recipient.isMirrorDummy());
+            } else {
+                assertTrue(recipient.isMirrorDummy());
+            }
+        }
+
+        List<String> topicLinks = message.getTopicLinks();
+        assertEquals(3, topicLinks.size());
+
+        for (int i = 1; i <= topicLinks.size(); i++) {
+            String topicLink = topicLinks.get(i - 1);
+            assertEquals("Topic " + i, topicLink);
+        }
+
+        List<MessageEdit> editHistory = message.getEditHistory();
+        assertEquals(3, editHistory.size());
+
+        for (int i = 1; i <= editHistory.size(); i++) {
+            MessageEdit edit = editHistory.get(i - 1);
+            assertEquals("Old Content " + i, edit.getPreviousContent());
+            assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
+            assertEquals(i, edit.getPreviousRenderedContentVersion());
+            assertEquals(i, edit.getPreviousStream());
+            assertEquals("Old Topic " + i, edit.getPreviousTopic());
+            assertEquals(i, edit.getStream());
+            assertEquals("New Topic " + i, edit.getTopic());
+            assertEquals(1603913066000L, edit.getTimestamp().toEpochMilli());
+            assertEquals(i, edit.getUserId());
+        }
     }
 
     public void getMessages(Object anchor) throws Exception {

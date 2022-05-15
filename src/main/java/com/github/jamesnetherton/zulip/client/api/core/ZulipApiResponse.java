@@ -28,7 +28,7 @@ public class ZulipApiResponse {
      *
      * @return The response message
      */
-    public String getMessage() {
+    public String getResponseMessage() {
         return msg;
     }
 
@@ -40,7 +40,7 @@ public class ZulipApiResponse {
      *
      * @return The response code
      */
-    public String getCode() {
+    public String getResponseCode() {
         return code;
     }
 
