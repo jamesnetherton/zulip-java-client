@@ -84,6 +84,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertEquals(createdUser.getUserId(), userByEmail.getUserId());
             assertTrue(userByEmail.isActive());
             assertFalse(userByEmail.isAdmin());
+            assertFalse(userByEmail.isBillingAdmin());
             assertFalse(userByEmail.isBot());
             assertFalse(userByEmail.isGuest());
             assertFalse(userByEmail.isOwner());
