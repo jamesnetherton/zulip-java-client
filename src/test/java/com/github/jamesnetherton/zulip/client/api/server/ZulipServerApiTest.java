@@ -103,6 +103,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         ServerSettings settings = zulip.server().getServerSettings().execute();
         assertFalse(settings.isIncompatible());
         assertFalse(settings.isPushNotificationsEnabled());
+        assertTrue(settings.isRealmWebPublicAccessEnabled());
         assertTrue(settings.isRequireEmailFormatUsernames());
         assertEquals("<p>Test Realm Description</p>", settings.getRealmDescription());
         assertEquals("https://foo/bar/icon.png", settings.getRealmIcon());

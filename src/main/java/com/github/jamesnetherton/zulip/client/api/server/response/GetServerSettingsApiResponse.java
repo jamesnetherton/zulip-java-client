@@ -42,6 +42,9 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
     private String realmUri;
 
     @JsonProperty
+    private boolean realmWebPublicAccessEnabled;
+
+    @JsonProperty
     private boolean requireEmailFormatUsernames;
 
     @JsonProperty
@@ -81,6 +84,10 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
 
     public String getRealmUri() {
         return realmUri;
+    }
+
+    public boolean isRealmWebPublicAccessEnabled() {
+        return realmWebPublicAccessEnabled;
     }
 
     public boolean isRequireEmailFormatUsernames() {
