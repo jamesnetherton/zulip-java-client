@@ -50,6 +50,10 @@ public class ServerSettings {
         return delegate.getRealmUri();
     }
 
+    public boolean isRealmWebPublicAccessEnabled() {
+        return delegate.isRealmWebPublicAccessEnabled();
+    }
+
     public boolean isRequireEmailFormatUsernames() {
         return delegate.isRequireEmailFormatUsernames();
     }

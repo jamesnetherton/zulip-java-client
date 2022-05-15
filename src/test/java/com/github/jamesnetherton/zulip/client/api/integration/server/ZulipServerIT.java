@@ -84,6 +84,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
         ServerSettings settings = zulip.server().getServerSettings().execute();
 
         assertTrue(settings.isEmailAuthEnabled());
+        assertFalse(settings.isRealmWebPublicAccessEnabled());
         assertTrue(settings.isRequireEmailFormatUsernames());
         assertFalse(settings.isIncompatible());
         assertFalse(settings.isPushNotificationsEnabled());
