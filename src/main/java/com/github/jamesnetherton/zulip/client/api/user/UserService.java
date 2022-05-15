@@ -18,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGr
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -271,6 +272,17 @@ public class UserService implements ZulipService {
      */
     public MuteUserApiRequest mute(long userId) {
         return new MuteUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Updates aspects of the status for the user who invokes this endpoint.
+     *
+     * @see    <a href="https://zulip.com/api/update-status">https://zulip.com/api/update-status</a>
+     *
+     * @return The {@link UpdateOwnUserStatusApiRequest} builder object
+     */
+    public UpdateOwnUserStatusApiRequest updateOwnUserStatus() {
+        return new UpdateOwnUserStatusApiRequest(this.client);
     }
 
     /**

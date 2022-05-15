@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
@@ -20,6 +21,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
@@ -439,5 +441,26 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         stubZulipResponse(DELETE, "/users/me/muted_users/5", Collections.emptyMap());
 
         zulip.users().unmute(5).execute();
+    }
+
+    @Test
+    public void updateOwnUserStatus() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserStatusApiRequest.AWAY, "true")
+                .add(UpdateOwnUserStatusApiRequest.EMOJI_CODE, "test")
+                .add(UpdateOwnUserStatusApiRequest.EMOJI_NAME, "test name")
+                .add(UpdateOwnUserStatusApiRequest.REACTION_TYPE, ReactionType.REALM.toString())
+                .add(UpdateOwnUserStatusApiRequest.STATUS_TEXT, "test status text")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/status", params);
+
+        zulip.users().updateOwnUserStatus()
+                .withAway(true)
+                .withEmojiCode("test")
+                .withEmojiName("test name")
+                .withReactionType(ReactionType.REALM)
+                .withStatusText("test status text")
+                .execute();
     }
 }

@@ -340,4 +340,17 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         Optional<UserGroup> match = groups.stream().filter(userGroup -> userGroup.getId() == matchGroup.getId()).findFirst();
         assertFalse(match.isPresent());
     }
+
+    @Test
+    public void updateOwnUserStatus() throws ZulipClientException {
+        zulip.users().updateOwnUserStatus()
+                .withAway(true)
+                .withStatusText("test status")
+                .execute();
+
+        zulip.users().updateOwnUserStatus()
+                .withAway(false)
+                .withStatusText("")
+                .execute();
+    }
 }
