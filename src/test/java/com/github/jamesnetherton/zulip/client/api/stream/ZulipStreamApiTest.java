@@ -300,6 +300,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
                 .add(UpdateStreamApiRequest.NEW_NAME, "New name")
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
+                .add(UpdateStreamApiRequest.IS_WEB_PUBLIC, "true")
                 .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
@@ -311,6 +312,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withMessageRetention(30)
                 .withName("New name")
                 .withIsPrivate(true)
+                .withWebPublic(true)
                 .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
     }
