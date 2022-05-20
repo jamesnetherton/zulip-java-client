@@ -2,7 +2,6 @@ package com.github.jamesnetherton.zulip.client.api.stream.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionSetting;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +14,9 @@ import java.util.List;
 public class UpdateStreamSubscriptionSettingsApiResponse extends ZulipApiResponse {
 
     @JsonProperty
-    List<StreamSubscriptionSetting> subscriptionData = new ArrayList<>();
+    List<String> ignoredParametersUnsupported = new ArrayList<>();
 
-    public List<StreamSubscriptionSetting> getSubscriptionData() {
-        return subscriptionData;
+    public List<String> getIgnoredParametersUnsupported() {
+        return ignoredParametersUnsupported;
     }
 }

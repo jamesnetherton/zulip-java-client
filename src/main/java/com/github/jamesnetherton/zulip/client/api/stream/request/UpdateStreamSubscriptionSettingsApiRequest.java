@@ -17,8 +17,7 @@ import java.util.Set;
  *
  * @see <a href="https://zulip.com/api/update-subscription-settings">https://zulip.com/api/update-subscription-settings</a>
  */
-public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest
-        implements ExecutableApiRequest<List<StreamSubscriptionSetting>> {
+public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<String>> {
 
     public static final String COLOR = "color";
     public static final String IS_MUTED = "is_muted";
@@ -122,7 +121,7 @@ public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest
      * @param  emailNotifications {@code true} to enable email notifications. {@code false} to disable email notifications.
      * @return                    This {@link UpdateStreamSubscriptionSettingsApiRequest} instance
      */
-    public UpdateStreamSubscriptionSettingsApiRequest withEmailNotifications(int streamId, boolean emailNotifications) {
+    public UpdateStreamSubscriptionSettingsApiRequest withEmailNotifications(long streamId, boolean emailNotifications) {
         addSetting(streamId, EMAIL_NOTIFICATIONS, emailNotifications);
         return this;
     }
@@ -140,11 +139,11 @@ public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public List<StreamSubscriptionSetting> execute() throws ZulipClientException {
+    public List<String> execute() throws ZulipClientException {
         putParamAsJsonString(SUBSCRIPTION_DATA, settings);
 
         UpdateStreamSubscriptionSettingsApiResponse response = client().post(SUBSCRIPTIONS_PROPERTIES, getParams(),
                 UpdateStreamSubscriptionSettingsApiResponse.class);
-        return response.getSubscriptionData();
+        return response.getIgnoredParametersUnsupported();
     }
 }
