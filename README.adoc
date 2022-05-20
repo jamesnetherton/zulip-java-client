@@ -7,6 +7,8 @@ image:https://img.shields.io/endpoint?url=https%3A%2F%2Fjamesnetherton.github.io
 
 Java client for the https://zulip.com[Zulip] chat server https://zulip.com/api/rest[REST API].
 
+Refer to the https://github.com/jamesnetherton/zulip-java-client/blob/master/COMPATIBILITY.adoc[compatibility matrix] to see which version of the Zulip server this library is compatible with.
+
 == Quick start
 
 Here's how to get started with the Zulip Java client and starting making API requests.
