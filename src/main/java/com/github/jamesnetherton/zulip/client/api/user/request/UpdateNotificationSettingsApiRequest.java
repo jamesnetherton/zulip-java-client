@@ -15,6 +15,7 @@ import java.util.Map;
  *
  * @see <a href="https://zulip.com/api/update-notification-settings">https://zulip.com/api/update-notification-settings</a>
  */
+@Deprecated
 public class UpdateNotificationSettingsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Map<String, Object>> {
 
     public static final String ENABLE_STREAM_DESKTOP_NOTIFICATIONS = "enable_stream_desktop_notifications";

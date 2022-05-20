@@ -9,7 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
+import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
+import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
+import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
+import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
@@ -352,5 +356,51 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withAway(false)
                 .withStatusText("")
                 .execute();
+    }
+
+    @Test
+    public void updateOwnUserSettings() throws ZulipClientException {
+        List<String> result = zulip.users().updateOwnUserSettings()
+                .withColorScheme(ColorScheme.DARK)
+                .withDefaultLanguage("en")
+                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
+                .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
+                .withDisplayEmojiReactionUsers(true)
+                .withEmojiSet(EmojiSet.TWITTER)
+                .withEnableDesktopNotifications(true)
+                .withEnableDigestEmails(true)
+                .withEnableDraftsSynchronization(true)
+                .withEnableLoginEmails(true)
+                .withEnableMarketingEmails(true)
+                .withEnableOfflineEmailNotifications(true)
+                .withEnableOfflinePushNotifications(true)
+                .withEnableOnlinePushNotifications(true)
+                .withEnableSounds(true)
+                .withEnableStreamAudibleNotifications(true)
+                .withEnableStreamDesktopNotifications(true)
+                .withEnableStreamEmailNotifications(true)
+                .withEnableStreamPushNotifications(true)
+                .withEnterSends(true)
+                .withEscapeNavigatesToDefaultView(true)
+                .withFluidLayoutWidth(true)
+                .withHighContrastMode(true)
+                .withLeftSideUserList(true)
+                .withMessageContentInEmailNotifications(true)
+                .withNotificationSound("ding")
+                .withPmContentInDesktopNotifications(true)
+                .withPresenceEnabled(true)
+                .withRealmNameInNotifications(true)
+                .withSendPrivateTypingNotifications(true)
+                .withSendReadReceipts(true)
+                .withSendStreamTypingNotifications(true)
+                .withStarredMessageCounts(true)
+                .withTimezone("Europe/London")
+                .withTranslateEmoticons(true)
+                .withTwentyFourHourTime(true)
+                .withWildcardMentionsNotify(true)
+                .execute();
+
+        assertNotNull(result);
     }
 }

@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGr
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
@@ -189,6 +190,7 @@ public class UserService implements ZulipService {
      *
      * @return The {@link UpdateNotificationSettingsApiRequest} builder object
      */
+    @Deprecated
     public UpdateNotificationSettingsApiRequest updateNotificationSettings() {
         return new UpdateNotificationSettingsApiRequest(this.client);
     }
@@ -295,6 +297,17 @@ public class UserService implements ZulipService {
      */
     public UpdateOwnUserStatusApiRequest updateOwnUserStatus() {
         return new UpdateOwnUserStatusApiRequest(this.client);
+    }
+
+    /**
+     * Updates settings for the user who invokes this endpoint.
+     *
+     * @see    <a href="https://zulip.com/api/update-settings">https://zulip.com/api/update-settings</a>
+     *
+     * @return The {@link UpdateOwnUserSettingsApiRequest} builder object
+     */
+    public UpdateOwnUserSettingsApiRequest updateOwnUserSettings() {
+        return new UpdateOwnUserSettingsApiRequest(this.client);
     }
 
     /**
