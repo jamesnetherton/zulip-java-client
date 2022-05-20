@@ -450,7 +450,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users/me/subscriptions/properties", params, "subscriptionSettings.json");
 
-        List<StreamSubscriptionSetting> modified = zulip.streams().updateSubscriptionSettings()
+        List<String> result = zulip.streams().updateSubscriptionSettings()
                 .withColor(1, "#000000")
                 .withAudibleNotifications(1, true)
                 .withDesktopNotifications(1, true)
@@ -462,7 +462,9 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withPushNotifications(1, true)
                 .execute();
 
-        assertEquals(2, modified.size());
+        assertEquals(2, result.size());
+        assertEquals("invalid_parameter_1", result.get(0));
+        assertEquals("invalid_parameter_2", result.get(1));
     }
 
     @Test

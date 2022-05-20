@@ -1,16 +1,8 @@
 {
+  "ignored_parameters_unsupported": [
+    "invalid_parameter_1",
+    "invalid_parameter_2"
+  ],
   "msg": "",
-  "result": "success",
-  "subscription_data": [
-    {
-      "property": "pin_to_top",
-      "stream_id": 1,
-      "value": true
-    },
-    {
-      "property": "color",
-      "stream_id": 1,
-      "value": "#000000"
-    }
-  ]
+  "result": "success"
 }

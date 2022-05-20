@@ -2,6 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.integration.stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
@@ -98,6 +99,19 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(30, updatedStream.getMessageRetentionDays());
         assertFalse(updatedStream.isDefault());
         assertTrue(updatedStream.isAnnouncementOnly());
+
+        List<String> subscriptionSettings = zulip.streams().updateSubscriptionSettings()
+                .withColor(updatedStream.getStreamId(), "#000000")
+                .withAudibleNotifications(updatedStream.getStreamId(), true)
+                .withDesktopNotifications(updatedStream.getStreamId(), true)
+                .withEmailNotifications(updatedStream.getStreamId(), true)
+                .withIsMuted(updatedStream.getStreamId(), true)
+                .withPinToTop(updatedStream.getStreamId(), true)
+                .withPushNotifications(updatedStream.getStreamId(), false)
+                .execute();
+
+        assertNotNull(subscriptionSettings);
+        assertTrue(subscriptionSettings.isEmpty());
 
         // Delete
         zulip.streams().delete(firstStreamId).execute();
