@@ -14,6 +14,11 @@ import com.github.jamesnetherton.zulip.client.api.server.Linkifier;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileFieldType;
 import com.github.jamesnetherton.zulip.client.api.server.ServerSettings;
+import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
+import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
+import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
+import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
+import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
 import java.util.ArrayList;
@@ -187,7 +192,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     }
 
     @Test
-    public void getApiKey() throws Exception {
+    public void getApiKey() throws ZulipClientException {
         try {
             String key = zulip.server().getApiKey("test@test.com", "testing123").execute();
             assertFalse(key.isEmpty());
@@ -200,8 +205,51 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     }
 
     @Test
-    public void codePlayground() throws Exception {
+    public void codePlayground() throws ZulipClientException {
         long id = zulip.server().addCodePlayground("test", "java", "http://localhost/java/playground").execute();
         zulip.server().removeCodePlayground(id).execute();
+    }
+
+    @Test
+    public void updateRealmNewUserDefaultSettings() throws ZulipClientException {
+        List<String> result = zulip.server().updateRealmNewUserDefaultSettings()
+                .withColorScheme(ColorScheme.DARK)
+                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
+                .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
+                .withDisplayEmojiReactionUsers(true)
+                .withEmailNotificationsBatchingPeriodSeconds(60)
+                .withEmojiSet(EmojiSet.TWITTER)
+                .withEnableDesktopNotifications(true)
+                .withEnableDigestEmails(true)
+                .withEnableDraftsSynchronization(true)
+                .withEnableOfflineEmailNotifications(true)
+                .withEnableOfflinePushNotifications(true)
+                .withEnableOnlinePushNotifications(true)
+                .withEnableSounds(true)
+                .withEnableStreamAudibleNotifications(true)
+                .withEnableStreamDesktopNotifications(true)
+                .withEnableStreamEmailNotifications(true)
+                .withEnableStreamPushNotifications(true)
+                .withEnterSends(true)
+                .withEscapeNavigatesToDefaultView(true)
+                .withFluidLayoutWidth(true)
+                .withHighContrastMode(true)
+                .withLeftSideUserList(true)
+                .withMessageContentInEmailNotifications(true)
+                .withNotificationSound("ding")
+                .withPmContentInDesktopNotifications(true)
+                .withPresenceEnabled(true)
+                .withRealmNameInNotifications(true)
+                .withSendPrivateTypingNotifications(true)
+                .withSendReadReceipts(true)
+                .withSendStreamTypingNotifications(true)
+                .withStarredMessageCounts(true)
+                .withTranslateEmoticons(true)
+                .withTwentyFourHourTime(true)
+                .withWildcardMentionsNotify(true)
+                .execute();
+
+        assertNotNull(result);
     }
 }

@@ -16,6 +16,12 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApi
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
+import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
+import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
+import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
+import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.File;
 import java.util.Collections;
@@ -314,5 +320,92 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         stubZulipResponse(DELETE, "/realm/playgrounds/1", Collections.emptyMap());
 
         zulip.server().removeCodePlayground(1).execute();
+    }
+
+    @Test
+    public void updateRealmNewUserDefaultSettings() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.DEFAULT_VIEW, DefaultView.RECENT_TOPICS.toString())
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
+                        String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
+                        String.valueOf(DesktopIconCountDisplay.ALL_UNREADS.getSetting()))
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.DISPLAY_EMOJI_REACTION_USERS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.EMAIL_NOTIFICATIONS_BATCHING_PERIOD_SECONDS, "60")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.EMOJISET, EmojiSet.TWITTER.toString())
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DIGEST_EMAILS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DRAFTS_SYNCHRONIZATION, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_OFFLINE_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_OFFLINE_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_ONLINE_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_SOUNDS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_AUDIBLE_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENTER_SENDS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ESCAPE_NAVIGATES_TO_DEFAULT_VIEW, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.FLUID_LAYOUT_WIDTH, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.HIGH_CONTRAST_MODE, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.LEFT_SIDE_USERLIST, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.NOTIFICATION_SOUND, "ding")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.PRESENCE_ENABLED, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
+                .get();
+
+        stubZulipResponse(PATCH, "/realm/user_settings_defaults", params, "updateRealmNewUserDefaultSettings.json");
+
+        List<String> result = zulip.server().updateRealmNewUserDefaultSettings()
+                .withColorScheme(ColorScheme.DARK)
+                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
+                .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
+                .withDisplayEmojiReactionUsers(true)
+                .withEmailNotificationsBatchingPeriodSeconds(60)
+                .withEmojiSet(EmojiSet.TWITTER)
+                .withEnableDesktopNotifications(true)
+                .withEnableDigestEmails(true)
+                .withEnableDraftsSynchronization(true)
+                .withEnableOfflineEmailNotifications(true)
+                .withEnableOfflinePushNotifications(true)
+                .withEnableOnlinePushNotifications(true)
+                .withEnableSounds(true)
+                .withEnableStreamAudibleNotifications(true)
+                .withEnableStreamDesktopNotifications(true)
+                .withEnableStreamEmailNotifications(true)
+                .withEnableStreamPushNotifications(true)
+                .withEnterSends(true)
+                .withEscapeNavigatesToDefaultView(true)
+                .withFluidLayoutWidth(true)
+                .withHighContrastMode(true)
+                .withLeftSideUserList(true)
+                .withMessageContentInEmailNotifications(true)
+                .withNotificationSound("ding")
+                .withPmContentInDesktopNotifications(true)
+                .withPresenceEnabled(true)
+                .withRealmNameInNotifications(true)
+                .withSendPrivateTypingNotifications(true)
+                .withSendReadReceipts(true)
+                .withSendStreamTypingNotifications(true)
+                .withStarredMessageCounts(true)
+                .withTranslateEmoticons(true)
+                .withTwentyFourHourTime(true)
+                .withWildcardMentionsNotify(true)
+                .execute();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("desktop_notifications", result.get(0));
+        assertEquals("demote_streams", result.get(1));
     }
 }
