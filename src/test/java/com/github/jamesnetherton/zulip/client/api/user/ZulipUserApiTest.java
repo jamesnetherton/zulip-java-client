@@ -7,6 +7,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -21,6 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
@@ -469,5 +471,106 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withReactionType(ReactionType.REALM)
                 .withStatusText("test status text")
                 .execute();
+    }
+
+    @Test
+    public void updateOwnUserSettings() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
+                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_LANGUAGE, "de")
+                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, DefaultView.RECENT_TOPICS.toString())
+                .add(UpdateOwnUserSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
+                        String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
+                .add(UpdateOwnUserSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
+                        String.valueOf(DesktopIconCountDisplay.ALL_UNREADS.getSetting()))
+                .add(UpdateOwnUserSettingsApiRequest.DISPLAY_EMOJI_REACTION_USERS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.EMAIL, "test@test.com")
+                .add(UpdateOwnUserSettingsApiRequest.EMAIL_NOTIFICATIONS_BATCHING_PERIOD_SECONDS, "60")
+                .add(UpdateOwnUserSettingsApiRequest.EMOJISET, EmojiSet.TWITTER.toString())
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_DIGEST_EMAILS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_DRAFTS_SYNCHRONIZATION, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_LOGIN_EMAILS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_MARKETING_EMAILS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_OFFLINE_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_OFFLINE_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_ONLINE_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_SOUNDS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_STREAM_AUDIBLE_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_STREAM_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENABLE_STREAM_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ENTER_SENDS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.ESCAPE_NAVIGATES_TO_DEFAULT_VIEW, "true")
+                .add(UpdateOwnUserSettingsApiRequest.FLUID_LAYOUT_WIDTH, "true")
+                .add(UpdateOwnUserSettingsApiRequest.HIGH_CONTRAST_MODE, "true")
+                .add(UpdateOwnUserSettingsApiRequest.LEFT_SIDE_USERLIST, "true")
+                .add(UpdateOwnUserSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.NEW_PASSWORD, "new-password")
+                .add(UpdateOwnUserSettingsApiRequest.NOTIFICATION_SOUND, "ding")
+                .add(UpdateOwnUserSettingsApiRequest.OLD_PASSWORD, "old-password")
+                .add(UpdateOwnUserSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
+                .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.TIMEZONE, "Europe/London")
+                .add(UpdateOwnUserSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
+                .add(UpdateOwnUserSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
+                .get();
+
+        stubZulipResponse(PATCH, "/settings", params, "updateOwnUserSettings.json");
+
+        List<String> result = zulip.users().updateOwnUserSettings()
+                .withColorScheme(ColorScheme.DARK)
+                .withDefaultLanguage("de")
+                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
+                .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
+                .withDisplayEmojiReactionUsers(true)
+                .withEmail("test@test.com")
+                .withEmailNotificationsBatchingPeriodSeconds(60)
+                .withEmojiSet(EmojiSet.TWITTER)
+                .withEnableDesktopNotifications(true)
+                .withEnableDigestEmails(true)
+                .withEnableDraftsSynchronization(true)
+                .withEnableLoginEmails(true)
+                .withEnableMarketingEmails(true)
+                .withEnableOfflineEmailNotifications(true)
+                .withEnableOfflinePushNotifications(true)
+                .withEnableOnlinePushNotifications(true)
+                .withEnableSounds(true)
+                .withEnableStreamAudibleNotifications(true)
+                .withEnableStreamDesktopNotifications(true)
+                .withEnableStreamEmailNotifications(true)
+                .withEnableStreamPushNotifications(true)
+                .withEnterSends(true)
+                .withEscapeNavigatesToDefaultView(true)
+                .withFluidLayoutWidth(true)
+                .withHighContrastMode(true)
+                .withLeftSideUserList(true)
+                .withMessageContentInEmailNotifications(true)
+                .withNewPassword("new-password")
+                .withNotificationSound("ding")
+                .withOldPassword("old-password")
+                .withPmContentInDesktopNotifications(true)
+                .withPresenceEnabled(true)
+                .withRealmNameInNotifications(true)
+                .withSendPrivateTypingNotifications(true)
+                .withSendReadReceipts(true)
+                .withSendStreamTypingNotifications(true)
+                .withStarredMessageCounts(true)
+                .withTimezone("Europe/London")
+                .withTranslateEmoticons(true)
+                .withTwentyFourHourTime(true)
+                .withWildcardMentionsNotify(true)
+                .execute();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("name", result.get(0));
+        assertEquals("password", result.get(1));
     }
 }
