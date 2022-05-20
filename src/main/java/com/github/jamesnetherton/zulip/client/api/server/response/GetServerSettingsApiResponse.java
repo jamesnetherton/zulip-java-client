@@ -48,6 +48,9 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
     private boolean requireEmailFormatUsernames;
 
     @JsonProperty
+    private String zulipMergeBase;
+
+    @JsonProperty
     private String zulipVersion;
 
     public AuthenticationSettings getAuthenticationMethods() {
@@ -92,6 +95,10 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
 
     public boolean isRequireEmailFormatUsernames() {
         return requireEmailFormatUsernames;
+    }
+
+    public String getZulipMergeBase() {
+        return zulipMergeBase;
     }
 
     public String getZulipVersion() {

@@ -44,5 +44,6 @@
   "realm_web_public_access_enabled": true,
   "require_email_format_usernames": true,
   "result": "success",
+  "zulip_merge_base": "5.6.7",
   "zulip_version": "1.2.3"
 }
