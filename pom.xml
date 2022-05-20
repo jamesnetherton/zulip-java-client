@@ -150,7 +150,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven.release.plugin.version}</version>
                 <configuration>
-                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
                     <tagNameFormat>@{project.version}</tagNameFormat>
                     <releaseProfiles>release</releaseProfiles>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -204,13 +203,6 @@
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${maven.gpg.plugin.version}</version>
-                        <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
                         <executions>
                             <execution>
                                 <goals>
