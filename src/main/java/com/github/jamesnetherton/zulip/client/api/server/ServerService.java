@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileField
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.io.File;
@@ -203,5 +204,17 @@ public class ServerService implements ZulipService {
      */
     public RemoveCodePlaygroundApiRequest removeCodePlayground(long codePlaygroundId) {
         return new RemoveCodePlaygroundApiRequest(this.client, codePlaygroundId);
+    }
+
+    /**
+     * Updates realm level default settings for new users.
+     *
+     * @see    <a href=
+     *         "https://zulip.com/api/update-realm-user-settings-defaults">https://zulip.com/api/update-realm-user-settings-defaults/a>
+     *
+     * @return The {@link UpdateRealmNewUserDefaultSettingsApiRequest} builder object
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest updateRealmNewUserDefaultSettings() {
+        return new UpdateRealmNewUserDefaultSettingsApiRequest(this.client);
     }
 }

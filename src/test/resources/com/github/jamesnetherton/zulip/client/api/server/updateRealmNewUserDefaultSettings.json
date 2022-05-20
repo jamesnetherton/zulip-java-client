@@ -1,0 +1,8 @@
+{
+  "ignored_parameters_unsupported": [
+    "desktop_notifications",
+    "demote_streams"
+  ],
+  "msg": "",
+  "result": "success"
+}
