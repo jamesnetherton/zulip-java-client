@@ -1,5 +1,17 @@
 = Changelog
 
+== 0.3.0
+
+==== Enhancements
+
+Zulip 5 support:
+
+* Get single message APIs
+* Update realm level defaults of user settings APIs
+* Update user settings APIs
+* Deactivate own user APIs
+* Set user status APIs
+
 == 0.2.0
 
 ==== Enhancements
