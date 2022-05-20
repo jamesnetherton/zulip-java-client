@@ -110,6 +110,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals("https://foo/bar/icon.png", settings.getRealmIcon());
         assertEquals("Test Realm Name", settings.getRealmName());
         assertEquals("http://localhost:8080", settings.getRealmUri());
+        assertEquals("5.6.7", settings.getZulipMergeBase());
         assertEquals("1.2.3", settings.getZulipVersion());
         assertTrue(settings.isEmailAuthEnabled());
 

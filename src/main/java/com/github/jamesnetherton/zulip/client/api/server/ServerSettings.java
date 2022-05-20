@@ -58,6 +58,10 @@ public class ServerSettings {
         return delegate.isRequireEmailFormatUsernames();
     }
 
+    public String getZulipMergeBase() {
+        return delegate.getZulipMergeBase();
+    }
+
     public String getZulipVersion() {
         return delegate.getZulipVersion();
     }
