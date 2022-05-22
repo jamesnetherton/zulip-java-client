@@ -80,8 +80,8 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     /**
      * Sets the default view to use.
      *
-     * @See                <a href=
-     *                     "https://zulip.com/help/configure-default-view">https://zulip.com/help/configure-default-view</a>
+     * @see                <a href=
+     *                     "htt`ps://zulip.com/help/configure-default-view">https://zulip.com/help/configure-default-view</a>
      *
      * @param  defaultView The default view to use
      * @return             This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
@@ -94,7 +94,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     /**
      * Sets whether to demote inactive streams.
      *
-     * @See                               <a href=
+     * @see                               <a href=
      *                                    "https://zulip.com/help/manage-inactive-streams">https://zulip.com/help/manage-inactive-streams</a>
      *
      * @param  demoteInactiveStreamOption The option to control how inactive streams are demoted
@@ -444,7 +444,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     /**
      * Sets whether to display the number of starred messages.
      *
-     * @See                         <a href=
+     * @see                         <a href=
      *                              "https://zulip.com/help/star-a-message#display-the-number-of-starred-messages">https://zulip.com/help/star-a-message#display-the-number-of-starred-messages</a>
      *
      * @param  starredMessageCounts {@code true} to display the number of starred messages. {@code false} to not display the

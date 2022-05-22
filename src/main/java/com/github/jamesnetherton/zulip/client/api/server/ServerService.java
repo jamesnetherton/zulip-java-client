@@ -210,7 +210,7 @@ public class ServerService implements ZulipService {
      * Updates realm level default settings for new users.
      *
      * @see    <a href=
-     *         "https://zulip.com/api/update-realm-user-settings-defaults">https://zulip.com/api/update-realm-user-settings-defaults/a>
+     *         "https://zulip.com/api/update-realm-user-settings-defaults">https://zulip.com/api/update-realm-user-settings-defaults</a>
      *
      * @return The {@link UpdateRealmNewUserDefaultSettingsApiRequest} builder object
      */
