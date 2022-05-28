@@ -135,20 +135,6 @@ zulip.messages().editMessage(1) <1>
 
 <3> The request builder is completed and sent to the Zulip server with the `execute()` method. This *MUST* be called in order for the request to be sent.
 
-Alternatively you can create an instance of the builder object.
-
-[source,java]
-----
-EditMessageApiRequest request = new EditMessageApiRequest(1);
-request.withContent("edited content");
-request.withPropagateMode(PropagateMode.CHANGE_ONE);
-request.withSendNotificationToNewThread(true);
-request.withSendNotificationToOldThread(true);
-request.withStreamId(1);
-request.withTopic("different topic");
-request.execute();
-----
-
 == Exception handling
 
 Zulip API error responses are thrown as `ZulipClientException`. The exception object contains details about the error such as the code and a descriptive message.
