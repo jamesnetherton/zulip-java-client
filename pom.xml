@@ -21,7 +21,7 @@
         <jackson.version>2.13.4.20221013</jackson.version>
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <slf4j.version>2.0.3</slf4j.version>
-        <wiremock-jre8.version>2.34.0</wiremock-jre8.version>
+        <wiremock-jre8.version>2.35.0</wiremock-jre8.version>
 
         <!-- Plugin versions -->
         <formatter.plugin.version>2.18.0</formatter.plugin.version>
