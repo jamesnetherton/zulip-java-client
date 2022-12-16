@@ -45,7 +45,7 @@ jobs:
           cd src/test/resources/docker/
           docker-compose up -d
 
-          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost)" != "200" ]
+          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost/login)" != "200" ]
           do
             sleep 5
           done
@@ -53,7 +53,7 @@ jobs:
           ./populatedb.sh
           cd -
 
-          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost)" != "200" ]
+          while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost/login)" != "200" ]
           do
             sleep 5
           done
