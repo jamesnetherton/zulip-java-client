@@ -169,8 +169,8 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 assertEquals("1", vim.get("order"));
                 order.add(field.getOrder());
             } else if (field.getId() == externalId) {
-                assertEquals("Enter your GitHub username", field.getHint());
-                assertEquals("GitHub", field.getName());
+                assertEquals("", field.getHint());
+                assertEquals("GitHub username", field.getName());
                 assertTrue(field.getOrder() > 0);
                 assertEquals(ProfileFieldType.EXTERNAL_ACCOUNT, field.getType());
 
