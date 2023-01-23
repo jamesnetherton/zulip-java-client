@@ -73,7 +73,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     public void setTyping() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SetTypingStatusApiRequest.OPERATION, TypingOperation.START.toString())
-                .add(SetTypingStatusApiRequest.TO, "\\[1,2,3\\]")
+                .add(SetTypingStatusApiRequest.TO, "[1,2,3]")
                 .get();
 
         stubZulipResponse(POST, "/typing", params);
@@ -86,7 +86,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(CreateUserGroupApiRequest.NAME, "Test Group Name")
                 .add(CreateUserGroupApiRequest.DESCRIPTION, "Test Group Description")
-                .add(CreateUserGroupApiRequest.MEMBERS, "\\[1,2,3\\]")
+                .add(CreateUserGroupApiRequest.MEMBERS, "[1,2,3]")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/create", params);
@@ -116,7 +116,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @Test
     public void addUsersToGroup() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(AddUsersToGroupApiRequest.ADD, "\\[1,2,3\\]")
+                .add(AddUsersToGroupApiRequest.ADD, "[1,2,3]")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/7/members", params);
@@ -127,7 +127,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @Test
     public void removeUsersFromGroup() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(RemoveUsersFromGroupApiRequest.DELETE, "\\[1,2,3\\]")
+                .add(RemoveUsersFromGroupApiRequest.DELETE, "[1,2,3]")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/7/members", params);
@@ -153,7 +153,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     public void updateNotificationSettings() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateNotificationSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY, "2")
-                .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_PUSH_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_AUDIBLE_NOTIFICATIONS, "true")
@@ -170,6 +169,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateNotificationSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .add(UpdateNotificationSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.PRESENCE_ENABLED, "true")
+                .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
                 .get();
 
         stubZulipResponse(PATCH, "/settings/notifications", params, "updateNotificationSettings.json");
@@ -177,7 +177,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, Object> settings = zulip.users().updateNotificationSettings()
                 .withEnableOfflinePushNotifications(true)
                 .withEnableOnlinePushNotifications(true)
-                .withEnableStreamAudibleNotifications(true)
                 .withEnableLoginEmails(true)
                 .withEnableDigestEmails(true)
                 .withEnableDesktopNotifications(true)
@@ -385,7 +384,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserApiRequest.FULL_NAME, "Updated User")
                 .add(UpdateUserApiRequest.ROLE, "200")
-                .add(UpdateUserApiRequest.PROFILE_DATA, "\\[\\{\"id\":1,\"value\":\"bar\"\\}\\]")
+                .add(UpdateUserApiRequest.PROFILE_DATA, "[{\"id\":1,\"value\":\"bar\"}]")
                 .get();
 
         stubZulipResponse(PATCH, "/users/1", params);
@@ -507,12 +506,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.LEFT_SIDE_USERLIST, "true")
                 .add(UpdateOwnUserSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.NEW_PASSWORD, "new-password")
+                .add(UpdateOwnUserSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.NOTIFICATION_SOUND, "ding")
                 .add(UpdateOwnUserSettingsApiRequest.OLD_PASSWORD, "old-password")
                 .add(UpdateOwnUserSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.SEND_READ_RECEIPTS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.TIMEZONE, "Europe/London")

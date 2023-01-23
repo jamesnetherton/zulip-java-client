@@ -46,7 +46,7 @@ public class ZulipDraftApiTest extends ZulipApiTestBase {
                 .collect(Collectors.toList());
 
         Map<String, StringValuePattern> params = QueryParams.create()
-                .addAsJsonString(DRAFTS, drafts)
+                .addAsRawJsonString(DRAFTS, drafts)
                 .get();
 
         stubZulipResponse(POST, "/drafts", params, "createDrafts.json");
@@ -76,7 +76,7 @@ public class ZulipDraftApiTest extends ZulipApiTestBase {
 
         draft.setId(0);
         Map<String, StringValuePattern> params = QueryParams.create()
-                .addAsJsonString(DRAFT, draft)
+                .addAsRawJsonString(DRAFT, draft)
                 .get();
         draft.setId(1);
 

@@ -12,12 +12,16 @@ import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
-import com.github.tomakehurst.wiremock.matching.RegexPattern;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -66,11 +70,33 @@ public class ZulipApiTestBase {
 
     protected void stubZulipResponse(HttpMethod method, String path, Map<String, StringValuePattern> params,
             String stubbedResponse) throws IOException {
-        server.stubFor(request(method.name(), urlPathEqualTo("/" + ZulipUrlUtils.API_BASE_PATH + path))
-                .withQueryParams(params)
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(getStubbedResponse(stubbedResponse))));
+
+        MappingBuilder mappingBuilder = request(method.name(), urlPathEqualTo("/" + ZulipUrlUtils.API_BASE_PATH + path));
+
+        if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PATCH)) {
+            if (!params.isEmpty()) {
+                StringBuilder urlParamString = new StringBuilder();
+                Iterator<String> it = params.keySet().iterator();
+                while (it.hasNext()) {
+                    String key = it.next();
+                    urlParamString.append(key);
+                    urlParamString.append("=");
+                    urlParamString.append(URLEncoder.encode(params.get(key).getValue(), StandardCharsets.UTF_8));
+                    if (it.hasNext()) {
+                        urlParamString.append('&');
+                    }
+                }
+                mappingBuilder.withRequestBody(new UrlEncodedEntityMatcher(urlParamString.toString()));
+            }
+        } else {
+            mappingBuilder.withQueryParams(params);
+        }
+
+        mappingBuilder.willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withBody(getStubbedResponse(stubbedResponse)));
+
+        server.stubFor(mappingBuilder);
     }
 
     protected void stubMultiPartZulipResponse(HttpMethod method, String path, String stubbedResponse) throws IOException {
@@ -102,17 +128,12 @@ public class ZulipApiTestBase {
         }
 
         public QueryParams add(String name, String value) {
-            params.put(name, new RegexPattern(value));
+            params.put(name, new EqualToPattern(value));
             return this;
         }
 
-        public QueryParams addAsJsonString(String name, Object value) throws JsonProcessingException {
-            String json = JsonUtils.getMapper().writeValueAsString(value);
-            String sanitized = json.replace("[", "\\[")
-                    .replace("]", "\\]")
-                    .replace("{", "\\{")
-                    .replace("}", "\\}");
-            params.put(name, new RegexPattern(sanitized));
+        public QueryParams addAsRawJsonString(String name, Object value) throws JsonProcessingException {
+            params.put(name, new EqualToPattern(JsonUtils.getMapper().writeValueAsString(value)));
             return this;
         }
 

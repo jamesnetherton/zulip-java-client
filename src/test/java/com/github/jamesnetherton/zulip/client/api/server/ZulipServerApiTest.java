@@ -200,7 +200,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     @Test
     public void reorderProfileFields() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(ReorderProfileFieldsApiRequest.ORDER, "\\[5,4,3,2,1\\]")
+                .add(ReorderProfileFieldsApiRequest.ORDER, "[5,4,3,2,1]")
                 .get();
 
         stubZulipResponse(PATCH, "/realm/profile_fields", params);
@@ -238,7 +238,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(CreateProfileFieldApiRequest.NAME, "Test Name")
                 .add(CreateProfileFieldApiRequest.HINT, "Test Hint")
                 .add(CreateProfileFieldApiRequest.FIELD_TYPE, "3")
-                .add(CreateProfileFieldApiRequest.FIELD_DATA, "\\{\"test\":\\{\"foo\":\"bar\"\\}\\}")
+                .add(CreateProfileFieldApiRequest.FIELD_DATA, "{\"test\":{\"foo\":\"bar\"}}")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
@@ -259,7 +259,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     public void createExternalCustomProfileField() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(CreateProfileFieldApiRequest.FIELD_TYPE, "7")
-                .add(CreateProfileFieldApiRequest.FIELD_DATA, "\\{\"foo\":\"bar\"\\}")
+                .add(CreateProfileFieldApiRequest.FIELD_DATA, "{\"foo\":\"bar\"}")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
@@ -355,6 +355,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_READ_RECEIPTS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")

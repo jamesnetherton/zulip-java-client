@@ -327,7 +327,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(GetMessagesApiRequest.MARKDOWN, "true")
                 .add(GetMessagesApiRequest.GRAVATAR, "true")
                 .add(GetMessagesApiRequest.NARROW,
-                        "\\[\\{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false\\},\\{\"operator\":\"cheese\",\"operand\":\"wine\",\"negated\":true\\}\\]")
+                        "[{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false},{\"operator\":\"cheese\",\"operand\":\"wine\",\"negated\":true}]")
                 .get();
 
         stubZulipResponse(GET, "/messages", params, "getMessages.json");
@@ -465,9 +465,9 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     @Test
     public void matchesNarrow() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(MatchesNarrowApiRequest.MESSAGE_IDS, "\\[1,2,3\\]")
+                .add(MatchesNarrowApiRequest.MESSAGE_IDS, "[1,2,3]")
                 .add(MatchesNarrowApiRequest.NARROW,
-                        "\\[\\{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false\\},\\{\"operator\":\"cheese\",\"operand\":\"wine\",\"negated\":true\\}\\]")
+                        "[{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false},{\"operator\":\"cheese\",\"operand\":\"wine\",\"negated\":true}]")
                 .get();
 
         stubZulipResponse(GET, "/messages/matches_narrow", params, "matchesNarrow.json");
@@ -505,7 +505,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(SendMessageApiRequest.CONTENT, "test private message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
-                .add(SendMessageApiRequest.TO, "\\[1,2,3\\]")
+                .add(SendMessageApiRequest.TO, "[1,2,3]")
                 .add(SendMessageApiRequest.TYPE, MessageType.PRIVATE.toString())
                 .get();
 
@@ -525,7 +525,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(SendMessageApiRequest.CONTENT, "test private message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
-                .add(SendMessageApiRequest.TO, "\\[\"foo@bar.com\",\"cheese@wine.net\"\\]")
+                .add(SendMessageApiRequest.TO, "[\"foo@bar.com\",\"cheese@wine.net\"]")
                 .add(SendMessageApiRequest.TYPE, MessageType.PRIVATE.toString())
                 .get();
 
@@ -585,7 +585,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     public void updateMessageFlags() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateMessageFlagsApiRequest.FLAG, MessageFlag.READ.toString())
-                .add(UpdateMessageFlagsApiRequest.MESSAGES, "\\[1,2,3\\]")
+                .add(UpdateMessageFlagsApiRequest.MESSAGES, "[1,2,3]")
                 .add(UpdateMessageFlagsApiRequest.OP, Operation.ADD.toString())
                 .get();
 
