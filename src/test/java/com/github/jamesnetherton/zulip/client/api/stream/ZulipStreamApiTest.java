@@ -99,10 +99,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_WEB_PUBLIC, "true")
                 .add(SubscribeStreamsApiRequest.MESSAGE_RETENTION_DAYS, "\"unlimited\"")
-                .add(SubscribeStreamsApiRequest.PRINCIPALS, "\\[1,2,3\\]")
-                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
+                .add(SubscribeStreamsApiRequest.PRINCIPALS, "[1,2,3]")
                 .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS,
-                        "\\[\\{\"name\":\"foo\",\"description\":\"bar\"\\},\\{\"name\":\"secret\",\"description\":\"stream\"\\},\\{\"name\":\"old\",\"description\":\"stream\"\\},\\{\"name\":\"cheese\",\"description\":\"wine\"\\}\\]")
+                        "[{\"name\":\"foo\",\"description\":\"bar\"},{\"name\":\"secret\",\"description\":\"stream\"},{\"name\":\"old\",\"description\":\"stream\"},{\"name\":\"cheese\",\"description\":\"wine\"}]")
+                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
@@ -156,10 +156,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_WEB_PUBLIC, "false")
                 .add(SubscribeStreamsApiRequest.MESSAGE_RETENTION_DAYS, "30")
-                .add(SubscribeStreamsApiRequest.PRINCIPALS, "\\[\"test@test.com\",\"foo@bar.com\"\\]")
-                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
+                .add(SubscribeStreamsApiRequest.PRINCIPALS, "[\"test@test.com\",\"foo@bar.com\"]")
                 .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS,
-                        "\\[\\{\"name\":\"foo\",\"description\":\"bar\"\\},\\{\"name\":\"secret\",\"description\":\"stream\"\\},\\{\"name\":\"old\",\"description\":\"stream\"\\},\\{\"name\":\"cheese\",\"description\":\"wine\"\\}\\]")
+                        "[{\"name\":\"foo\",\"description\":\"bar\"},{\"name\":\"secret\",\"description\":\"stream\"},{\"name\":\"old\",\"description\":\"stream\"},{\"name\":\"cheese\",\"description\":\"wine\"}]")
+                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
@@ -207,8 +207,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void unsubscribe() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(SubscribeStreamsApiRequest.PRINCIPALS, "\\[1,2,3\\]")
-                .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS, "\\[\"foo\",\"bar\"\\]")
+                .add(SubscribeStreamsApiRequest.PRINCIPALS, "[1,2,3]")
+                .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS, "[\"foo\",\"bar\"]")
                 .get();
 
         stubZulipResponse(DELETE, "/users/me/subscriptions", params, "unsubscribe.json");
@@ -231,8 +231,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void unsubscribeWithStringPrincipals() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(SubscribeStreamsApiRequest.PRINCIPALS, "\\[\"test@test.com\",\"foo@bar.com\"\\]")
-                .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS, "\\[\"foo\",\"bar\"\\]")
+                .add(SubscribeStreamsApiRequest.PRINCIPALS, "[\"test@test.com\",\"foo@bar.com\"]")
+                .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS, "[\"foo\",\"bar\"]")
                 .get();
 
         stubZulipResponse(DELETE, "/users/me/subscriptions", params, "unsubscribe.json");
@@ -437,11 +437,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertNotEquals(null, settings[0]);
         assertNotEquals("some wrong value", settings[0]);
 
-        String subscriptionData = JsonUtils.getMapper().writeValueAsString(settings)
-                .replaceAll("\\{", "\\\\{")
-                .replaceAll("}", "\\\\}")
-                .replaceAll("\\[", "\\\\[")
-                .replaceAll("]", "\\\\]");
+        String subscriptionData = JsonUtils.getMapper().writeValueAsString(settings);
 
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateStreamSubscriptionSettingsApiRequest.SUBSCRIPTION_DATA,

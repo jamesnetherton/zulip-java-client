@@ -18,13 +18,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 public class CustomZulipHttpClientTest extends ZulipApiTestBase {
@@ -107,19 +110,30 @@ public class CustomZulipHttpClientTest extends ZulipApiTestBase {
                 String basicAuth = new String(Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.UTF_8)));
                 StringBuilder endpoint = new StringBuilder();
 
-                endpoint.append(configuration.getZulipUrl().toString()).append("/api/v1/").append(path).append("?");
-                parameters.forEach((key, value) -> {
-                    endpoint.append("&");
-                    endpoint.append(key);
-                    endpoint.append("=");
-                    endpoint.append(value);
-                });
+                endpoint.append(configuration.getZulipUrl().toString()).append("/api/v1/").append(path);
 
                 URL url = new URL(endpoint.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Authorization", "Basic " + basicAuth);
+
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    StringBuilder postParams = new StringBuilder();
+                    AtomicBoolean first = new AtomicBoolean(true);
+                    parameters.forEach((key, value) -> {
+                        if (!first.get()) {
+                            postParams.append("&");
+                        }
+                        postParams.append(key);
+                        postParams.append("=");
+                        postParams.append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
+                        first.set(false);
+                    });
+
+                    outputStream.write(postParams.toString().getBytes());
+                    outputStream.flush();
+                }
 
                 try (InputStream stream = connection.getInputStream()) {
                     InputStreamReader reader = new InputStreamReader(stream);
