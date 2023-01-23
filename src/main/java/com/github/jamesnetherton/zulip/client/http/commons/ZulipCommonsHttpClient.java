@@ -154,7 +154,7 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
 
         HttpPatch request = new HttpPatch(requestUri);
         request = (HttpPatch) setFormData(request, parameters);
-        return doRequest(new HttpPatch(requestUri), responseAs);
+        return doRequest(request, responseAs);
     }
 
     @Override
