@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
+import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -179,7 +180,7 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
         }
 
         try {
-          request.setEntity(new UrlEncodedFormEntity(urlParameters));
+          request.setEntity(new UrlEncodedFormEntity(urlParameters, Consts.UTF_8));
         } catch (UnsupportedEncodingException e) {
           throw new ZulipClientException(e);
         }
