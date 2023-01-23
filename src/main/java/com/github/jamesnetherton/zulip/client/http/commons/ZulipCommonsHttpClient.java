@@ -9,12 +9,15 @@ import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
@@ -22,13 +25,16 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -44,6 +50,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 
@@ -142,13 +149,42 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
     @Override
     public <T extends ZulipApiResponse> T patch(String path, Map<String, Object> parameters, Class<T> responseAs)
             throws ZulipClientException {
-        return doRequest(new HttpPatch(getRequestUri(path, parameters)), responseAs);
+    	URI requestUri = getRequestUri(path, null);
+
+        HttpPatch request = new HttpPatch(requestUri);
+        request = (HttpPatch) setFormData(request, parameters);
+        return doRequest(new HttpPatch(requestUri), responseAs);
     }
 
     @Override
     public <T extends ZulipApiResponse> T post(String path, Map<String, Object> parameters, Class<T> responseAs)
             throws ZulipClientException {
-        return doRequest(new HttpPost(getRequestUri(path, parameters)), responseAs);
+        URI requestUri = getRequestUri(path, null);
+        HttpPost request = new HttpPost(requestUri);
+        request = (HttpPost) setFormData(request, parameters);
+
+        return doRequest(request, responseAs);
+    }
+
+    private HttpEntityEnclosingRequestBase setFormData(
+        HttpEntityEnclosingRequestBase request, Map<String, Object> parameters)
+        throws ZulipClientException {
+      if (parameters != null) {
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+          if (entry.getValue() != null) {
+            urlParameters.add(new BasicNameValuePair(entry.getKey(),
+                entry.getValue().toString()));
+          }
+        }
+
+        try {
+          request.setEntity(new UrlEncodedFormEntity(urlParameters));
+        } catch (UnsupportedEncodingException e) {
+          throw new ZulipClientException(e);
+        }
+      }
+      return request;
     }
 
     @Override
