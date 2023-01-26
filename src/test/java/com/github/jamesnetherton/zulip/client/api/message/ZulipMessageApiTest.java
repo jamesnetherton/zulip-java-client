@@ -322,6 +322,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
     public void getMessages(Object anchor) throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetMessagesApiRequest.ANCHOR, anchor.toString())
+                .add(GetMessagesApiRequest.INCLUDE_ANCHOR, "true")
                 .add(GetMessagesApiRequest.NUM_BEFORE, "3")
                 .add(GetMessagesApiRequest.NUM_AFTER, "1")
                 .add(GetMessagesApiRequest.MARKDOWN, "true")
@@ -335,12 +337,14 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         List<Message> messages;
         if (anchor instanceof Integer) {
             messages = zulip.messages().getMessages(3, 1, (Integer) anchor)
+                    .withIncludeAnchor(true)
                     .withMarkdown(true)
                     .withGravatar(true)
                     .withNarrows(Narrow.of("foo", "bar"), Narrow.ofNegated("cheese", "wine"))
                     .execute();
         } else {
             messages = zulip.messages().getMessages(3, 1, (Anchor) anchor)
+                    .withIncludeAnchor(true)
                     .withMarkdown(true)
                     .withGravatar(true)
                     .withNarrows(Narrow.of("foo", "bar"), Narrow.ofNegated("cheese", "wine"))

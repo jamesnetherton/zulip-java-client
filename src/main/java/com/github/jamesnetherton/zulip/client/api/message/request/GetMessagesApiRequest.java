@@ -22,6 +22,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
         implements NarrowableApiRequest<GetMessagesApiRequest>, ExecutableApiRequest<List<Message>> {
 
     public static final String ANCHOR = "anchor";
+    public static final String INCLUDE_ANCHOR = "include_anchor";
     public static final String GRAVATAR = "gravatar";
     public static final String MARKDOWN = "apply_markdown";
     public static final String NARROW = "narrow";
@@ -62,6 +63,21 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      */
     public GetMessagesApiRequest withAnchor(long messageId) {
         putParam(ANCHOR, Long.toString(messageId));
+        return this;
+    }
+
+    /**
+     * Whether a message with the specified ID matching the narrow should be included.
+     *
+     * @see                  <a href=
+     *                       "https://zulip.com/api/get-messages#parameter-include_anchor">https://zulip.com/api/get-messages#parameter-include_anchor</a>
+     *
+     * @param  includeAnchor {@code true} if a message with the specified ID matching the narrow should be included.
+     *                       {@code False} if a message with the specified ID matching the narrow should not be included
+     * @return               This {@link GetMessagesApiRequest} instance
+     */
+    public GetMessagesApiRequest withIncludeAnchor(boolean includeAnchor) {
+        putParam(INCLUDE_ANCHOR, includeAnchor);
         return this;
     }
 
