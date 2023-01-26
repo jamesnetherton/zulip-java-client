@@ -160,11 +160,32 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(1, subscriptions.size());
 
         StreamSubscription streamSubscription = subscriptions.get(0);
+        assertFalse(streamSubscription.isAudibleNotifications());
+        assertFalse(streamSubscription.isDesktopNotifications());
+        assertTrue(streamSubscription.isHistoryPublicToSubscribers());
+        assertFalse(streamSubscription.isInviteOnly());
+        assertFalse(streamSubscription.isMuted());
+        assertFalse(streamSubscription.isPinToTop());
+        assertFalse(streamSubscription.isPushNotifications());
+        assertFalse(streamSubscription.isWebPublic());
+        assertFalse(streamSubscription.isWildcardMentionsNotify());
+        assertNotNull(streamSubscription.getColor());
+        assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
+        assertEquals("Test Subscribed", streamSubscription.getDescription());
+        assertTrue(streamSubscription.getEmailAddress().isEmpty());
+        assertTrue(streamSubscription.getFirstMessageId() > 0);
+        assertEquals(0, streamSubscription.getMessageRetentionDays());
+        assertEquals("Test Subscribed", streamSubscription.getName());
+        assertEquals("<p>Test Subscribed</p>", streamSubscription.getRenderedDescription());
+        assertTrue(streamSubscription.getStreamId() > 0);
+        assertEquals(0, streamSubscription.getStreamWeeklyTraffic());
+        assertEquals(2, streamSubscription.getCanRemoveSubscribersGroupId());
+
         List<String> subscribers = streamSubscription.getSubscribers();
         assertEquals(1, subscribers.size());
 
-        String email = subscribers.get(0);
-        assertEquals("8", email);
+        String subscriberId = subscribers.get(0);
+        assertEquals("8", subscriberId);
 
         // Get ID
         Long streamId = zulip.streams().getStreamId("Test Subscribed").execute();

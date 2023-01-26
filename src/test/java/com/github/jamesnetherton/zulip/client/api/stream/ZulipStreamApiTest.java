@@ -54,11 +54,11 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Denmark", subscriptionA.getName());
         assertFalse(subscriptionA.isPinToTop());
         assertFalse(subscriptionA.isPushNotifications());
-        assertEquals(20, subscriptionA.getRole());
         assertEquals(1, subscriptionA.getStreamId());
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
         assertEquals(1, subscriptionA.getStreamWeeklyTraffic());
+        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroupId());
         assertEquals(30, subscriptionA.getMessageRetentionDays());
         assertTrue(subscriptionA.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionA.getFirstMessageId());
@@ -77,11 +77,11 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Scotland", subscriptionB.getName());
         assertFalse(subscriptionB.isPinToTop());
         assertFalse(subscriptionB.isPushNotifications());
-        assertEquals(50, subscriptionB.getRole());
         assertEquals(3, subscriptionB.getStreamId());
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
         assertEquals(1, subscriptionB.getStreamWeeklyTraffic());
+        assertEquals(2, subscriptionB.getCanRemoveSubscribersGroupId());
         assertEquals(30, subscriptionB.getMessageRetentionDays());
         assertTrue(subscriptionB.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionB.getFirstMessageId());

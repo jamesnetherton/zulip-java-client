@@ -58,9 +58,6 @@ public class StreamSubscription {
     private String renderedDescription;
 
     @JsonProperty
-    private int role;
-
-    @JsonProperty
     private long streamId;
 
     @JsonProperty
@@ -74,6 +71,9 @@ public class StreamSubscription {
 
     @JsonProperty
     private boolean wildcardMentionsNotify;
+
+    @JsonProperty
+    private int canRemoveSubscribersGroupId;
 
     public boolean isAudibleNotifications() {
         return audibleNotifications;
@@ -139,10 +139,6 @@ public class StreamSubscription {
         return renderedDescription;
     }
 
-    public int getRole() {
-        return role;
-    }
-
     public long getStreamId() {
         return streamId;
     }
@@ -161,5 +157,9 @@ public class StreamSubscription {
 
     public boolean isWildcardMentionsNotify() {
         return wildcardMentionsNotify;
+    }
+
+    public int getCanRemoveSubscribersGroupId() {
+        return canRemoveSubscribersGroupId;
     }
 }
