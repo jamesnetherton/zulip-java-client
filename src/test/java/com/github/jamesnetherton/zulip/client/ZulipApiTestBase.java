@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
+import com.github.tomakehurst.wiremock.client.ScenarioMappingBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
@@ -61,17 +62,38 @@ public class ZulipApiTestBase {
 
     protected void stubZulipResponse(HttpMethod method, String path, Map<String, StringValuePattern> params)
             throws IOException {
-        stubZulipResponse(method, path, params, SUCCESS_JSON);
+        stubZulipResponse(method, path, params, SUCCESS_JSON, null, null, null);
     }
 
     protected void stubZulipResponse(HttpMethod method, String path, String stubbedResponse) throws IOException {
-        stubZulipResponse(method, path, new HashMap<>(), stubbedResponse);
+        stubZulipResponse(method, path, new HashMap<>(), stubbedResponse, null, null, null);
     }
 
     protected void stubZulipResponse(HttpMethod method, String path, Map<String, StringValuePattern> params,
             String stubbedResponse) throws IOException {
+        stubZulipResponse(method, path, params, stubbedResponse, null, null, null);
+    }
+
+    protected void stubZulipResponse(
+            HttpMethod method,
+            String path,
+            Map<String, StringValuePattern> params,
+            String stubbedResponse,
+            String scenarioName,
+            String scenarioStateFrom,
+            String scenarioSateTo) throws IOException {
 
         MappingBuilder mappingBuilder = request(method.name(), urlPathEqualTo("/" + ZulipUrlUtils.API_BASE_PATH + path));
+        if (scenarioName != null) {
+            ScenarioMappingBuilder scenarioMappingBuilder = mappingBuilder.inScenario(scenarioName);
+            if (scenarioStateFrom != null) {
+                scenarioMappingBuilder.whenScenarioStateIs(scenarioStateFrom);
+            }
+
+            if (scenarioSateTo != null) {
+                scenarioMappingBuilder.willSetStateTo(scenarioSateTo);
+            }
+        }
 
         if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PATCH)) {
             if (!params.isEmpty()) {
