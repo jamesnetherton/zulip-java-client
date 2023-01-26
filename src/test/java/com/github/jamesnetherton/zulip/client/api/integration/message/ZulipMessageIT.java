@@ -98,6 +98,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertFalse(message.isMeMessage());
 
         messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withIncludeAnchor(true)
                 .withNarrows(Narrow.of("stream", "Test Message Stream 2"))
                 .execute();
 
