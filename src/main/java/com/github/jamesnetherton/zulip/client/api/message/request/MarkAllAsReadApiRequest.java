@@ -31,6 +31,9 @@ public class MarkAllAsReadApiRequest extends ZulipApiRequest implements VoidExec
      */
     @Override
     public void execute() throws ZulipClientException {
-        client().post(MARK_ALL_AS_READ, getParams(), ZulipApiResponse.class);
+        ZulipApiResponse response = null;
+        while (response == null || response.isPartiallyCompleted()) {
+            response = client().post(MARK_ALL_AS_READ, getParams(), ZulipApiResponse.class);
+        }
     }
 }

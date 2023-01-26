@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.PATCH;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.POST;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -439,6 +440,16 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     @Test
     public void markAllAsRead() throws Exception {
         stubZulipResponse(POST, "/mark_all_as_read", Collections.emptyMap());
+
+        zulip.messages().markAllAsRead().execute();
+    }
+
+    @Test
+    public void markAllAsReadPartiallyCompleted() throws Exception {
+        String scenarioName = "markAllAsReadPartiallyCompleted";
+        stubZulipResponse(POST, "/mark_all_as_read", Collections.emptyMap(), "markAllAsReadPartiallyCompleted.json",
+                scenarioName, STARTED, "retry");
+        stubZulipResponse(POST, "/mark_all_as_read", Collections.emptyMap(), SUCCESS_JSON, scenarioName, "retry", "success");
 
         zulip.messages().markAllAsRead().execute();
     }

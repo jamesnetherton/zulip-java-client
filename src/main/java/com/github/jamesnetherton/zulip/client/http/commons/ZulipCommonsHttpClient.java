@@ -209,7 +209,7 @@ public class ZulipCommonsHttpClient implements ZulipHttpClient {
                 throw new ZulipClientException("Response was empty");
             }
 
-            if (!zulipApiResponse.isSuccess()) {
+            if (!zulipApiResponse.isSuccess() && !zulipApiResponse.isPartiallyCompleted()) {
                 throw new ZulipClientException(zulipApiResponse.getResponseMessage(), zulipApiResponse.getResponseCode());
             }
 

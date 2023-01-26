@@ -54,4 +54,13 @@ public class ZulipApiResponse {
     public boolean isSuccess() {
         return result.equals("success");
     }
+
+    /**
+     * Determines whether the Zulip API request was partially completed due to a request timeout.
+     *
+     * @return {@code true} if the Zulip API request was partially completed. {code false} otherwise
+     */
+    public boolean isPartiallyCompleted() {
+        return code != null && code.equals("REQUEST_TIMEOUT") && result.equals("partially_completed");
+    }
 }
