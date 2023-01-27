@@ -38,6 +38,9 @@ public class DeleteTopicApiRequest extends ZulipApiRequest implements VoidExecut
      */
     @Override
     public void execute() throws ZulipClientException {
-        client().post(this.path, getParams(), ZulipApiResponse.class);
+        ZulipApiResponse response = null;
+        while (response == null || response.isPartiallyCompleted()) {
+            response = client().post(this.path, getParams(), ZulipApiResponse.class);
+        }
     }
 }
