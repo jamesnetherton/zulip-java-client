@@ -384,6 +384,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withEnterSends(true)
                 .withEscapeNavigatesToDefaultView(true)
                 .withFluidLayoutWidth(true)
+                .withFullName("tester")
                 .withHighContrastMode(true)
                 .withLeftSideUserList(true)
                 .withMessageContentInEmailNotifications(true)
