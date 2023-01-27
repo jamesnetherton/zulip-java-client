@@ -34,9 +34,11 @@ public class UpdateOwnUserStatusApiRequest extends ZulipApiRequest implements Vo
     /**
      * Sets whether the user should be marked as "away".
      *
-     * @param  away {@code true} to set the user status as 'away'. {@code false} to not set the user status as 'away'
-     * @return      This {@link UpdateOwnUserStatusApiRequest} instance
+     * @deprecated      away is a legacy way to access the user's presence_enabled setting, with away = !presence_enabled
+     * @param      away {@code true} to set the user status as 'away'. {@code false} to not set the user status as 'away'
+     * @return          This {@link UpdateOwnUserStatusApiRequest} instance
      */
+    @Deprecated(forRemoval = true)
     public UpdateOwnUserStatusApiRequest withAway(boolean away) {
         putParam(AWAY, away);
         return this;
