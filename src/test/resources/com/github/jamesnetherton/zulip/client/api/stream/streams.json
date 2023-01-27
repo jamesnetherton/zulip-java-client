@@ -15,7 +15,8 @@
       "first_message_id": 1,
       "message_retention_days": 1,
       "is_default": true,
-      "is_announcement_only": false
+      "is_announcement_only": false,
+      "can_remove_subscribers_group_id": 1
     },
     {
       "description": "Test Stream Description 2",
@@ -30,7 +31,8 @@
       "first_message_id": 2,
       "message_retention_days": 2,
       "is_default": true,
-      "is_announcement_only": false
+      "is_announcement_only": false,
+      "can_remove_subscribers_group_id": 2
     },
     {
       "description": "Test Stream Description 3",
@@ -45,7 +47,8 @@
       "first_message_id": 3,
       "message_retention_days": 3,
       "is_default": true,
-      "is_announcement_only": false
+      "is_announcement_only": false,
+      "can_remove_subscribers_group_id": 3
     }
   ]
 }

@@ -375,7 +375,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(i, stream.getFirstMessageId());
+
+            assertEquals(i, stream.canRemoveSubscribersGroupId());
 
             if (i < 3) {
                 assertEquals(StreamPostPolicy.fromInt(i), stream.getStreamPostPolicy());

@@ -47,6 +47,9 @@ public class Stream {
     @JsonProperty
     private boolean isWebPublic;
 
+    @JsonProperty
+    private int canRemoveSubscribersGroupId;
+
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
     }
@@ -97,5 +100,9 @@ public class Stream {
 
     public boolean isWebPublic() {
         return isWebPublic;
+    }
+
+    public int canRemoveSubscribersGroupId() {
+        return canRemoveSubscribersGroupId;
     }
 }

@@ -64,6 +64,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
+            assertEquals(2, stream.canRemoveSubscribersGroupId());
         }
 
         long firstStreamId = createdStreams.get(0).getStreamId();
