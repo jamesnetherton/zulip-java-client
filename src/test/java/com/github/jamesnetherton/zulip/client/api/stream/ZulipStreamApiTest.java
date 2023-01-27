@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.PATCH;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.POST;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -470,7 +471,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
                 .get();
 
-        stubZulipResponse(POST, "/streams/1/delete_topic", params);
+        String scenarioName = "deleteTopicPartiallyCompleted";
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicPartiallyCompleted.json", scenarioName, STARTED,
+                "retry");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, SUCCESS_JSON, scenarioName, "retry", "success");
 
         zulip.streams().deleteTopic(1, "Test Topic").execute();
     }
