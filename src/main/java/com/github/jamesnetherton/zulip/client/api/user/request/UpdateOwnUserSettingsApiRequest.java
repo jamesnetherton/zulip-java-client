@@ -24,8 +24,8 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String DEFAULT_LANGUAGE = "default_language";
     public static final String DEFAULT_VIEW = "default_view";
     public static final String DEMOTE_INACTIVE_STREAMS = "demote_inactive_streams";
-    public static final String DISPLAY_EMOJI_REACTION_USERS = "display_emoji_reaction_users";
     public static final String DESKTOP_ICON_COUNT_DISPLAY = "desktop_icon_count_display";
+    public static final String DISPLAY_EMOJI_REACTION_USERS = "display_emoji_reaction_users";
     public static final String EMAIL = "email";
     public static final String EMOJISET = "emojiset";
     public static final String ENABLE_DESKTOP_NOTIFICATIONS = "enable_desktop_notifications";
@@ -45,6 +45,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String ENTER_SENDS = "enter_sends";
     public static final String ESCAPE_NAVIGATES_TO_DEFAULT_VIEW = "escape_navigates_to_default_view";
     public static final String FLUID_LAYOUT_WIDTH = "fluid_layout_width";
+    public static final String FULL_NAME = "full_name";
     public static final String HIGH_CONTRAST_MODE = "high_contrast_mode";
     public static final String LEFT_SIDE_USERLIST = "left_side_userlist";
     public static final String MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS = "message_content_in_email_notifications";
@@ -360,6 +361,17 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest withFluidLayoutWidth(boolean fluidLayoutWidth) {
         putParam(FLUID_LAYOUT_WIDTH, fluidLayoutWidth);
+        return this;
+    }
+
+    /**
+     * Sets a new display name for the user.
+     *
+     * @param  fullName {@code true} The new display name.
+     * @return          This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withFullName(String fullName) {
+        putParam(FULL_NAME, fullName);
         return this;
     }
 
