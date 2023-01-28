@@ -22,6 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowA
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsForNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.nio.charset.StandardCharsets;
@@ -611,5 +612,61 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         assertEquals(3, updatedIds.size());
         assertArrayEquals(new Long[] { 4L, 18L, 15L }, updatedIds.toArray(new Long[0]));
+    }
+
+    @Test
+    public void updateMessageFlagsForNarrow() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateMessageFlagsForNarrowApiRequest.ANCHOR, Anchor.NEWEST.toString())
+                .add(UpdateMessageFlagsForNarrowApiRequest.INCLUDE_ANCHOR, "true")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NARROW,
+                        "[{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false}]")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NUM_BEFORE, "1")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NUM_AFTER, "2")
+                .add(UpdateMessageFlagsForNarrowApiRequest.FLAG, MessageFlag.READ.toString())
+                .add(UpdateMessageFlagsForNarrowApiRequest.OP, Operation.ADD.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/flags/narrow", params, "updateMessageFlagsForNarrow.json");
+
+        MessageFlagsUpdateResult result = zulip.messages()
+                .updateMessageFlagsForNarrow(Anchor.NEWEST, 1, 2, Operation.ADD, MessageFlag.READ, Narrow.of("foo", "bar"))
+                .withIncludeAnchor(true)
+                .execute();
+
+        assertEquals(1, result.getFirstProcessedId());
+        assertEquals(2, result.getLastProcessedId());
+        assertEquals(3, result.getProcessedCount());
+        assertEquals(4, result.getUpdatedCount());
+        assertTrue(result.isFoundNewest());
+        assertTrue(result.isFoundOldest());
+    }
+
+    @Test
+    public void updateMessageFlagsForNarrowWithIntAnchor() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateMessageFlagsForNarrowApiRequest.ANCHOR, "1")
+                .add(UpdateMessageFlagsForNarrowApiRequest.INCLUDE_ANCHOR, "true")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NARROW,
+                        "[{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false}]")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NUM_BEFORE, "1")
+                .add(UpdateMessageFlagsForNarrowApiRequest.NUM_AFTER, "2")
+                .add(UpdateMessageFlagsForNarrowApiRequest.FLAG, MessageFlag.READ.toString())
+                .add(UpdateMessageFlagsForNarrowApiRequest.OP, Operation.ADD.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/flags/narrow", params, "updateMessageFlagsForNarrow.json");
+
+        MessageFlagsUpdateResult result = zulip.messages()
+                .updateMessageFlagsForNarrow(1, 1, 2, Operation.ADD, MessageFlag.READ, Narrow.of("foo", "bar"))
+                .withIncludeAnchor(true)
+                .execute();
+
+        assertEquals(1, result.getFirstProcessedId());
+        assertEquals(2, result.getLastProcessedId());
+        assertEquals(3, result.getProcessedCount());
+        assertEquals(4, result.getUpdatedCount());
+        assertTrue(result.isFoundNewest());
+        assertTrue(result.isFoundOldest());
     }
 }
