@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Zulip API response class for getting stream topics.
  *
- * @see <a href="https://zulip.com/api/get-stream-topics">https://zulip.com/api/get-stream-topics</a>
+ * @see <a href="https://zulip.com/api/get-stream-topics#response">https://zulip.com/api/get-stream-topics#response</a>
  */
 public class GetStreamTopicsApiResponse extends ZulipApiResponse {
 
