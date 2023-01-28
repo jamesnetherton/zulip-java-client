@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeAll;
 public class ZulipIntegrationTestBase {
 
     protected static ZulipConfiguration configuration;
-    protected static ThrottledZulip zulip;
+    protected static Zulip zulip;
     protected static User ownUser;
 
     @BeforeAll
@@ -59,7 +59,7 @@ public class ZulipIntegrationTestBase {
 
         assumeTrue(zulipAvailable);
 
-        zulip = new ThrottledZulip(new Zulip(configuration));
+        zulip = new Zulip(configuration);
         ownUser = zulip.users().getOwnUser().execute();
     }
 
