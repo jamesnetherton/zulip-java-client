@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiR
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageMarkdownApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageReadReceiptsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkAllAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsReadApiRequest;
@@ -370,5 +371,17 @@ public class MessageService implements ZulipService {
             MessageFlag flag,
             Narrow... narrows) {
         return new UpdateMessageFlagsForNarrowApiRequest(this.client, anchor, numBefore, numAfter, operation, flag, narrows);
+    }
+
+    /**
+     * Gets a list containing of IDs for all users who have marked the given message as read.
+     *
+     * @see              <a href="https://zulip.com/api/get-read-receipts">https://zulip.com/api/get-read-receipts</a>
+     *
+     * @param  messageId The id of the message to get read recipients for
+     * @return           The {@link GetMessageReadReceiptsApiRequest} builder object
+     */
+    public GetMessageReadReceiptsApiRequest getMessageReadReceipts(long messageId) {
+        return new GetMessageReadReceiptsApiRequest(this.client, messageId);
     }
 }
