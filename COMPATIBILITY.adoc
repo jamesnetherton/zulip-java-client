@@ -3,6 +3,7 @@
 [options="header"]
 |=======================
 |Zulip Java Client Version|Zulip Server Version
+|0.4.0    |Zulip 6.x
 |0.3.0    |Zulip 5.x
 |0.2.0    |Zulip 4.x
 |0.1.1    |Zulip 3.x

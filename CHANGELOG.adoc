@@ -1,5 +1,21 @@
 = Changelog
 
+== 0.4.0
+
+==== Enhancements
+
+Zulip 6 support:
+
+* Sub group APIs
+* Message read receipts APIs
+* Get stream by id APIs
+* Update personal message flags with narrow APIs
+* Set user status APIs
+
+==== Bug fixes
+
+* https://github.com/jamesnetherton/zulip-java-client/issues/216[#216] - POST / PATCH must post `UrlEncodedFormEntity`
+
 == 0.3.0
 
 ==== Enhancements
