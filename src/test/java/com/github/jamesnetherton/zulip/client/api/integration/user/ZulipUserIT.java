@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachmentMessage;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
+import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
@@ -399,6 +400,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withTimezone("Europe/London")
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
+                .withUserListStyle(UserListStyle.COMPACT)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
