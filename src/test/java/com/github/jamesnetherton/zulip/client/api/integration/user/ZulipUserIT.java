@@ -334,6 +334,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<Long> groupMembers = zulip.users().getUserGroupMembers(group.getId()).execute();
         assertEquals(List.of(ownUser.getUserId(), createdUser.getUserId()), groupMembers);
 
+        boolean isMember = zulip.users().getUserGroupMembershipStatus(group.getId(), createdUser.getUserId()).execute();
+        assertTrue(isMember);
+
         // Remove user from group
         zulip.users().removeUsersFromGroup(group.getId(), createdUser.getUserId()).execute();
 
@@ -345,6 +348,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         groupMembers = zulip.users().getUserGroupMembers(group.getId()).execute();
         assertEquals(List.of(ownUser.getUserId()), groupMembers);
+
+        isMember = zulip.users().getUserGroupMembershipStatus(group.getId(), createdUser.getUserId()).execute();
+        assertFalse(isMember);
 
         // Delete group
         zulip.users().deleteUserGroup(group.getId()).execute();

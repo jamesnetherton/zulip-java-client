@@ -21,6 +21,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiReq
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
@@ -641,5 +642,20 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .execute();
 
         assertEquals(List.of(1L, 2L, 3L), members);
+    }
+
+    @Test
+    public void getUserGroupMembershipStatus() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetUserGroupMembershipStatusApiRequest.DIRECT_MEMBER_ONLY, "true")
+                .get();
+
+        stubZulipResponse(GET, "/user_groups/1/members/2", params, "getUserGroupMembershipStatus.json");
+
+        boolean isMember = zulip.users().getUserGroupMembershipStatus(1, 2)
+                .withDirectMemberOnly(true)
+                .execute();
+
+        assertTrue(isMember);
     }
 }
