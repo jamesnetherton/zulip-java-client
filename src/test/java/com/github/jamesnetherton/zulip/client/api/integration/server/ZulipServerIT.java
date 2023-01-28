@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
 import java.util.ArrayList;
@@ -249,6 +250,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withStarredMessageCounts(true)
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
+                .withUserListStyle(UserListStyle.WITH_STATUS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

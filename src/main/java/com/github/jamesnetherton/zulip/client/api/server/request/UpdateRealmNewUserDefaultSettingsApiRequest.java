@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.List;
@@ -55,6 +56,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String STARRED_MESSAGE_COUNTS = "starred_message_counts";
     public static final String TRANSLATE_EMOTICONS = "translate_emoticons";
     public static final String TWENTY_FOUR_HOUR_TIME = "twenty_four_hour_time";
+    public static final String USER_LIST_STYLE = "user_list_style";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
 
     /**
@@ -481,6 +483,17 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest withTwentyFourHourTime(boolean enable) {
         putParam(TWENTY_FOUR_HOUR_TIME, enable);
+        return this;
+    }
+
+    /**
+     * Sets the style selected by the user for the right sidebar user list.
+     *
+     * @param  userListStyle {@code true} The style selected by the user for the right sidebar user list
+     * @return               This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withUserListStyle(UserListStyle userListStyle) {
+        putParam(USER_LIST_STYLE, userListStyle.getId());
         return this;
     }
 

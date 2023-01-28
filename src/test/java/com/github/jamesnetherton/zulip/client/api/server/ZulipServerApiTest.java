@@ -22,6 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.File;
 import java.util.Collections;
@@ -364,6 +365,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.STARRED_MESSAGE_COUNTS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.USER_LIST_STYLE, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -404,6 +406,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withStarredMessageCounts(true)
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
+                .withUserListStyle(UserListStyle.WITH_STATUS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
