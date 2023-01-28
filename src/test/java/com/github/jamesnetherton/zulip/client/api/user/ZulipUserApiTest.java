@@ -18,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupAp
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
@@ -26,6 +27,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSett
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
 import java.util.List;
@@ -582,5 +584,46 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(2, result.size());
         assertEquals("name", result.get(0));
         assertEquals("password", result.get(1));
+    }
+
+    @Test
+    public void getSubGroupsOfUserGroup() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetSubGroupsOfUserGroupApiRequest.DIRECT_SUBGROUP_ONLY, "true")
+                .get();
+
+        stubZulipResponse(GET, "/user_groups/1/subgroups", params, "getSubGroupsOfUserGroup.json");
+
+        List<Long> ids = zulip.users().getSubGroupsOfUserGroup(1)
+                .withDirectSubGroupOnly(true)
+                .execute();
+
+        assertEquals(List.of(1L, 2L, 3L), ids);
+    }
+
+    @Test
+    public void updateUserGroupSubGroupsAdd() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateUserGroupSubGroupsApiRequest.ADD, "[1,2,3]")
+                .get();
+
+        stubZulipResponse(POST, "/user_groups/1/subgroups", params);
+
+        zulip.users().updateUserGroupSubGroups(1)
+                .withAddUserGroups(List.of(1L, 2L, 3L))
+                .execute();
+    }
+
+    @Test
+    public void updateUserGroupSubGroupsDelete() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateUserGroupSubGroupsApiRequest.DELETE, "[1,2,3]")
+                .get();
+
+        stubZulipResponse(POST, "/user_groups/1/subgroups", params);
+
+        zulip.users().updateUserGroupSubGroups(1)
+                .withDeleteUserGroups(List.of(1L, 2L, 3L))
+                .execute();
     }
 }

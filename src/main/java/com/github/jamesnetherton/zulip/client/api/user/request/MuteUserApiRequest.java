@@ -21,6 +21,7 @@ public class MuteUserApiRequest extends ZulipApiRequest implements VoidExecutabl
      * Constructs a {@link MuteUserApiRequest}.
      *
      * @param client The Zulip HTTP client
+     * @param userId The ID of the user to mute
      */
     public MuteUserApiRequest(ZulipHttpClient client, long userId) {
         super(client);

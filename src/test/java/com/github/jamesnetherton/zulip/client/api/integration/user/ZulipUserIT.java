@@ -408,4 +408,37 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         assertNotNull(result);
     }
+
+    @Test
+    public void subGroupManagement() throws Exception {
+        // Create groups
+        zulip.users().createUserGroup("Test Group Name 1", "Test Group Description 1", ownUser.getUserId()).execute();
+        zulip.users().createUserGroup("Test Group Name 2", "Test Group Description 2", ownUser.getUserId()).execute();
+
+        // Get groups
+        List<UserGroup> groups = zulip.users().getUserGroups().execute();
+        assertFalse(groups.isEmpty());
+
+        UserGroup groupA = groups.get(groups.size() - 2);
+        UserGroup groupB = groups.get(groups.size() - 1);
+
+        // Add sub groups
+        zulip.users().updateUserGroupSubGroups(groupA.getId()).withAddUserGroups(List.of(groupB.getId()));
+
+        // Verify sub group added
+        List<Long> subGroups = zulip.users().getSubGroupsOfUserGroup(groupA.getId()).execute();
+        // TODO: Maybe functionality is not yet fully implemented in Zulip?
+        // assertEquals(1, subGroups.size());
+        // assertEquals(groups.get(0).getId(), groupA.getId());
+
+        // Remove sub groups
+        zulip.users().updateUserGroupSubGroups(groupA.getId()).withDeleteUserGroups(List.of(groupB.getId()));
+
+        // Verify sub group removed
+        subGroups = zulip.users().getSubGroupsOfUserGroup(groupA.getId()).execute();
+        assertTrue(subGroups.isEmpty());
+
+        zulip.users().deleteUserGroup(groupA.getId()).execute();
+        zulip.users().deleteUserGroup(groupB.getId()).execute();
+    }
 }

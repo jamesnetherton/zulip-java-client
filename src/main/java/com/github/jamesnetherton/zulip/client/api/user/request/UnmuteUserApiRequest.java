@@ -21,6 +21,7 @@ public class UnmuteUserApiRequest extends ZulipApiRequest implements VoidExecuta
      * Constructs a {@link UnmuteUserApiRequest}.
      *
      * @param client The Zulip HTTP client
+     * @param userId The ID of the user to unmute
      */
     public UnmuteUserApiRequest(ZulipHttpClient client, long userId) {
         super(client);
