@@ -20,6 +20,9 @@ public class UserGroup {
     @JsonProperty
     private List<Long> members;
 
+    @JsonProperty
+    private List<Long> directSubgroupIds;
+
     public long getId() {
         return id;
     }
@@ -34,5 +37,9 @@ public class UserGroup {
 
     public List<Long> getMembers() {
         return members;
+    }
+
+    public List<Long> getDirectSubgroupIds() {
+        return directSubgroupIds;
     }
 }

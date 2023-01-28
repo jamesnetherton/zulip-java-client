@@ -292,6 +292,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertEquals("Test Group Name", group.getName());
         assertEquals("Test Group Description", group.getDescription());
         assertTrue(group.getId() > 0);
+        assertNotNull(group.getDirectSubgroupIds());
 
         List<Long> members = group.getMembers();
         assertEquals(1, members.size());
