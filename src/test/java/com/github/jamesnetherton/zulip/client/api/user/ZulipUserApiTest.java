@@ -146,6 +146,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             assertEquals("Test Group Description " + i, group.getDescription());
             assertEquals("Test Group Name " + i, group.getName());
             assertArrayEquals(new Long[] { 1L, 2L, 3L }, group.getMembers().toArray(new Long[3]));
+            assertEquals(i == 1 ? true : false, group.isSystemGroup());
 
             List<Long> directGroupSubIds = group.getDirectSubgroupIds();
             assertEquals(1, directGroupSubIds.size());
