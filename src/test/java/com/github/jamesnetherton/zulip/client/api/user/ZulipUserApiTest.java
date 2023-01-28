@@ -20,6 +20,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupAp
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
@@ -625,5 +626,20 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         zulip.users().updateUserGroupSubGroups(1)
                 .withDeleteUserGroups(List.of(1L, 2L, 3L))
                 .execute();
+    }
+
+    @Test
+    public void getUserGroupMembers() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetUserGroupMembersApiRequest.DIRECT_MEMBER_ONLY, "true")
+                .get();
+
+        stubZulipResponse(GET, "/user_groups/1/members", params, "getUserGroupMembers.json");
+
+        List<Long> members = zulip.users().getUserGroupMembers(1)
+                .withDirectMemberOnly(true)
+                .execute();
+
+        assertEquals(List.of(1L, 2L, 3L), members);
     }
 }
