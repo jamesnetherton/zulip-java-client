@@ -38,6 +38,10 @@ public enum ProfileFieldType {
      */
     EXTERNAL_ACCOUNT(7),
     /**
+     * Profile field for pronouns.
+     */
+    PRONOUNS(8),
+    /**
      * An unknown profile field type. This usually indicates an error in the response from Zulip.
      */
     UNKNOWN(0);
