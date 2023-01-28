@@ -12,6 +12,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
@@ -182,6 +183,19 @@ public class UserService implements ZulipService {
      */
     public GetUserGroupsApiRequest getUserGroups() {
         return new GetUserGroupsApiRequest(this.client);
+    }
+
+    /**
+     * Get user group members.
+     *
+     * @see                <a href=
+     *                     "https://zulip.com/api/get-user-group-members">https://zulip.com/api/get-user-group-members</a>
+     *
+     * @param  userGroupId The id of the user group to fetch members from
+     * @return             The {@link GetUserGroupMembersApiRequest} builder object
+     */
+    public GetUserGroupMembersApiRequest getUserGroupMembers(long userGroupId) {
+        return new GetUserGroupMembersApiRequest(this.client, userGroupId);
     }
 
     /**
