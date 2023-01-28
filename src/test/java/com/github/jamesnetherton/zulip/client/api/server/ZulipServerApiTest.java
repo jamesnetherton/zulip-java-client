@@ -169,6 +169,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
             assertEquals(i, field.getId());
             assertEquals(i, field.getOrder());
             assertEquals(ProfileFieldType.fromInt(field.getType().getId()), field.getType());
+            assertEquals(i == 1, field.isDisplayInProfileSummary());
 
             if (field.getType().equals(ProfileFieldType.LIST_OF_OPTIONS)) {
                 Map<String, Map<String, String>> data = (Map<String, Map<String, String>>) field.getFieldData();
@@ -221,12 +222,14 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(CreateProfileFieldApiRequest.NAME, "Test Name")
                 .add(CreateProfileFieldApiRequest.HINT, "Test Hint")
                 .add(CreateProfileFieldApiRequest.FIELD_TYPE, "2")
+                .add(CreateProfileFieldApiRequest.DISPLAY_IN_PROFILE_SUMMARY, "true")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
 
         long id = zulip.server().createCustomProfileField()
                 .withSimpleFieldType(ProfileFieldType.LONG_TEXT, "Test Name", "Test Hint")
+                .withDisplayInProfileSummary(true)
                 .execute();
 
         assertEquals(9, id);

@@ -6,7 +6,8 @@
       "id": 1,
       "name": "Field 1",
       "order": 1,
-      "type": 1
+      "type": 1,
+      "display_in_profile_summary": true
     },
     {
       "field_data": "Data 2",

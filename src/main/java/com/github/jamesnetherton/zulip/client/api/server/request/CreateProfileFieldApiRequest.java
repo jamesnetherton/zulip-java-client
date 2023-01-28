@@ -26,6 +26,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
     public static final String HINT = "hint";
     public static final String FIELD_TYPE = "field_type";
     public static final String FIELD_DATA = "field_data";
+    public static final String DISPLAY_IN_PROFILE_SUMMARY = "display_in_profile_summary";
 
     /**
      * Constructs a {@link CreateProfileFieldApiRequest}.
@@ -93,6 +94,18 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
     public CreateProfileFieldApiRequest withExternalAccountFieldType(Map<String, String> data) {
         putParam(FIELD_TYPE, ProfileFieldType.EXTERNAL_ACCOUNT.getId());
         putParamAsJsonString(FIELD_DATA, data);
+        return this;
+    }
+
+    /**
+     * Sets whether clients should display this profile field in a summary section of a users profile.
+     *
+     * @param  isDisplayInProfileSummary Whether clients should display this profile field in a summary section of a users
+     *                                   profile
+     * @return                           This {@link CreateProfileFieldApiRequest} instance
+     */
+    public CreateProfileFieldApiRequest withDisplayInProfileSummary(boolean isDisplayInProfileSummary) {
+        putParam(DISPLAY_IN_PROFILE_SUMMARY, isDisplayInProfileSummary);
         return this;
     }
 
