@@ -236,7 +236,7 @@
                             <doclint>none</doclint>
                             <encoding>${project.build.sourceEncoding}</encoding>
                             <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                            <release>8</release>
+                            <release>11</release>
                         </configuration>
                         <executions>
                             <execution>
