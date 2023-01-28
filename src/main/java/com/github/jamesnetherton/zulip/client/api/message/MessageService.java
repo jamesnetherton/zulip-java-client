@@ -18,6 +18,8 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowA
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsForNarrowApiRequest;
+import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.io.File;
 
@@ -310,6 +312,9 @@ public class MessageService implements ZulipService {
     /**
      * Add or remove personal message flags on a collection of message ids
      *
+     * @see               <a href=
+     *                    "https://zulip.com/api/update-message-flags-for-narrow">https://zulip.com/api/update-message-flags</a>
+     *
      * @param  flag       The {@link MessageFlag} to add or remove
      * @param  operation  The {@link Operation} to apply
      * @param  messageIds The message ids to update flags on
@@ -317,5 +322,53 @@ public class MessageService implements ZulipService {
      */
     public UpdateMessageFlagsApiRequest updateMessageFlags(MessageFlag flag, Operation operation, long... messageIds) {
         return new UpdateMessageFlagsApiRequest(this.client, flag, operation, messageIds);
+    }
+
+    /**
+     * Add or remove personal message flags with a narrow
+     *
+     * @see              <a href=
+     *                   "https://zulip.com/api/update-message-flags-for-narrow">https://zulip.com/api/update-message-flags-for-narrow</a>
+     *
+     * @param  anchor    The {@link Anchor} to use
+     * @param  numBefore The number of messages preceding the anchor in the update range
+     * @param  numAfter  The number of messages following the anchor in the update range
+     * @param  operation The {@link Operation} to apply for the {@link MessageFlag}
+     * @param  flag      The {@link MessageFlag} to add or remove to the messages
+     * @param  narrows   The {@link Narrow} expressions to use
+     * @return           The {@link UpdateMessageFlagsApiRequest} builder object
+     */
+    public UpdateMessageFlagsForNarrowApiRequest updateMessageFlagsForNarrow(
+            Anchor anchor,
+            int numBefore,
+            int numAfter,
+            Operation operation,
+            MessageFlag flag,
+            Narrow... narrows) {
+        return new UpdateMessageFlagsForNarrowApiRequest(this.client, anchor, numBefore, numAfter, operation, flag, narrows);
+    }
+
+    /**
+     * Add or remove personal message flags with a narrow
+     *
+     * @see              <a href=
+     *                   "https://zulip.com/api/update-message-flags-for-narrow">https://zulip.com/api/update-message-flags-for-narrow</a>
+     *
+     * @param  anchor    The message id anchor to filter and restrict messages
+     * @param  numBefore The number of messages preceding the anchor in the update range
+     * @param  numAfter  The number of messages following the anchor in the update range
+     * @param  operation The {@link Operation} to apply for the {@link MessageFlag}
+     * @param  flag      The {@link MessageFlag} to add or remove to the messages
+     * @param  narrows   The {@link Narrow} expressions to use
+     * @return           The {@link UpdateMessageFlagsApiRequest} builder object
+     */
+    public UpdateMessageFlagsForNarrowApiRequest updateMessageFlagsForNarrow(
+            int anchor,
+            int numBefore,
+            int numAfter,
+            Operation operation,
+            MessageFlag flag,
+            Narrow... narrows) {
+        return new UpdateMessageFlagsForNarrowApiRequest(this.client, anchor, numBefore, numAfter, operation, flag, narrows);
     }
 }

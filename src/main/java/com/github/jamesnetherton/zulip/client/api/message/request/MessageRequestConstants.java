@@ -8,6 +8,7 @@ final class MessageRequestConstants {
     final static String MESSAGES_API_PATH = "messages";
     final static String MESSAGES_ID_API_PATH = MESSAGES_API_PATH + "/%d";
     final static String FLAGS_API_PATH = MESSAGES_API_PATH + "/flags";
+    final static String FLAGS_API_NARROW_PATH = FLAGS_API_PATH + "/narrow";
     final static String HISTORY_API_PATH = MESSAGES_ID_API_PATH + "/history";
     final static String MATCHES_NARROW_API_PATH = MESSAGES_API_PATH + "/matches_narrow";
     final static String REACTIONS_API_PATH = MESSAGES_ID_API_PATH + "/reactions";

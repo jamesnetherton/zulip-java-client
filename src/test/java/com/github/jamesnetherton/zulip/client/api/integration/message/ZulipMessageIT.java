@@ -146,6 +146,15 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(MessageFlag.STARRED, message.getFlags().get(0));
         assertEquals("Edited Topic", message.getSubject());
 
+        zulip.messages().updateMessageFlagsForNarrow(1, 1, 10, Operation.REMOVE, MessageFlag.STARRED,
+                Narrow.of("stream", "Test Message Stream 3")).execute();
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("stream", "Test Message Stream 3"))
+                .execute();
+        message = messages.get(1);
+        assertTrue(message.getFlags().isEmpty());
+        assertEquals("Edited Topic", message.getSubject());
+
         List<MessageEdit> editHistory = message.getEditHistory();
         assertEquals(1, editHistory.size());
         MessageEdit edit = editHistory.get(0);

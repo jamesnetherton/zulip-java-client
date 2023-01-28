@@ -1,0 +1,10 @@
+{
+  "first_processed_id": 1,
+  "found_newest": true,
+  "found_oldest": true,
+  "last_processed_id": 2,
+  "msg": "",
+  "processed_count": 3,
+  "result": "success",
+  "updated_count": 4
+}
