@@ -32,6 +32,9 @@ public class ProfileField {
     @JsonProperty
     private ProfileFieldType type;
 
+    @JsonProperty
+    private boolean displayInProfileSummary;
+
     @JsonCreator
     public ProfileField(JsonNode node) {
         this.hint = node.get("hint").asText();
@@ -39,6 +42,9 @@ public class ProfileField {
         this.name = node.get("name").asText();
         this.order = node.get("order").asInt();
         this.type = ProfileFieldType.fromInt(node.get("type").asInt());
+        if (node.has("display_in_profile_summary")) {
+            this.displayInProfileSummary = node.get("display_in_profile_summary").asBoolean();
+        }
 
         JsonNode fieldDataNode = node.get("field_data");
         if (this.type.equals(ProfileFieldType.LIST_OF_OPTIONS)) {
@@ -104,5 +110,9 @@ public class ProfileField {
 
     public ProfileFieldType getType() {
         return type;
+    }
+
+    public boolean isDisplayInProfileSummary() {
+        return displayInProfileSummary;
     }
 }

@@ -137,6 +137,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         long externalId = zulip.server().createCustomProfileField()
                 .withExternalAccountFieldType(externalData)
+                .withDisplayInProfileSummary(true)
                 .execute();
         assertTrue(externalId > 0);
 
@@ -173,6 +174,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 assertEquals("GitHub username", field.getName());
                 assertTrue(field.getOrder() > 0);
                 assertEquals(ProfileFieldType.EXTERNAL_ACCOUNT, field.getType());
+                assertTrue(field.isDisplayInProfileSummary());
 
                 Map<String, String> data = (Map<String, String>) field.getFieldData();
                 assertEquals(1, data.size());
