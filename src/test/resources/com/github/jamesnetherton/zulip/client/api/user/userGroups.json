@@ -10,7 +10,10 @@
         2,
         3
       ],
-      "name": "Test Group Name 1"
+      "name": "Test Group Name 1",
+      "direct_subgroup_ids": [
+        1
+      ]
     },
     {
       "description": "Test Group Description 2",
@@ -20,7 +23,10 @@
         2,
         3
       ],
-      "name": "Test Group Name 2"
+      "name": "Test Group Name 2",
+      "direct_subgroup_ids": [
+        2
+      ]
     }
   ]
 }
