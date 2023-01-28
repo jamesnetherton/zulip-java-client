@@ -23,6 +23,9 @@ public class UserGroup {
     @JsonProperty
     private List<Long> directSubgroupIds;
 
+    @JsonProperty
+    private boolean isSystemGroup;
+
     public long getId() {
         return id;
     }
@@ -41,5 +44,9 @@ public class UserGroup {
 
     public List<Long> getDirectSubgroupIds() {
         return directSubgroupIds;
+    }
+
+    public boolean isSystemGroup() {
+        return isSystemGroup;
     }
 }
