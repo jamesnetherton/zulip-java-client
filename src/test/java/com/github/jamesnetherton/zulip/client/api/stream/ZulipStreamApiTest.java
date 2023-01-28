@@ -376,7 +376,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-
             assertEquals(i, stream.canRemoveSubscribersGroupId());
 
             if (i < 3) {
@@ -385,6 +384,25 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 assertEquals(StreamPostPolicy.UNKNOWN, stream.getStreamPostPolicy());
             }
         }
+    }
+
+    @Test
+    public void getStreamById() throws Exception {
+        stubZulipResponse(GET, "/streams/1", "getStreamById.json");
+
+        Stream stream = zulip.streams().getStream(1).execute();
+        assertEquals("Test Stream Description", stream.getDescription());
+        assertEquals("<p>Test Stream Description</p>", stream.getRenderedDescription());
+        assertTrue(stream.getDateCreated().toEpochMilli() > 0);
+        assertTrue(stream.isInviteOnly());
+        assertEquals("Test Stream Name", stream.getName());
+        assertEquals(1, stream.getStreamId());
+        assertTrue(stream.isWebPublic());
+        assertTrue(stream.isHistoryPublicToSubscribers());
+        assertEquals(10, stream.getMessageRetentionDays());
+        assertFalse(stream.isDefault());
+        assertTrue(stream.isAnnouncementOnly());
+        assertEquals(1, stream.canRemoveSubscribersGroupId());
     }
 
     @Test

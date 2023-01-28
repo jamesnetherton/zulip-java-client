@@ -67,6 +67,24 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(2, stream.canRemoveSubscribersGroupId());
         }
 
+        // Get stream by ID
+        for (int i = 1; i < createdStreams.size(); i++) {
+            Stream stream = zulip.streams().getStream(createdStreams.get(i - 1).getStreamId()).execute();
+            assertEquals("Test Stream " + i, stream.getDescription());
+            assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
+            assertTrue(stream.getDateCreated().toEpochMilli() > 0);
+            assertFalse(stream.isInviteOnly());
+            assertEquals("Test Stream " + i, stream.getName());
+            assertTrue(stream.getStreamId() > 0);
+            assertFalse(stream.isWebPublic());
+            assertEquals(StreamPostPolicy.ANY, stream.getStreamPostPolicy());
+            assertTrue(stream.isHistoryPublicToSubscribers());
+            assertEquals(-1, stream.getMessageRetentionDays());
+            assertFalse(stream.isDefault());
+            assertFalse(stream.isAnnouncementOnly());
+            assertEquals(2, stream.canRemoveSubscribersGroupId());
+        }
+
         long firstStreamId = createdStreams.get(0).getStreamId();
 
         // Update

@@ -1,0 +1,19 @@
+{
+  "msg": "",
+  "result": "success",
+  "stream": {
+    "can_remove_subscribers_group_id": 1,
+    "description": "Test Stream Description",
+    "first_message_id": 1,
+    "history_public_to_subscribers": true,
+    "invite_only": true,
+    "is_announcement_only": true,
+    "is_web_public": true,
+    "message_retention_days": 10,
+    "name": "Test Stream Name",
+    "rendered_description": "<p>Test Stream Description</p>",
+    "stream_id": 1,
+    "stream_post_policy": 1,
+    "date_created": 1603913066
+  }
+}
