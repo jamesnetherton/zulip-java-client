@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUse
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
@@ -196,6 +197,20 @@ public class UserService implements ZulipService {
      */
     public GetUserGroupMembersApiRequest getUserGroupMembers(long userGroupId) {
         return new GetUserGroupMembersApiRequest(this.client, userGroupId);
+    }
+
+    /**
+     * Check whether a user is member of a user group.
+     *
+     * @see                <a href=
+     *                     "https://zulip.com/api/get-is-user-group-member">https://zulip.com/api/get-is-user-group-member</a>
+     *
+     * @param  userGroupId The id of the user group on which the user belongs
+     * @param  userId      The id of the user
+     * @return             The {@link GetUserGroupMembershipStatusApiRequest} builder object
+     */
+    public GetUserGroupMembershipStatusApiRequest getUserGroupMembershipStatus(long userGroupId, long userId) {
+        return new GetUserGroupMembershipStatusApiRequest(this.client, userGroupId, userId);
     }
 
     /**
