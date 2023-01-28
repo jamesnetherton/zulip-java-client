@@ -9,6 +9,7 @@ final class UserRequestConstants {
     public static final String USER_GROUPS_CREATE = USER_GROUPS + "/create";
     public static final String USER_GROUPS_WITH_ID = USER_GROUPS + "/%d";
     public static final String USER_GROUPS_MEMBERS = USER_GROUPS_WITH_ID + "/members";
+    public static final String USER_GROUPS_SUBGROUPS = USER_GROUPS_WITH_ID + "/subgroups";
     public static final String USERS = "users";
     public static final String USERS_WITH_EMAIL = "users/%s";
     public static final String USERS_WITH_ID = "users/%d";

@@ -24,6 +24,7 @@ public class GetDraftsApiRequest extends ZulipApiRequest implements ExecutableAp
     /**
      * Executes the Zulip API request for fetching drafts.
      *
+     * @return                      The list of drafts
      * @throws ZulipClientException if the request was not successful
      */
     @Override

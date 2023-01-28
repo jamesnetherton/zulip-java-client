@@ -9,6 +9,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApi
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
@@ -23,6 +24,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSett
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
@@ -320,5 +322,31 @@ public class UserService implements ZulipService {
      */
     public UnmuteUserApiRequest unmute(long userId) {
         return new UnmuteUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Get the subgroups of a user group.
+     *
+     * @see                <a href=
+     *                     "https://zulip.com/api/get-user-group-subgroups">https://zulip.com/api/get-user-group-subgroups</a>
+     *
+     * @param  userGroupId The ID of the user group
+     * @return             The {@link GetSubGroupsOfUserGroupApiRequest} builder object
+     */
+    public GetSubGroupsOfUserGroupApiRequest getSubGroupsOfUserGroup(long userGroupId) {
+        return new GetSubGroupsOfUserGroupApiRequest(this.client, userGroupId);
+    }
+
+    /**
+     * Updates user group sub groups.
+     *
+     * @see                <a href=
+     *                     "https://zulip.com/api/update-user-group-subgroups">https://zulip.com/api/update-user-group-subgroups</a>
+     *
+     * @param  userGroupId The ID of the user group to update
+     * @return             The {@link UpdateUserGroupSubGroupsApiRequest} builder object
+     */
+    public UpdateUserGroupSubGroupsApiRequest updateUserGroupSubGroups(long userGroupId) {
+        return new UpdateUserGroupSubGroupsApiRequest(this.client, userGroupId);
     }
 }
