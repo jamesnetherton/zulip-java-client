@@ -5,6 +5,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.stream.request.ArchiveStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamTopicsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
@@ -81,6 +82,17 @@ public class StreamService implements ZulipService {
      */
     public GetSubscriptionStatusApiRequest isSubscribed(long userId, long streamId) {
         return new GetSubscriptionStatusApiRequest(this.client, userId, streamId);
+    }
+
+    /**
+     * Gets a stream for the given stream ID.
+     *
+     * @see    <a href="https://zulip.com/api/get-stream-by-id">https://zulip.com/api/get-stream-by-id</a>
+     *
+     * @return The {@link GetStreamApiRequest} builder object
+     */
+    public GetStreamApiRequest getStream(long streamId) {
+        return new GetStreamApiRequest(this.client, streamId);
     }
 
     /**
