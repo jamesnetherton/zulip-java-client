@@ -396,6 +396,9 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
             MessageFlag flag = flags.get(0);
             assertEquals(MessageFlag.READ, flag);
+
+            List<Long> receipts = zulip.messages().getMessageReadReceipts(message.getId()).execute();
+            assertNotNull(receipts);
         }
     }
 

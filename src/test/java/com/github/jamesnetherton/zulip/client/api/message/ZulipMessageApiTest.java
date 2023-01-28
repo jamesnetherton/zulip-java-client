@@ -669,4 +669,12 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertTrue(result.isFoundNewest());
         assertTrue(result.isFoundOldest());
     }
+
+    @Test
+    public void getMessageReadReceipts() throws Exception {
+        stubZulipResponse(GET, "/messages/1/read_receipts", Collections.emptyMap(), "getMessageReadReceipts.json");
+
+        List<Long> messageIds = zulip.messages().getMessageReadReceipts(1).execute();
+        assertEquals(List.of(1L, 2L, 3L), messageIds);
+    }
 }
