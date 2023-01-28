@@ -7,7 +7,8 @@ import java.util.List;
 /**
  * Zulip API response class for getting user group members.
  *
- * @see <a href="https://zulip.com/api/get-user-group-members">https://zulip.com/api/get-user-group-members</a>
+ * @see <a href=
+ *      "https://zulip.com/api/get-user-group-members#response">https://zulip.com/api/get-user-group-members#response</a>
  */
 public class GetUserGroupMembersApiResponse extends ZulipApiResponse {
 

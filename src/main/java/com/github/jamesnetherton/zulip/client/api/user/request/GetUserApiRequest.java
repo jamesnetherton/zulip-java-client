@@ -13,8 +13,8 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 /**
  * Zulip API request builder for getting a user.
  *
- * @see <a href="https://zulip.com/api/get-user">https://zulip.com/api/get-user</a>
- * @see <a href="https://zulip.com/api/get-user-by-email">https://zulip.com/api/get-user-by-email</a>
+ * @see <a href="https://zulip.com/api/get-user#response">https://zulip.com/api/get-user#response</a>
+ * @see <a href="https://zulip.com/api/get-user-by-email#response">https://zulip.com/api/get-user-by-email#response</a>
  */
 public class GetUserApiRequest extends ZulipApiRequest implements ExecutableApiRequest<User> {
 

@@ -6,7 +6,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 /**
  * Zulip API response class for getting a user.
  *
- * @see <a href="https://zulip.com/api/get-user">https://zulip.com/api/get-user</a>
+ * @see <a href="https://zulip.com/api/get-user#response">https://zulip.com/api/get-user#response</a>
  */
 public class GetUserApiResponse extends ZulipApiResponse {
 

@@ -7,7 +7,8 @@ import java.util.List;
 /**
  * Zulip API response class for getting sub groups of a user group.
  *
- * @see <a href="https://zulip.com/api/get-user-group-subgroups">https://zulip.com/api/get-user-group-subgroups</a>
+ * @see <a href=
+ *      "https://zulip.com/api/get-user-group-subgroups#response">https://zulip.com/api/get-user-group-subgroups#response</a>
  */
 public class GetSubGroupsOfUserGroupApiResponse extends ZulipApiResponse {
 
