@@ -57,7 +57,7 @@ import org.apache.http.util.EntityUtils;
 /**
  * A {@link ZulipHttpClient} implementation that uses the Apache Commons HTTP Client.
  */
-public class ZulipCommonsHttpClient implements ZulipHttpClient {
+class ZulipCommonsHttpClient implements ZulipHttpClient {
 
     private static final Logger LOG = Logger.getLogger(ZulipCommonsHttpClient.class.getName());
 
