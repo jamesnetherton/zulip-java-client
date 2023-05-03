@@ -1,0 +1,24 @@
+package com.github.jamesnetherton.zulip.client.api.message;
+
+/**
+ * Defines a Zulip reaction emoji and associated code.
+ *
+ * Generated from <a href="https://raw.githubusercontent.com/zulip/zulip/master/tools/setup/emoji/emoji_map.json">https://raw.githubusercontent.com/zulip/zulip/master/tools/setup/emoji/emoji_map.json</a>.
+ */
+@SuppressWarnings("unused")
+public enum Emoji {
+    {values}
+    private final String code;
+
+    Emoji(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return this.name().toLowerCase();
+    }
+}
