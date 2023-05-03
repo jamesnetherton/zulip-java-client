@@ -200,7 +200,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         long messageId = zulip.messages().sendStreamMessage("Test Content", "Test Message Reaction", "Test Topic 1").execute();
 
         // Add reaction
-        zulip.messages().addEmojiReaction(messageId, Emoji.PIGLET.getName()).execute();
+        zulip.messages().addEmojiReaction(messageId, Emoji.PIG.getName()).execute();
 
         // Verify reaction added
         List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
@@ -212,10 +212,10 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         Message message = messages.get(1);
         List<MessageReaction> reactions = message.getReactions();
         assertEquals(1, reactions.size());
-        assertEquals("piglet", reactions.get(0).getEmojiName());
+        assertEquals(Emoji.PIG.name().toLowerCase(), reactions.get(0).getEmojiName());
 
         // Delete reaction
-        zulip.messages().deleteEmojiReaction(messageId, Emoji.PIGLET.getName()).execute();
+        zulip.messages().deleteEmojiReaction(messageId, Emoji.PIG.getName()).execute();
 
         // Verify reaction removed
         messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
