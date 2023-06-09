@@ -37,7 +37,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     public void addLinkfier() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(AddLinkifierApiRequest.PATTERN, "some regex")
-                .add(AddLinkifierApiRequest.URL_FORMAT_STRING, "https://github.com/zulip/zulip/issues/%s")
+                .add(AddLinkifierApiRequest.URL_TEMPLATE, "https://github.com/zulip/zulip/issues/%s")
                 .get();
 
         stubZulipResponse(POST, "/realm/filters", params, "addLinkifier.json");
@@ -62,12 +62,12 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         Linkifier linkifierA = linkifiers.get(0);
         assertEquals("#(?P<id>[0-9]+)", linkifierA.getPattern());
-        assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifierA.getUrlFormat());
+        assertEquals("https://github.com/zulip/zulip/issues/{id}s", linkifierA.getUrlTemplate());
         assertEquals(1, linkifierA.getId());
 
         Linkifier linkifierB = linkifiers.get(1);
         assertEquals("(?P<id>[0-9a-f]{40})", linkifierB.getPattern());
-        assertEquals("https://github.com/zulip/zulip/commit/%(id)s", linkifierB.getUrlFormat());
+        assertEquals("https://github.com/zulip/zulip/commit/{id}s", linkifierB.getUrlTemplate());
         assertEquals(2, linkifierB.getId());
     }
 

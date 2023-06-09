@@ -36,7 +36,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     @Test
     public void linkifierCrud() throws ZulipClientException {
         // Create linikifier
-        Long id = zulip.server().addLinkifier("#(?P<id>[0-9]+)", "https://github.com/zulip/zulip/issues/%(id)s").execute();
+        Long id = zulip.server().addLinkifier("#(?P<id>[0-9]+)", "https://github.com/zulip/zulip/issues/{id}s").execute();
         assertTrue(id > 0);
 
         try {
@@ -47,7 +47,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
             Linkifier linkifier = linkifiers.get(0);
             assertEquals(id, linkifier.getId());
             assertEquals("#(?P<id>[0-9]+)", linkifier.getPattern());
-            assertEquals("https://github.com/zulip/zulip/issues/%(id)s", linkifier.getUrlFormat());
+            assertEquals("https://github.com/zulip/zulip/issues/{id}s", linkifier.getUrlTemplate());
 
             // Delete linkifiers
             zulip.server().deleteLinkifier(id).execute();

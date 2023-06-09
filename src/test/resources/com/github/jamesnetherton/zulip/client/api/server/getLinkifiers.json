@@ -4,12 +4,12 @@
   "linkifiers": [
     {
       "pattern": "#(?P<id>[0-9]+)",
-      "url_format": "https:\/\/github.com\/zulip\/zulip\/issues\/%(id)s",
+      "url_template": "https:\/\/github.com\/zulip\/zulip\/issues\/{id}s",
       "id": 1
     },
     {
       "pattern": "(?P<id>[0-9a-f]{40})",
-      "url_format": "https:\/\/github.com\/zulip\/zulip\/commit\/%(id)s",
+      "url_template": "https:\/\/github.com\/zulip\/zulip\/commit\/{id}s",
       "id": 2
     }
   ]

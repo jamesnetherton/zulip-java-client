@@ -37,14 +37,14 @@ public class ServerService implements ZulipService {
     /**
      * Adds a linkifier.
      *
-     * @see                    <a href="https://zulip.com/api/add-linkifier">https://zulip.com/api/add-linkifier</a>
+     * @see                <a href="https://zulip.com/api/add-linkifier">https://zulip.com/api/add-linkifier</a>
      *
-     * @param  pattern         The The regular expression that should trigger the linkifier
-     * @param  urlFormatString The URL used for the link. Can include match groups
-     * @return                 The {@link AddLinkifierApiRequest} builder object
+     * @param  pattern     The The regular expression that should trigger the linkifier
+     * @param  urlTemplate The RFC 6570 compliant URL template used for the link
+     * @return             The {@link AddLinkifierApiRequest} builder object
      */
-    public AddLinkifierApiRequest addLinkifier(String pattern, String urlFormatString) {
-        return new AddLinkifierApiRequest(this.client, pattern, urlFormatString);
+    public AddLinkifierApiRequest addLinkifier(String pattern, String urlTemplate) {
+        return new AddLinkifierApiRequest(this.client, pattern, urlTemplate);
     }
 
     /**
