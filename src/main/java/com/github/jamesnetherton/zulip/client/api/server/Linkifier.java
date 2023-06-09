@@ -10,7 +10,7 @@ public class Linkifier {
     @JsonProperty
     private String pattern;
     @JsonProperty
-    private String urlFormat;
+    private String urlTemplate;
     @JsonProperty
     private long id;
 
@@ -22,7 +22,7 @@ public class Linkifier {
         return pattern;
     }
 
-    public String getUrlFormat() {
-        return urlFormat;
+    public String getUrlTemplate() {
+        return urlTemplate;
     }
 }

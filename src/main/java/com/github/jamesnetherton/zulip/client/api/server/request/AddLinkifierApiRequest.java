@@ -16,19 +16,19 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 public class AddLinkifierApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
 
     public static final String PATTERN = "pattern";
-    public static final String URL_FORMAT_STRING = "url_format_string";
+    public static final String URL_TEMPLATE = "url_template";
 
     /**
      * Constrtucts a {@link AddLinkifierApiRequest}.
      *
-     * @param client          The Zulip HTTP client
-     * @param pattern         The The regular expression that should trigger the linkifier
-     * @param urlFormatString The URL used for the link. Can include match groups
+     * @param client      The Zulip HTTP client
+     * @param pattern     The The regular expression that should trigger the linkifier
+     * @param urlTemplate The RFC 6570 compliant URL template used for the link
      */
-    public AddLinkifierApiRequest(ZulipHttpClient client, String pattern, String urlFormatString) {
+    public AddLinkifierApiRequest(ZulipHttpClient client, String pattern, String urlTemplate) {
         super(client);
         putParam(PATTERN, pattern);
-        putParam(URL_FORMAT_STRING, urlFormatString);
+        putParam(URL_TEMPLATE, urlTemplate);
     }
 
     /**
