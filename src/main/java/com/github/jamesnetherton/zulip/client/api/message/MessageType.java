@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  */
 public enum MessageType {
     /**
+     * The message is a direct message.
+     */
+    DIRECT,
+    /**
      * The message is private.
      */
     PRIVATE,

@@ -516,18 +516,18 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void sendPrivateMessageWithUserIds() throws Exception {
+    public void sendDirectMessageWithUserIds() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(SendMessageApiRequest.CONTENT, "test private message")
+                .add(SendMessageApiRequest.CONTENT, "test direct message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
                 .add(SendMessageApiRequest.TO, "[1,2,3]")
-                .add(SendMessageApiRequest.TYPE, MessageType.PRIVATE.toString())
+                .add(SendMessageApiRequest.TYPE, MessageType.DIRECT.toString())
                 .get();
 
         stubZulipResponse(POST, "/messages", params, "sendMessage.json");
 
-        long messageId = zulip.messages().sendPrivateMessage("test private message", 1, 2, 3)
+        long messageId = zulip.messages().sendDirectMessage("test direct message", 1, 2, 3)
                 .withLocalId("foo")
                 .withQueueId("bar")
                 .execute();
@@ -536,18 +536,18 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void sendPrivateMessageWithEmailAddresses() throws Exception {
+    public void sendDirectMessageWithEmailAddresses() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(SendMessageApiRequest.CONTENT, "test private message")
+                .add(SendMessageApiRequest.CONTENT, "test direct message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
                 .add(SendMessageApiRequest.TO, "[\"foo@bar.com\",\"cheese@wine.net\"]")
-                .add(SendMessageApiRequest.TYPE, MessageType.PRIVATE.toString())
+                .add(SendMessageApiRequest.TYPE, MessageType.DIRECT.toString())
                 .get();
 
         stubZulipResponse(POST, "/messages", params, "sendMessage.json");
 
-        long messageId = zulip.messages().sendPrivateMessage("test private message", "foo@bar.com", "cheese@wine.net")
+        long messageId = zulip.messages().sendDirectMessage("test direct message", "foo@bar.com", "cheese@wine.net")
                 .withLocalId("foo")
                 .withQueueId("bar")
                 .execute();

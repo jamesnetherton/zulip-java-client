@@ -24,37 +24,37 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
     public static final String LOCAL_ID = "local_id";
     public static final String QUEUE_ID = "queue_id";
     public static final String TO = "to";
-    public static final String TO_PRIVATE = "to_private";
+    public static final String TO_DIRECT = "to_direct";
     public static final String TO_STREAM = "to_stream";
     public static final String TOPIC = "topic";
     public static final String TYPE = "type";
 
     /**
-     * Constructs a {@link SendMessageApiRequest} for sending a private message.
+     * Constructs a {@link SendMessageApiRequest} for sending a direct message.
      *
      * @param client  The Zulip HTTP client
      * @param content The message content
-     * @param to      One or more user email addresses for which the private message should be sent to
+     * @param to      One or more user email addresses for which the direct message should be sent to
      */
     public SendMessageApiRequest(ZulipHttpClient client, String content, String... to) {
         super(client);
         putParam(CONTENT, content);
-        putParam(TYPE, MessageType.PRIVATE.toString());
-        putParam(TO_PRIVATE, to);
+        putParam(TYPE, MessageType.DIRECT.toString());
+        putParam(TO_DIRECT, to);
     }
 
     /**
-     * Constructs a {@link SendMessageApiRequest} for sending a private message.
+     * Constructs a {@link SendMessageApiRequest} for sending a direct message.
      *
      * @param client  The Zulip HTTP client
      * @param content The message content
-     * @param to      One or more user ids for which the private message should be sent to
+     * @param to      One or more user ids for which the direct message should be sent to
      */
     public SendMessageApiRequest(ZulipHttpClient client, String content, long... to) {
         super(client);
         putParam(CONTENT, content);
-        putParam(TYPE, MessageType.PRIVATE.toString());
-        putParam(TO_PRIVATE, to);
+        putParam(TYPE, MessageType.DIRECT.toString());
+        putParam(TO_DIRECT, to);
     }
 
     /**
@@ -130,15 +130,15 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
 
         if (params.get(TYPE) != null) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
-                if (!entry.getKey().equals(TO_PRIVATE) && !entry.getKey().equals(TO_STREAM)) {
+                if (!entry.getKey().equals(TO_DIRECT) && !entry.getKey().equals(TO_STREAM)) {
                     modified.put(entry.getKey(), entry.getValue());
                 }
             }
 
             String type = (String) params.get(TYPE);
-            if (type.equals(MessageType.PRIVATE.toString())) {
+            if (type.equals(MessageType.DIRECT.toString())) {
                 try {
-                    modified.put(TO, JsonUtils.getMapper().writeValueAsString(params.get(TO_PRIVATE)));
+                    modified.put(TO, JsonUtils.getMapper().writeValueAsString(params.get(TO_DIRECT)));
                 } catch (JsonProcessingException e) {
                     throw new ZulipClientException(e);
                 }

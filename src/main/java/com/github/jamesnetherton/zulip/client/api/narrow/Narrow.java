@@ -60,4 +60,8 @@ public class Narrow {
     public String getOperand() {
         return operand;
     }
+
+    public boolean isNegated() {
+        return negated;
+    }
 }

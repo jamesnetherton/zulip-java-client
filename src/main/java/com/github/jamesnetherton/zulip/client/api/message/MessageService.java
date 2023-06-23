@@ -257,7 +257,7 @@ public class MessageService implements ZulipService {
     }
 
     /**
-     * Sends a private message to the users matching the given email addresses.
+     * Sends a direct message to the users matching the given email addresses.
      *
      * @see               <a href="https://zulip.com/api/send-message">https://zulip.com/api/send-message</a>
      *
@@ -265,12 +265,12 @@ public class MessageService implements ZulipService {
      * @param  userEmails The email addresses of the users to send the message to
      * @return            The {@link SendMessageApiRequest} builder object
      */
-    public SendMessageApiRequest sendPrivateMessage(String content, String... userEmails) {
+    public SendMessageApiRequest sendDirectMessage(String content, String... userEmails) {
         return new SendMessageApiRequest(this.client, content, userEmails);
     }
 
     /**
-     * Sends a private message to the users matching the given email user ids.
+     * Sends a direct message to the users matching the given email user ids.
      *
      * @see            <a href="https://zulip.com/api/send-message">https://zulip.com/api/send-message</a>
      *
@@ -278,8 +278,38 @@ public class MessageService implements ZulipService {
      * @param  userIds The ids of the users to send the message to
      * @return         The {@link SendMessageApiRequest} builder object
      */
-    public SendMessageApiRequest sendPrivateMessage(String content, long... userIds) {
+    public SendMessageApiRequest sendDirectMessage(String content, long... userIds) {
         return new SendMessageApiRequest(this.client, content, userIds);
+    }
+
+    /**
+     * Sends a private message to the users matching the given email addresses.
+     *
+     * @see                   <a href="https://zulip.com/api/send-message">https://zulip.com/api/send-message</a>
+     *
+     * @param      content    The content of the message
+     * @param      userEmails The email addresses of the users to send the message to
+     * @return                The {@link SendMessageApiRequest} builder object
+     * @deprecated            Use sendDirectMessage instead
+     */
+    @Deprecated(forRemoval = true)
+    public SendMessageApiRequest sendPrivateMessage(String content, String... userEmails) {
+        return sendDirectMessage(content, userEmails);
+    }
+
+    /**
+     * Sends a private message to the users matching the given email user ids.
+     *
+     * @see                <a href="https://zulip.com/api/send-message">https://zulip.com/api/send-message</a>
+     *
+     * @param      content The content of the message
+     * @param      userIds The ids of the users to send the message to
+     * @return             The {@link SendMessageApiRequest} builder object
+     * @deprecated         Use sendDirectMessage instead
+     */
+    @Deprecated(forRemoval = true)
+    public SendMessageApiRequest sendPrivateMessage(String content, long... userIds) {
+        return sendDirectMessage(content, userIds);
     }
 
     /**
