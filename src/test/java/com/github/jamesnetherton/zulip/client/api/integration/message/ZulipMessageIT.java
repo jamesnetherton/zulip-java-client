@@ -240,17 +240,17 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
     }
 
     @Test
-    public void privateMessages() throws ZulipClientException {
-        // Send private messages
-        long firstMessageId = zulip.messages().sendPrivateMessage("Test Private Message 1", "test@test.com")
+    public void directMessages() throws ZulipClientException {
+        // Send direct messages
+        long firstMessageId = zulip.messages().sendDirectMessage("Test Direct Message 1", "test@test.com")
                 .execute();
 
-        long secondMessageId = zulip.messages().sendPrivateMessage("Test Private Message 2", ownUser.getUserId())
+        long secondMessageId = zulip.messages().sendPrivateMessage("Test Direct Message 2", ownUser.getUserId())
                 .execute();
 
         // Get private messages
         List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
-                .withNarrows(Narrow.of("is", "private"))
+                .withNarrows(Narrow.of("is", "dm"))
                 .execute();
 
         messages = messages.stream()
@@ -260,7 +260,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(2, messages.size());
 
         Message message = messages.get(0);
-        assertEquals("<p>Test Private Message 1</p>", message.getContent());
+        assertEquals("<p>Test Direct Message 1</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
         assertEquals("Apache-HttpClient", message.getClient());
         assertNull(message.getStream());
@@ -272,7 +272,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertFalse(message.isMeMessage());
 
         message = messages.get(1);
-        assertEquals("<p>Test Private Message 2</p>", message.getContent());
+        assertEquals("<p>Test Direct Message 2</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
         assertEquals("Apache-HttpClient", message.getClient());
         assertNull(message.getStream());
@@ -288,7 +288,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         zulip.messages().deleteMessage(secondMessageId).execute();
 
         messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
-                .withNarrows(Narrow.of("is", "private"))
+                .withNarrows(Narrow.of("is", "dm"))
                 .execute();
 
         messages = messages.stream()
