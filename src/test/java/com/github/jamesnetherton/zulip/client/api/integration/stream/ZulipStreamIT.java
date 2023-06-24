@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscription;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
 import com.github.jamesnetherton.zulip.client.api.stream.Topic;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +25,17 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void streamCrudOperations() throws Exception {
+        List<UserGroup> groups = zulip.users().getUserGroups().execute();
+        long groupIdA = groups.get(1).getId();
+        long groupIdB = groups.get(2).getId();
+
         // Create
         StreamSubscriptionResult result = zulip.streams().subscribe(
                 StreamSubscriptionRequest.of("Test Stream 1", "Test Stream 1"),
                 StreamSubscriptionRequest.of("Test Stream 2", "Test Stream 2"),
                 StreamSubscriptionRequest.of("Test Stream 3", "Test Stream 3"))
                 .withAuthorizationErrorsFatal(false)
+                .withCanRemoveSubscribersGroupId(groupIdA)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withWebPublic(false)
@@ -64,7 +70,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(2, stream.canRemoveSubscribersGroupId());
+            assertEquals(groupIdA, stream.canRemoveSubscribersGroupId());
         }
 
         // Get stream by ID
@@ -82,13 +88,14 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(2, stream.canRemoveSubscribersGroupId());
+            assertEquals(groupIdA, stream.canRemoveSubscribersGroupId());
         }
 
         long firstStreamId = createdStreams.get(0).getStreamId();
 
         // Update
         zulip.streams().updateStream(firstStreamId)
+                .withCanRemoveSubscribersGroupId(groupIdB)
                 .withDescription("Updated Description")
                 .withName("Updated Name")
                 .withMessageRetention(30)
@@ -118,6 +125,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(30, updatedStream.getMessageRetentionDays());
         assertFalse(updatedStream.isDefault());
         assertTrue(updatedStream.isAnnouncementOnly());
+        assertEquals(groupIdB, updatedStream.canRemoveSubscribersGroupId());
 
         List<String> subscriptionSettings = zulip.streams().updateSubscriptionSettings()
                 .withColor(updatedStream.getStreamId(), "#000000")

@@ -96,6 +96,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SubscribeStreamsApiRequest.ANNOUNCE, "true")
                 .add(SubscribeStreamsApiRequest.AUTHORIZATION_ERRORS_FATAL, "false")
+                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP_ID, "1")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_WEB_PUBLIC, "true")
@@ -115,6 +116,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 StreamSubscriptionRequest.of("cheese", "wine"))
                 .withAnnounce(true)
                 .withAuthorizationErrorsFatal(false)
+                .withCanRemoveSubscribersGroupId(1)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withWebPublic(true)
@@ -296,6 +298,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void updateStream() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateStreamApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP_ID, "99")
                 .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
@@ -308,6 +311,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         stubZulipResponse(PATCH, "/streams/1", params);
 
         zulip.streams().updateStream(1)
+                .withCanRemoveSubscribersGroupId(99)
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetention(30)

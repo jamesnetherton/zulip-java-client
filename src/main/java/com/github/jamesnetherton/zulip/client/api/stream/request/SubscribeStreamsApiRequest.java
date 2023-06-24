@@ -26,6 +26,7 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
+    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP_ID = "can_remove_subscribers_group_id";
 
     /**
      * Constructs a {@link SubscribeStreamsApiRequest}.
@@ -152,6 +153,17 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
      */
     public SubscribeStreamsApiRequest withMessageRetention(RetentionPolicy messageRetentionPolicy) {
         putParamAsJsonString(MESSAGE_RETENTION_DAYS, messageRetentionPolicy.toString());
+        return this;
+    }
+
+    /**
+     * Sets the user group id whose members are allowed to unsubscribe others from the stream.
+     *
+     * @param  userGroupID The user group id whose members are allowed to unsubscribe others from the stream
+     * @return             This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanRemoveSubscribersGroupId(long userGroupID) {
+        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP_ID, userGroupID);
         return this;
     }
 

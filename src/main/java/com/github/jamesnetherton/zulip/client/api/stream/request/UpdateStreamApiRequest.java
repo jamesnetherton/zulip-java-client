@@ -24,6 +24,7 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
+    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP_ID = "can_remove_subscribers_group_id";
 
     private final long streamId;
 
@@ -128,6 +129,17 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withHistoryPublicToSubscribers(boolean historyPublicToSubscribers) {
         putParam(HISTORY_PUBLIC_TO_SUBSCRIBERS, historyPublicToSubscribers);
+        return this;
+    }
+
+    /**
+     * Sets the updated user group id whose members are allowed to unsubscribe others from the stream.
+     *
+     * @param  userGroupID The user group id whose members are allowed to unsubscribe others from the stream
+     * @return             This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanRemoveSubscribersGroupId(long userGroupID) {
+        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP_ID, userGroupID);
         return this;
     }
 
