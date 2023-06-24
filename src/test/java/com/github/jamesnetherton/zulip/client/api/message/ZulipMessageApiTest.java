@@ -8,6 +8,7 @@ import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
@@ -21,13 +22,16 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsRea
 import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.SendScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsForNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
+import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +79,13 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void deleteScheduledMessage() throws Exception {
+        stubZulipResponse(DELETE, "/scheduled_messages/1", Collections.emptyMap());
+
+        zulip.messages().deleteScheduledMessage(1).execute();
+    }
+
+    @Test
     public void editMessage() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(EditMessageApiRequest.CONTENT, "edited content")
@@ -94,6 +105,65 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .withSendNotificationToOldThread(true)
                 .withStreamId(1)
                 .withTopic("test topic")
+                .execute();
+    }
+
+    @Test
+    public void editScheduledDirectMessage() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendScheduledMessageApiRequest.CONTENT, "test updated scheduled direct message")
+                .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .add(SendScheduledMessageApiRequest.TO, "[1,2,3]")
+                .add(SendScheduledMessageApiRequest.TYPE, MessageType.DIRECT.toString())
+                .add(SendScheduledMessageApiRequest.TOPIC, "test updated topic")
+                .get();
+
+        stubZulipResponse(PATCH, "/scheduled_messages/1", params);
+
+        zulip.messages().editScheduledMessage(1)
+                .withType(MessageType.DIRECT)
+                .withContent("test updated scheduled direct message")
+                .withScheduledDeliveryTimestamp(now)
+                .withTo(1, 2, 3)
+                .withTopic("test updated topic")
+                .execute();
+    }
+
+    @Test
+    public void editScheduledStreamMessage() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendScheduledMessageApiRequest.CONTENT, "test updated scheduled stream message")
+                .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .add(SendScheduledMessageApiRequest.TO, "1")
+                .add(SendScheduledMessageApiRequest.TYPE, MessageType.STREAM.toString())
+                .add(SendScheduledMessageApiRequest.TOPIC, "test updated topic")
+                .get();
+
+        stubZulipResponse(PATCH, "/scheduled_messages/1", params);
+
+        assertThrows(ZulipClientException.class, () -> {
+            zulip.messages().editScheduledMessage(1)
+                    .withType(MessageType.STREAM)
+                    .execute();
+        });
+
+        assertThrows(ZulipClientException.class, () -> {
+            zulip.messages().editScheduledMessage(1)
+                    .withType(MessageType.STREAM)
+                    .withTo(1, 2, 3)
+                    .execute();
+        });
+
+        zulip.messages().editScheduledMessage(1)
+                .withType(MessageType.STREAM)
+                .withContent("test updated scheduled stream message")
+                .withScheduledDeliveryTimestamp(now)
+                .withTo(1)
+                .withTopic("test updated topic")
                 .execute();
     }
 
@@ -439,6 +509,25 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void getScheduledMessages() throws Exception {
+        stubZulipResponse(GET, "/scheduled_messages", Collections.emptyMap(), "getScheduledMessages.json");
+
+        List<ScheduledMessage> scheduledMessages = zulip.messages().getScheduledMessages().execute();
+        assertEquals(2, scheduledMessages.size());
+        for (int i = 1; i <= 2; i++) {
+            ScheduledMessage scheduledMessage = scheduledMessages.get(i - 1);
+            assertEquals("Scheduled Message " + i, scheduledMessage.getContent());
+            assertEquals("<p>Scheduled Message " + i + "</p>", scheduledMessage.getRenderedContent());
+            assertEquals("Test Topic " + i, scheduledMessage.getTopic());
+            assertEquals(i, scheduledMessage.getTo().get(0));
+            assertEquals(1681662420000L, scheduledMessage.getScheduledDeliveryTimestamp().toEpochMilli());
+            assertEquals(i, scheduledMessage.getScheduledMessageId());
+            assertEquals(i == 1 ? MessageType.STREAM : MessageType.DIRECT, scheduledMessage.getType());
+            assertEquals(i != 1, scheduledMessage.isFailed());
+        }
+    }
+
+    @Test
     public void markAllAsRead() throws Exception {
         stubZulipResponse(POST, "/mark_all_as_read", Collections.emptyMap());
 
@@ -592,6 +681,53 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         long messageId = zulip.messages().sendStreamMessage("test stream message", "test stream", "test topic")
                 .withLocalId("foo")
                 .withQueueId("bar")
+                .execute();
+
+        assertEquals(42, messageId);
+    }
+
+    @Test
+    public void sendScheduledDirectMessage() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendScheduledMessageApiRequest.CONTENT, "test scheduled direct message")
+                .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .add(SendScheduledMessageApiRequest.TO, "[1,2,3]")
+                .add(SendScheduledMessageApiRequest.TYPE, MessageType.DIRECT.toString())
+                .add(SendScheduledMessageApiRequest.TOPIC, "test topic")
+                .get();
+
+        stubZulipResponse(POST, "/scheduled_messages", params, "sendScheduledMessage.json");
+
+        long messageId = zulip.messages()
+                .sendScheduledMessage(MessageType.DIRECT, "test scheduled direct message", now, 1, 2, 3)
+                .withTopic("test topic")
+                .execute();
+
+        assertEquals(42, messageId);
+    }
+
+    @Test
+    public void sendScheduledMessageForStream() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendScheduledMessageApiRequest.CONTENT, "test scheduled stream message")
+                .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .add(SendScheduledMessageApiRequest.TO, "1")
+                .add(SendScheduledMessageApiRequest.TYPE, MessageType.STREAM.toString())
+                .add(SendScheduledMessageApiRequest.TOPIC, "test topic")
+                .get();
+
+        stubZulipResponse(POST, "/scheduled_messages", params, "sendScheduledMessage.json");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().sendScheduledMessage(MessageType.STREAM, "test scheduled stream message", now, 1, 2, 3).execute();
+        });
+
+        long messageId = zulip.messages().sendScheduledMessage(MessageType.STREAM, "test scheduled stream message", now, 1)
+                .withTopic("test topic")
                 .execute();
 
         assertEquals(42, messageId);
