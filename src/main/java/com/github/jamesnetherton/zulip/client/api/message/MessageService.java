@@ -5,24 +5,29 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.DeleteScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.EditScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageMarkdownApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageReadReceiptsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetScheduledMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkAllAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.SendScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsForNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.io.File;
+import java.time.Instant;
 
 /**
  * Zulip message APIs.
@@ -79,6 +84,19 @@ public class MessageService implements ZulipService {
     }
 
     /**
+     * Deletes and cancels the sending of a previously scheduled message.
+     *
+     * @see                       <a href=
+     *                            "https://zulip.com/api/delete-scheduled-message">https://zulip.com/api/delete-scheduled-message</a>
+     *
+     * @param  scheduledMessageId The id of the scheduled message to delete
+     * @return                    The {@link DeleteMessageApiRequest} builder object
+     */
+    public DeleteScheduledMessageApiRequest deleteScheduledMessage(long scheduledMessageId) {
+        return new DeleteScheduledMessageApiRequest(this.client, scheduledMessageId);
+    }
+
+    /**
      * Edits the content or topic of a message.
      *
      * @see              <a href="https://zulip.com/api/update-message">https://zulip.com/api/update-message</a>
@@ -88,6 +106,19 @@ public class MessageService implements ZulipService {
      */
     public EditMessageApiRequest editMessage(long messageId) {
         return new EditMessageApiRequest(this.client, messageId);
+    }
+
+    /**
+     * Edits an existing scheduled message.
+     *
+     * @see                       <a href=
+     *                            "https://zulip.com/api/update-scheduled-message">https://zulip.com/api/update-scheduled-message</a>
+     *
+     * @param  scheduledMessageId The id of the scheduled message to edit
+     * @return                    The {@link EditMessageApiRequest} builder object
+     */
+    public EditScheduledMessageApiRequest editScheduledMessage(long scheduledMessageId) {
+        return new EditScheduledMessageApiRequest(this.client, scheduledMessageId);
     }
 
     /**
@@ -193,6 +224,17 @@ public class MessageService implements ZulipService {
                 .withNumBefore(numBefore)
                 .withNumAfter(numAfter)
                 .withAnchor(anchor);
+    }
+
+    /**
+     * Fetch all scheduled messages for the current user.
+     *
+     * @see    <a href="https://zulip.com/api/get-scheduled-messages"/>https://zulip.com/api/get-scheduled-messages</a>
+     *
+     * @return The {@link GetScheduledMessagesApiRequest} builder object
+     */
+    public GetScheduledMessagesApiRequest getScheduledMessages() {
+        return new GetScheduledMessagesApiRequest(this.client);
     }
 
     /**
@@ -310,6 +352,21 @@ public class MessageService implements ZulipService {
     @Deprecated(forRemoval = true)
     public SendMessageApiRequest sendPrivateMessage(String content, long... userIds) {
         return sendDirectMessage(content, userIds);
+    }
+
+    /**
+     * Schedules the sending of a message to a specified stream or users.
+     *
+     * @param  type              The type of scheduled message to be sent
+     * @param  content           The content of the message
+     * @param  deliveryTimestamp {@link Instant} set to the UNIX epoch timestamp for when the message will be sent
+     * @param  to                If the type is 'stream' then this is the id of the stream. Else one or more user ids may be
+     *                           specified
+     * @return                   The {@link SendScheduledMessageApiRequest}
+     */
+    public SendScheduledMessageApiRequest sendScheduledMessage(MessageType type, String content, Instant deliveryTimestamp,
+            long... to) {
+        return new SendScheduledMessageApiRequest(this.client, type, content, deliveryTimestamp, to);
     }
 
     /**

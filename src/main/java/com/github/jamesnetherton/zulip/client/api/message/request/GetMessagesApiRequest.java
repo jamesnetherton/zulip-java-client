@@ -154,7 +154,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
     }
 
     /**
-     * Executes the Zulip API request for editing a message.
+     * Executes the Zulip API request for searching and getting messages.
      *
      * @return                      List of {@link Message} objects that matched the search criteria
      * @throws ZulipClientException if the request was not successful

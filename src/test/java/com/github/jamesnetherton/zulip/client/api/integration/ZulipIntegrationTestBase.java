@@ -3,27 +3,20 @@ package com.github.jamesnetherton.zulip.client.api.integration;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.Zulip;
-import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.draft.Draft;
-import com.github.jamesnetherton.zulip.client.api.draft.DraftService;
-import com.github.jamesnetherton.zulip.client.api.event.EventService;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
-import com.github.jamesnetherton.zulip.client.api.message.MessageService;
+import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
-import com.github.jamesnetherton.zulip.client.api.server.ServerService;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
-import com.github.jamesnetherton.zulip.client.api.user.UserService;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.util.function.Supplier;
 import javax.net.ssl.SSLHandshakeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -92,6 +85,17 @@ public class ZulipIntegrationTestBase {
                 }
             }
 
+            List<ScheduledMessage> scheduledMessages = zulip.messages().getScheduledMessages().execute();
+            if (scheduledMessages != null) {
+                for (ScheduledMessage message : scheduledMessages) {
+                    try {
+                        zulip.messages().deleteScheduledMessage(message.getScheduledMessageId()).execute();
+                    } catch (ZulipClientException e) {
+                        // Ignore
+                    }
+                }
+            }
+
             // Clean up streams
             List<Stream> streams = zulip.streams().getAll().withIncludeDefault(false).execute();
             if (streams != null) {
@@ -127,60 +131,17 @@ public class ZulipIntegrationTestBase {
                     }
                 }
             }
-        }
 
-        // Clean up drafts
-        List<Draft> drafts = zulip.drafts().getDrafts().execute();
-        if (drafts != null) {
-            for (Draft draft : drafts) {
-                try {
-                    zulip.drafts().deleteDraft(draft.getId()).execute();
-                } catch (ZulipClientException e) {
-                    // Ignore
+            // Clean up drafts
+            List<Draft> drafts = zulip.drafts().getDrafts().execute();
+            if (drafts != null) {
+                for (Draft draft : drafts) {
+                    try {
+                        zulip.drafts().deleteDraft(draft.getId()).execute();
+                    } catch (ZulipClientException e) {
+                        // Ignore
+                    }
                 }
-            }
-        }
-    }
-
-    public static final class ThrottledZulip {
-
-        private final Zulip delegate;
-
-        ThrottledZulip(Zulip delegate) {
-            this.delegate = delegate;
-        }
-
-        public DraftService drafts() {
-            return (DraftService) throttle(delegate::drafts);
-        }
-
-        public EventService events() {
-            return (EventService) throttle(delegate::events);
-        }
-
-        public MessageService messages() {
-            return (MessageService) throttle(delegate::messages);
-        }
-
-        public ServerService server() {
-            return (ServerService) throttle(delegate::server);
-        }
-
-        public StreamService streams() {
-            return (StreamService) throttle(delegate::streams);
-        }
-
-        public UserService users() {
-            return (UserService) throttle(delegate::users);
-        }
-
-        ZulipService throttle(Supplier<ZulipService> serviceResolver) {
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } finally {
-                return serviceResolver.get();
             }
         }
     }

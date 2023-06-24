@@ -14,6 +14,8 @@ final class MessageRequestConstants {
     final static String REACTIONS_API_PATH = MESSAGES_ID_API_PATH + "/reactions";
     final static String READ_RECEIPTS_API_PATH = MESSAGES_ID_API_PATH + "/read_receipts";
     final static String RENDER_MESSAGE_API_PATH = MESSAGES_API_PATH + "/render";
+    final static String SCHEDULED_MESSAGES_API_PATH = "scheduled_messages";
+    final static String SCHEDULED_MESSAGES_ID_API_PATH = SCHEDULED_MESSAGES_API_PATH + "/%d";
     final static String USER_UPLOADS_API_PATH = "user_uploads";
 
     private MessageRequestConstants() {

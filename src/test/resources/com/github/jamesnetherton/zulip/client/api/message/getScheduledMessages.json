@@ -1,0 +1,26 @@
+{
+  "msg": "",
+  "result": "success",
+  "scheduled_messages": [
+    {
+      "content": "Scheduled Message 1",
+      "failed": false,
+      "rendered_content": "<p>Scheduled Message 1</p>",
+      "scheduled_delivery_timestamp": 1681662420,
+      "scheduled_message_id": 1,
+      "to": 1,
+      "topic": "Test Topic 1",
+      "type": "stream"
+    },
+    {
+      "content": "Scheduled Message 2",
+      "failed": true,
+      "rendered_content": "<p>Scheduled Message 2</p>",
+      "scheduled_delivery_timestamp": 1681662420,
+      "scheduled_message_id": 2,
+      "to": [2],
+      "topic": "Test Topic 2",
+      "type": "direct"
+    }
+  ]
+}

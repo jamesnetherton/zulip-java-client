@@ -17,6 +17,7 @@ import com.github.jamesnetherton.zulip.client.api.message.MessageHistory;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReaction;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
+import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
@@ -26,8 +27,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class ZulipMessageIT extends ZulipIntegrationTestBase {
@@ -425,5 +428,62 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         String rendered = zulip.messages().renderMessage("**content**").execute();
         assertEquals("<p><strong>content</strong></p>", rendered);
+    }
+
+    @Test
+    @Tag("slow")
+    public void scheduledMessagesCrudOperations() throws ZulipClientException {
+        Instant deliveryTimestamp = Instant.now().plusSeconds(10);
+        zulip.messages()
+                .sendScheduledMessage(MessageType.DIRECT, "test scheduled message", deliveryTimestamp, ownUser.getUserId())
+                .execute();
+
+        List<ScheduledMessage> scheduledMessages = zulip.messages().getScheduledMessages().execute();
+        assertEquals(1, scheduledMessages.size());
+
+        ScheduledMessage scheduledMessage = scheduledMessages.get(0);
+        assertEquals("test scheduled message", scheduledMessage.getContent());
+        assertEquals("<p>test scheduled message</p>", scheduledMessage.getRenderedContent());
+
+        List<Long> to = scheduledMessage.getTo();
+        assertEquals(1, to.size());
+        assertEquals(ownUser.getUserId(), to.get(0));
+        assertEquals(MessageType.PRIVATE, scheduledMessage.getType());
+        assertFalse(scheduledMessage.isFailed());
+
+        long scheduledMessageId = scheduledMessage.getScheduledMessageId();
+        zulip.messages().editScheduledMessage(scheduledMessageId).withContent("test edited scheduled message").execute();
+
+        int maxAttempts = 20;
+        int currAttempts = 1;
+        List<Message> messages = null;
+        while (currAttempts < maxAttempts) {
+            messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                    .withNarrows(Narrow.of("is", "dm"))
+                    .execute();
+
+            if (messages.size() > 0) {
+                break;
+            }
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            currAttempts++;
+        }
+
+        assertNotNull(messages);
+        assertEquals(1, messages.size());
+
+        Message message = messages.get(0);
+        assertEquals("<p>test edited scheduled message</p>", message.getContent());
+
+        zulip.messages().deleteScheduledMessage(scheduledMessageId).execute();
+
+        scheduledMessages = zulip.messages().getScheduledMessages().execute();
+        assertTrue(scheduledMessages.isEmpty());
     }
 }
