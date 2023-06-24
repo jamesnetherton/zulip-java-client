@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 /**
  * The default Zulip REST API response object.
@@ -19,6 +20,9 @@ public class ZulipApiResponse {
 
     @JsonProperty
     private String code;
+
+    @JsonProperty
+    private List<String> ignoredParametersUnsupported;
 
     /**
      * Gets the message from the Zulip API response. Usually empty for a successful response.
@@ -62,5 +66,16 @@ public class ZulipApiResponse {
      */
     public boolean isPartiallyCompleted() {
         return code != null && code.equals("REQUEST_TIMEOUT") && result.equals("partially_completed");
+    }
+
+    /**
+     * Gets the ist of parameters sent in the request that are not supported by the target endpoint.
+     *
+     * Will be null if no parameters were ignored or if the request was made to a Zulip server with a version < 7.0.
+     *
+     * @return The list of ignored parameters that are not supported by the request target endpoint
+     */
+    public List<String> getIgnoredParametersUnsupported() {
+        return ignoredParametersUnsupported;
     }
 }
