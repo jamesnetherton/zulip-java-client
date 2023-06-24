@@ -1,0 +1,8 @@
+{
+  "ignored_parameters_unsupported": [
+    "invalid_param_1",
+    "invalid_param_2"
+  ],
+  "msg": "",
+  "result": "success"
+}

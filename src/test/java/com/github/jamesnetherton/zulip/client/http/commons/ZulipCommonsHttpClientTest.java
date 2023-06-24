@@ -1,9 +1,11 @@
 package com.github.jamesnetherton.zulip.client.http.commons;
 
+import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,6 +24,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
     @Test
-    public void errorResponseCodethrowsZulipClientException() throws Exception {
+    public void errorResponseCodeThrowsZulipClientException() throws Exception {
         server.stubFor(request("GET", urlPathEqualTo("/api/v1/"))
                 .willReturn(aResponse()
                         .withStatus(500)
@@ -112,6 +115,24 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
             assertTrue(latch.await(5, TimeUnit.SECONDS));
         } finally {
             server.stop();
+        }
+    }
+
+    @Test
+    public void ignoredParameters() throws Exception {
+        stubZulipResponse(GET, "/test", "/com/github/jamesnetherton/zulip/client/exception/ignored_params.json");
+
+        URL zulipUrl = new URL(server.baseUrl());
+        ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+
+        ZulipApiResponse response = client.get("/test", Collections.emptyMap(), ZulipApiResponse.class);
+        List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
+        assertNotNull(ignoredParametersUnsupported);
+        assertEquals(2, ignoredParametersUnsupported.size());
+
+        for (int i = 1; i < ignoredParametersUnsupported.size(); i++) {
+            assertEquals("invalid_param_" + i, ignoredParametersUnsupported.get(i - 1));
         }
     }
 

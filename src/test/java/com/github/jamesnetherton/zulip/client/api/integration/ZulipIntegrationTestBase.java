@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.integration;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.Zulip;
+import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.draft.Draft;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
@@ -14,15 +15,19 @@ import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
+import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
 import javax.net.ssl.SSLHandshakeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
 public class ZulipIntegrationTestBase {
 
+    protected static boolean failOnIgnoredParametersUnsupported = Boolean.getBoolean("test.ignoredParametersUnsupported");
     protected static ZulipConfiguration configuration;
     protected static Zulip zulip;
     protected static User ownUser;
@@ -51,6 +56,57 @@ public class ZulipIntegrationTestBase {
         }
 
         assumeTrue(zulipAvailable);
+
+        if (failOnIgnoredParametersUnsupported) {
+            configuration.setZulipHttpClientFactory(configuration -> {
+                final ZulipHttpClient delegate = new ZulipCommonsHttpClientFactory().createZulipHttpClient(configuration);
+                return new ZulipHttpClient() {
+                    @Override
+                    public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, Class<T> responseAs)
+                            throws ZulipClientException {
+                        return handleResponse(delegate.get(path, parameters, responseAs));
+                    }
+
+                    @Override
+                    public <T extends ZulipApiResponse> T delete(String path, Map<String, Object> parameters,
+                            Class<T> responseAs) throws ZulipClientException {
+                        return handleResponse(delegate.delete(path, parameters, responseAs));
+                    }
+
+                    @Override
+                    public <T extends ZulipApiResponse> T patch(String path, Map<String, Object> parameters,
+                            Class<T> responseAs) throws ZulipClientException {
+                        return handleResponse(delegate.patch(path, parameters, responseAs));
+                    }
+
+                    @Override
+                    public <T extends ZulipApiResponse> T post(String path, Map<String, Object> parameters, Class<T> responseAs)
+                            throws ZulipClientException {
+                        return handleResponse(delegate.post(path, parameters, responseAs));
+                    }
+
+                    @Override
+                    public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs)
+                            throws ZulipClientException {
+                        return handleResponse(delegate.upload(path, file, responseAs));
+                    }
+
+                    @Override
+                    public void close() {
+                        delegate.close();
+                    }
+
+                    private <T extends ZulipApiResponse> T handleResponse(T response) {
+                        List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
+                        if (ignoredParametersUnsupported != null && !ignoredParametersUnsupported.isEmpty()) {
+                            System.out.println("======> " + ignoredParametersUnsupported);
+                            throw new IllegalStateException("Unsupported parameters detected in the request");
+                        }
+                        return response;
+                    }
+                };
+            });
+        }
 
         zulip = new Zulip(configuration);
         ownUser = zulip.users().getOwnUser().execute();
