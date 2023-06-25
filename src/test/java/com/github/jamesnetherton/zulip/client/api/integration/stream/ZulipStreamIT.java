@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscription;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
 import com.github.jamesnetherton.zulip.client.api.stream.Topic;
+import com.github.jamesnetherton.zulip.client.api.stream.TopicVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.List;
@@ -274,5 +275,26 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         // Verify archival
         List<Stream> streams = zulip.streams().getAll().execute();
         assertTrue(streams.isEmpty());
+    }
+
+    @Test
+    public void updateUserTopicPreferences() throws ZulipClientException {
+        StreamSubscriptionResult result = zulip.streams()
+                .subscribe(StreamSubscriptionRequest.of("Test Stream For Muting", "Test Stream For Muting")).execute();
+        Map<String, List<String>> subscribed = result.getSubscribed();
+        assertEquals(1, subscribed.size());
+
+        Long streamId = zulip.streams().getStreamId("Test Stream For Muting").execute();
+
+        zulip.streams().muteTopic("Test Stream For Muting")
+                .withStreamId(streamId)
+                .execute();
+        zulip.streams().unmuteTopic("Test Stream For Muting")
+                .withStreamId(streamId)
+                .execute();
+
+        for (TopicVisibilityPolicy topicVisibilityPolicy : TopicVisibilityPolicy.values()) {
+            zulip.streams().updateUserTopicPreferences(streamId, "Test Stream For Muting", topicVisibilityPolicy).execute();
+        }
     }
 }

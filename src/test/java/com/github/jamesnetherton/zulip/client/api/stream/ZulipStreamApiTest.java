@@ -20,6 +20,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.MuteTopicApiReq
 import com.github.jamesnetherton.zulip.client.api.stream.request.SubscribeStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamSubscriptionSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateUserTopicPreferencesApiRequest;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
@@ -485,6 +486,20 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(2, result.size());
         assertEquals("invalid_parameter_1", result.get(0));
         assertEquals("invalid_parameter_2", result.get(1));
+    }
+
+    @Test
+    public void updateUserTopicPreferences() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateUserTopicPreferencesApiRequest.STREAM_ID, "1")
+                .add(UpdateUserTopicPreferencesApiRequest.TOPIC, "Test Topic")
+                .add(UpdateUserTopicPreferencesApiRequest.VISIBILITY_POLICY,
+                        String.valueOf(TopicVisibilityPolicy.MUTED.getId()))
+                .get();
+
+        stubZulipResponse(POST, "/user_topics", params);
+
+        zulip.streams().updateUserTopicPreferences(1, "Test Topic", TopicVisibilityPolicy.MUTED).execute();
     }
 
     @Test
