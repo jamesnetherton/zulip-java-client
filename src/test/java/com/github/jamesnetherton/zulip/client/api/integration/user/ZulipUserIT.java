@@ -234,6 +234,18 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     }
 
     @Test
+    public void setTypingForStream() throws ZulipClientException {
+        zulip.streams()
+                .subscribe(StreamSubscriptionRequest.of("Test Stream For Typing", "Test Stream For Typing"))
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId("Test Stream For Typing").execute();
+
+        zulip.users().setTyping(TypingOperation.START, streamId, "Test Stream For Typing").execute();
+        zulip.users().setTyping(TypingOperation.STOP, streamId, "Test Stream For Typing").execute();
+    }
+
+    @Test
     public void userPresence() throws ZulipClientException {
         Map<String, UserPresenceDetail> userPresence = zulip.users().getUserPresence("test@test.com").execute();
         assertFalse(userPresence.isEmpty());

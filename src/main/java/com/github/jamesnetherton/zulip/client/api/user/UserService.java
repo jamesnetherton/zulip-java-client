@@ -108,6 +108,20 @@ public class UserService implements ZulipService {
     }
 
     /**
+     * Sets user 'typing' status
+     *
+     * @see              <a href="https://zulip.com/api/set-typing-status">https://zulip.com/api/set-typing-status</a>
+     *
+     * @param  operation The typing operation to apply
+     * @param  streamId  The id of the stream in which the message is being typed
+     * @param  topic     The name of the topic in which the message is being typed
+     * @return           The {@link SetTypingStatusApiRequest} builder object
+     */
+    public SetTypingStatusApiRequest setTyping(TypingOperation operation, long streamId, String topic) {
+        return new SetTypingStatusApiRequest(this.client, operation, streamId, topic);
+    }
+
+    /**
      * Create a new user group.
      *
      * @see                <a href="https://zulip.com/api/create-user-group">https://zulip.com/api/create-user-group</a>
