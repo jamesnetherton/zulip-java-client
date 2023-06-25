@@ -2,6 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.stream.request;
 
 final class StreamRequestConstants {
 
+    public static final String DEFAULT_STREAMS = "default_streams";
     public static final String STREAM_ID = "get_stream_id";
     public static final String STREAM_TOPICS = "users/me/%d/topics";
     public static final String STREAMS = "streams";
@@ -12,6 +13,7 @@ final class StreamRequestConstants {
     public static final String TOPIC_DELETE = STREAMS_WITH_ID + "/delete_topic";
     public static final String USER_SUBSCRIPTIONS = "users/%d/subscriptions/%d";
     public static final String USER_TOPICS = "user_topics";
+    public static final String MEMBERS = STREAMS_WITH_ID + "/members";
 
     private StreamRequestConstants() {
     }

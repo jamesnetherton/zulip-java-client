@@ -2,16 +2,19 @@ package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.ArchiveStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamSubscribersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamTopicsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetSubscribedStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetSubscriptionStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.MuteTopicApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.RemoveDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.SubscribeStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UnsubscribeStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApiRequest;
@@ -234,5 +237,35 @@ public class StreamService implements ZulipService {
     public UpdateUserTopicPreferencesApiRequest updateUserTopicPreferences(long streamId, String topic,
             TopicVisibilityPolicy topicVisibilityPolicy) {
         return new UpdateUserTopicPreferencesApiRequest(this.client, streamId, topic, topicVisibilityPolicy);
+    }
+
+    /**
+     * Adds a default stream for new users joining the organization.
+     *
+     * @param  streamId The id of the stream to make a default for new users joining the organization
+     * @return          The {@link AddDefaultStreamApiRequest} builder object
+     */
+    public AddDefaultStreamApiRequest addDefaultStream(long streamId) {
+        return new AddDefaultStreamApiRequest(this.client, streamId);
+    }
+
+    /**
+     * Removes a default stream for new users joining the organization.
+     *
+     * @param  streamId The id of the stream to remove as a default for new users joining the organization
+     * @return          The {@link RemoveDefaultStreamApiRequest} builder object
+     */
+    public RemoveDefaultStreamApiRequest removeDefaultStream(long streamId) {
+        return new RemoveDefaultStreamApiRequest(this.client, streamId);
+    }
+
+    /**
+     * Gets all users subscribed to a stream.
+     *
+     * @param  streamId The id of the stream to get subscribers for
+     * @return          The {@link GetStreamSubscribersApiRequest} builder object
+     */
+    public GetStreamSubscribersApiRequest getStreamSubscribers(long streamId) {
+        return new GetStreamSubscribersApiRequest(this.client, streamId);
     }
 }
