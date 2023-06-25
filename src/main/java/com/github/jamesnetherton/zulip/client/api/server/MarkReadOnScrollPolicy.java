@@ -1,4 +1,4 @@
-package com.github.jamesnetherton.zulip.client.api.user;
+package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

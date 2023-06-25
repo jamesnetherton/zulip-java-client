@@ -366,6 +366,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.USER_LIST_STYLE, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -407,6 +408,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
