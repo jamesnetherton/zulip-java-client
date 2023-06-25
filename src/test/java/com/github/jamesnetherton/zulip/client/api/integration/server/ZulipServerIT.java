@@ -52,6 +52,18 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
             assertEquals("#(?P<id>[0-9]+)", linkifier.getPattern());
             assertEquals("https://github.com/zulip/zulip/issues/{id}s", linkifier.getUrlTemplate());
 
+            // Update linkifier
+            zulip.server().updateLinkifier(linkifier.getId(), "#(?P<id>[0-5]+)", "https://github.com/zulip/zulip/pulls/{id}s")
+                    .execute();
+
+            linkifiers = zulip.server().getLinkifiers().execute();
+            assertEquals(1, linkifiers.size());
+
+            linkifier = linkifiers.get(0);
+            assertEquals(id, linkifier.getId());
+            assertEquals("#(?P<id>[0-5]+)", linkifier.getPattern());
+            assertEquals("https://github.com/zulip/zulip/pulls/{id}s", linkifier.getUrlTemplate());
+
             // Delete linkifiers
             zulip.server().deleteLinkifier(id).execute();
         } catch (Throwable t) {

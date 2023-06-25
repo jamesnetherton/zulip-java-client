@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileField
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -39,12 +40,26 @@ public class ServerService implements ZulipService {
      *
      * @see                <a href="https://zulip.com/api/add-linkifier">https://zulip.com/api/add-linkifier</a>
      *
-     * @param  pattern     The The regular expression that should trigger the linkifier
+     * @param  pattern     The regular expression that should trigger the linkifier
      * @param  urlTemplate The RFC 6570 compliant URL template used for the link
      * @return             The {@link AddLinkifierApiRequest} builder object
      */
     public AddLinkifierApiRequest addLinkifier(String pattern, String urlTemplate) {
         return new AddLinkifierApiRequest(this.client, pattern, urlTemplate);
+    }
+
+    /**
+     * Updates a linkifier.
+     *
+     * @see                <a href="https://zulip.com/api/add-linkifier">https://zulip.com/api/add-linkifier</a>
+     *
+     * @param  id          The id of the linkifier to update
+     * @param  pattern     The regular expression that should trigger the linkifier
+     * @param  urlTemplate The RFC 6570 compliant URL template used for the link
+     * @return             The {@link UpdateLinkifierApiRequest} builder object
+     */
+    public UpdateLinkifierApiRequest updateLinkifier(long id, String pattern, String urlTemplate) {
+        return new UpdateLinkifierApiRequest(this.client, id, pattern, urlTemplate);
     }
 
     /**

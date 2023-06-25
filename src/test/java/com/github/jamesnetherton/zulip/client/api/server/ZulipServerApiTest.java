@@ -47,6 +47,18 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void updateLinkifier() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddLinkifierApiRequest.PATTERN, "updated regex")
+                .add(AddLinkifierApiRequest.URL_TEMPLATE, "https://github.com/zulip/zulip-updated/issues/%s")
+                .get();
+
+        stubZulipResponse(PATCH, "/realm/filters/1", params);
+
+        zulip.server().updateLinkifier(1, "updated regex", "https://github.com/zulip/zulip-updated/issues/%s").execute();
+    }
+
+    @Test
     public void deleteLinkifier() throws Exception {
         stubZulipResponse(DELETE, "/realm/filters/1", Collections.emptyMap());
 
