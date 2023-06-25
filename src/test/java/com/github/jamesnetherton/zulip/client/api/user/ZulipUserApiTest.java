@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
