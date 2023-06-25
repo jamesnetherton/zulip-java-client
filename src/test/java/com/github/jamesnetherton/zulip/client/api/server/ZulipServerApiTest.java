@@ -336,6 +336,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
                         String.valueOf(DesktopIconCountDisplay.ALL_UNREADS.getSetting()))
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DISPLAY_EMOJI_REACTION_USERS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.EMAIL_ADDRESS_VISIBILITY, "1")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.EMAIL_NOTIFICATIONS_BATCHING_PERIOD_SECONDS, "60")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.EMOJISET, EmojiSet.TWITTER.toString())
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DESKTOP_NOTIFICATIONS, "true")
@@ -379,6 +380,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
+                .withEmailAddressVisibility(EmailAddressVisibilityPolicy.EVERYONE)
                 .withEmailNotificationsBatchingPeriodSeconds(60)
                 .withEmojiSet(EmojiSet.TWITTER)
                 .withEnableDesktopNotifications(true)

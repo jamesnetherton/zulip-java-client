@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.api.server.request.ServerRe
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.EmailAddressVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.response.UpdateRealmNewUserDefaultSettingsApiResponse;
@@ -31,6 +32,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String DISPLAY_EMOJI_REACTION_USERS = "display_emoji_reaction_users";
     public static final String DESKTOP_ICON_COUNT_DISPLAY = "desktop_icon_count_display";
     public static final String ENABLE_DESKTOP_NOTIFICATIONS = "enable_desktop_notifications";
+    public static final String EMAIL_ADDRESS_VISIBILITY = "email_address_visibility";
     public static final String EMAIL_NOTIFICATIONS_BATCHING_PERIOD_SECONDS = "email_notifications_batching_period_seconds";
     public static final String EMOJISET = "emojiset";
     public static final String ENABLE_DIGEST_EMAILS = "enable_digest_emails";
@@ -167,6 +169,17 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest withEnableDesktopNotifications(boolean enable) {
         putParam(ENABLE_DESKTOP_NOTIFICATIONS, enable);
+        return this;
+    }
+
+    /**
+     * Sets the policy for which other users in this organization can see the users real email address.
+     *
+     * @param  policy The {@link EmailAddressVisibilityPolicy} to apply
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEmailAddressVisibility(EmailAddressVisibilityPolicy policy) {
+        putParam(EMAIL_ADDRESS_VISIBILITY, policy.getId());
         return this;
     }
 

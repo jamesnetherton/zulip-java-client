@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.server.AuthenticationSettings;
 import com.github.jamesnetherton.zulip.client.api.server.CustomEmoji;
+import com.github.jamesnetherton.zulip.client.api.server.EmailAddressVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.Linkifier;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
@@ -224,6 +225,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
                 .withEmailNotificationsBatchingPeriodSeconds(60)
+                .withEmailAddressVisibility(EmailAddressVisibilityPolicy.EVERYONE)
                 .withEmojiSet(EmojiSet.TWITTER)
                 .withEnableDesktopNotifications(true)
                 .withEnableDigestEmails(true)
