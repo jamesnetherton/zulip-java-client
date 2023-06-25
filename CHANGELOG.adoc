@@ -1,5 +1,17 @@
 = Changelog
 
+== 0.5.0
+
+==== Enhancements
+
+Zulip 7 support:
+
+* Scheduled messages APIs
+* Update user topic preferences APIs
+* Default stream APIs
+* Get all users subscribed to a stream APIs
+* Update linkifier APIs
+
 == 0.4.0
 
 ==== Enhancements
