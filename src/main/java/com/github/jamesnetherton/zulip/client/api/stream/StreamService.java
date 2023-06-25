@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.SubscribeStream
 import com.github.jamesnetherton.zulip.client.api.stream.request.UnsubscribeStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamSubscriptionSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateUserTopicPreferencesApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
@@ -157,11 +158,13 @@ public class StreamService implements ZulipService {
     /**
      * Mutes a topic.
      *
-     * @see          <a href="https://zulip.com/api/mute-topic">https://zulip.com/api/mute-topic</a>
+     * @see              <a href="https://zulip.com/api/mute-topic">https://zulip.com/api/mute-topic</a>
      *
-     * @param  topic The name of the topic to mute
-     * @return       The {@link MuteTopicApiRequest} builder object
+     * @param      topic The name of the topic to mute
+     * @return           The {@link MuteTopicApiRequest} builder object
+     * @deprecated       Use updateUserTopicPreferences instead
      */
+    @Deprecated(forRemoval = true)
     public MuteTopicApiRequest muteTopic(String topic) {
         return new MuteTopicApiRequest(this.client, topic, Operation.ADD);
     }
@@ -169,11 +172,13 @@ public class StreamService implements ZulipService {
     /**
      * Unmutes a topic.
      *
-     * @see          <a href="https://zulip.com/api/mute-topic">https://zulip.com/api/mute-topic</a>
+     * @see              <a href="https://zulip.com/api/mute-topic">https://zulip.com/api/mute-topic</a>
      *
-     * @param  topic The name of the topic to unmute
-     * @return       The {@link MuteTopicApiRequest} builder object
+     * @param      topic The name of the topic to unmute
+     * @return           The {@link MuteTopicApiRequest} builder object
+     * @deprecated       Use updateUserTopicPreferences instead
      */
+    @Deprecated(forRemoval = true)
     public MuteTopicApiRequest unmuteTopic(String topic) {
         return new MuteTopicApiRequest(this.client, topic, Operation.REMOVE);
     }
@@ -213,5 +218,21 @@ public class StreamService implements ZulipService {
      */
     public ArchiveStreamApiRequest archiveStream(long streamId) {
         return new ArchiveStreamApiRequest(this.client, streamId);
+    }
+
+    /**
+     * Updates personal preferences for a topic.
+     *
+     * @see                          <a href=
+     *                               "https://zulip.com/api/update-user-topic">https://zulip.com/api/update-user-topic</a>
+     *
+     * @param  streamId              The id of the stream where the topic resides
+     * @param  topic                 The name of the topic to update preferences for
+     * @param  topicVisibilityPolicy The {@link TopicVisibilityPolicy} to apply
+     * @return                       The {@link UpdateUserTopicPreferencesApiRequest} builder object
+     */
+    public UpdateUserTopicPreferencesApiRequest updateUserTopicPreferences(long streamId, String topic,
+            TopicVisibilityPolicy topicVisibilityPolicy) {
+        return new UpdateUserTopicPreferencesApiRequest(this.client, streamId, topic, topicVisibilityPolicy);
     }
 }
