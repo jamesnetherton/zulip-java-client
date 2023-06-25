@@ -9,6 +9,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.response.UpdateOwnUserSettingsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -64,6 +65,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String TRANSLATE_EMOTICONS = "translate_emoticons";
     public static final String TWENTY_FOUR_HOUR_TIME = "twenty_four_hour_time";
     public static final String USER_LIST_STYLE = "user_list_style";
+    public static final String WEB_MARK_READ_ON_SCROLL_POLICY = "web_mark_read_on_scroll_policy";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
 
     /**
@@ -593,6 +595,17 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest withUserListStyle(UserListStyle userListStyle) {
         putParam(USER_LIST_STYLE, userListStyle.getId());
+        return this;
+    }
+
+    /**
+     * Sets whether or not to mark messages as read when the user scrolls through their feed.
+     *
+     * @param  policy The {@link MarkReadOnScrollPolicy} to determine whether when messages are marked as read
+     * @return        This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy policy) {
+        putParam(WEB_MARK_READ_ON_SCROLL_POLICY, policy.getId());
         return this;
     }
 
