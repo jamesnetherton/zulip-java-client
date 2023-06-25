@@ -14,6 +14,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
@@ -427,6 +428,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.COMPACT)
+                .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
