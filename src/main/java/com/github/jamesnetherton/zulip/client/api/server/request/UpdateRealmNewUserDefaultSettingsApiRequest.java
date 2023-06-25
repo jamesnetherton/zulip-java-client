@@ -5,6 +5,7 @@ import static com.github.jamesnetherton.zulip.client.api.server.request.ServerRe
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.response.UpdateRealmNewUserDefaultSettingsApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
@@ -12,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOptio
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.List;
@@ -51,6 +53,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String PM_CONTENT_IN_DESKTOP_NOTIFICATIONS = "pm_content_in_desktop_notifications";
     public static final String PRESENCE_ENABLED = "presence_enabled";
     public static final String REALM_NAME_IN_NOTIFICATIONS = "realm_name_in_notifications";
+    public static final String REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY = "realm_name_in_email_notifications_policy";
     public static final String SEND_PRIVATE_TYPING_NOTIFICATIONS = "send_private_typing_notifications";
     public static final String SEND_READ_RECEIPTS = "send_read_receipts";
     public static final String SEND_STREAM_TYPING_NOTIFICATIONS = "send_stream_typing_notifications";
@@ -391,13 +394,29 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     /**
      * Sets whether to include organization name in subject of missed message emails.
      *
-     * @param  realmNameInNotifications {@code true} to include the organization name in the subject of missed message emails.
-     *                                  {@code false} to not include the organization name in the subject of missed message
-     *                                  emails
-     * @return                          This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     * @param      realmNameInNotifications {@code true} to include the organization name in the subject of missed message
+     *                                      emails.
+     *                                      {@code false} to not include the organization name in the subject of missed message
+     *                                      emails
+     * @return                              This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     * @deprecated                          use withRealmNameInEmailNotifications instead
      */
+    @Deprecated
     public UpdateRealmNewUserDefaultSettingsApiRequest withRealmNameInNotifications(boolean realmNameInNotifications) {
         putParam(REALM_NAME_IN_NOTIFICATIONS, realmNameInNotifications);
+        return this;
+    }
+
+    /**
+     * Sets whether to include the organization name in the subject of message notification emails.
+     *
+     * @param  policy The {@link RealmNameInNotificationsPolicy} to determine whether to include the organization name in the
+     *                subject of message notification emails
+     * @return        This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withRealmNameInEmailNotifications(
+            RealmNameInNotificationsPolicy policy) {
+        putParam(REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, policy.getId());
         return this;
     }
 

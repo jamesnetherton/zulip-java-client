@@ -14,6 +14,7 @@ import com.github.jamesnetherton.zulip.client.api.server.Linkifier;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileFieldType;
+import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.ServerSettings;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
@@ -245,6 +246,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
+                .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
