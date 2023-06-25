@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
@@ -296,5 +297,33 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         for (TopicVisibilityPolicy topicVisibilityPolicy : TopicVisibilityPolicy.values()) {
             zulip.streams().updateUserTopicPreferences(streamId, "Test Stream For Muting", topicVisibilityPolicy).execute();
         }
+    }
+
+    @Test
+    public void defaultStreams() throws ZulipClientException {
+        StreamSubscriptionResult result = zulip.streams()
+                .subscribe(StreamSubscriptionRequest.of("Test Stream For Defaulting", "Test Stream For Defaulting"))
+                .execute();
+
+        Map<String, List<String>> subscribed = result.getSubscribed();
+        assertEquals(1, subscribed.size());
+
+        Long streamId = zulip.streams().getStreamId("Test Stream For Defaulting").execute();
+
+        zulip.streams().addDefaultStream(streamId).execute();
+
+        String uuid = UUID.randomUUID().toString().substring(0, 5);
+
+        long userIdA = zulip.users().createUser("foo@" + uuid + ".com", "Foo Bar", "f00B4r").execute();
+
+        List<Long> subscribers = zulip.streams().getStreamSubscribers(streamId).execute();
+        assertTrue(subscribers.contains(userIdA));
+
+        zulip.streams().removeDefaultStream(streamId).execute();
+
+        long userIdB = zulip.users().createUser("bar@" + uuid + ".com", "Bar Foo", "f00B4r").execute();
+
+        subscribers = zulip.streams().getStreamSubscribers(streamId).execute();
+        assertFalse(subscribers.contains(userIdB));
     }
 }

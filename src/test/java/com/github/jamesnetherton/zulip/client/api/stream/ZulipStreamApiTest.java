@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
@@ -523,4 +524,35 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         zulip.streams().archiveStream(1).execute();
     }
 
+    @Test
+    public void addDefaultStream() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddDefaultStreamApiRequest.STREAM_ID, "1")
+                .get();
+
+        stubZulipResponse(POST, "/default_streams", params);
+
+        zulip.streams().addDefaultStream(1).execute();
+    }
+
+    @Test
+    public void removeDefaultStream() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddDefaultStreamApiRequest.STREAM_ID, "1")
+                .get();
+
+        stubZulipResponse(DELETE, "/default_streams", params);
+
+        zulip.streams().removeDefaultStream(1).execute();
+    }
+
+    @Test
+    public void streamSubscribers() throws Exception {
+        stubZulipResponse(GET, "/streams/1/members", Collections.emptyMap(), "streamSubscribers.json");
+
+        List<Long> streamSubscribers = zulip.streams().getStreamSubscribers(1).execute();
+        assertEquals(2, streamSubscribers.size());
+        assertEquals(5, streamSubscribers.get(0));
+        assertEquals(6, streamSubscribers.get(1));
+    }
 }
