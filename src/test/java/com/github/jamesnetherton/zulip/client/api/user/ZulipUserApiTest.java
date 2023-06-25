@@ -126,6 +126,16 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void updateUserGroupWithNameOrDescription() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .get();
+
+        stubZulipResponse(PATCH, "/user_groups/3", params);
+
+        zulip.users().updateUserGroup(3).execute();
+    }
+
+    @Test
     public void deleteUserGroup() throws Exception {
         stubZulipResponse(DELETE, "/user_groups/7", Collections.emptyMap());
 

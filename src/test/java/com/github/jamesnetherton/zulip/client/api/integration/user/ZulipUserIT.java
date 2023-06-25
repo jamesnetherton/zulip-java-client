@@ -314,6 +314,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(members.contains(ownUser.getUserId()));
 
         // Update group
+        zulip.users().updateUserGroup(group.getId()).withName("Updated Group Name").execute();
         zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId()).execute();
 
         groups = zulip.users().getUserGroups().execute();

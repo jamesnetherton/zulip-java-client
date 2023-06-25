@@ -138,6 +138,18 @@ public class UserService implements ZulipService {
     /**
      * Updates a user group.
      *
+     * @see            <a href="https://zulip.com/api/update-user-group">https://zulip.com/api/update-user-group</a>
+     *
+     * @param  groupId The id of the group to update
+     * @return         The {@link UpdateUserGroupApiRequest} builder object
+     */
+    public UpdateUserGroupApiRequest updateUserGroup(long groupId) {
+        return new UpdateUserGroupApiRequest(this.client, groupId);
+    }
+
+    /**
+     * Updates a user group.
+     *
      * @see                <a href="https://zulip.com/api/update-user-group">https://zulip.com/api/update-user-group</a>
      *
      * @param  name        The updated name of the user group
