@@ -15,6 +15,7 @@ import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOptio
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.MarkReadOnScrollPolicy;
+import com.github.jamesnetherton.zulip.client.api.user.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
@@ -420,6 +421,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
+                .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
