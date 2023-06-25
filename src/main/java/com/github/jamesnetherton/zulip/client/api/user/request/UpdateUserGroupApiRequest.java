@@ -23,6 +23,17 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     /**
      * Constructs a {@link UpdateUserGroupApiRequest}.
      *
+     * @param client  The Zulip HTTP client
+     * @param groupId The id of the group to update
+     */
+    public UpdateUserGroupApiRequest(ZulipHttpClient client, long groupId) {
+        super(client);
+        this.groupId = groupId;
+    }
+
+    /**
+     * Constructs a {@link UpdateUserGroupApiRequest}.
+     *
      * @param client      The Zulip HTTP client
      * @param name        The updated name of the user group
      * @param description The updated description of the user group
@@ -31,8 +42,18 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     public UpdateUserGroupApiRequest(ZulipHttpClient client, String name, String description, long groupId) {
         super(client);
         this.groupId = groupId;
-        putParam(NAME, name);
+        withName(name);
+        withDescription(description);
+    }
+
+    public UpdateUserGroupApiRequest withDescription(String description) {
         putParam(DESCRIPTION, description);
+        return this;
+    }
+
+    public UpdateUserGroupApiRequest withName(String name) {
+        putParam(NAME, name);
+        return this;
     }
 
     /**
