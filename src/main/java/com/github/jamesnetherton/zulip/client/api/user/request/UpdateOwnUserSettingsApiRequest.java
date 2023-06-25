@@ -4,12 +4,12 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UserReques
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
-import com.github.jamesnetherton.zulip.client.api.user.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.response.UpdateOwnUserSettingsApiResponse;

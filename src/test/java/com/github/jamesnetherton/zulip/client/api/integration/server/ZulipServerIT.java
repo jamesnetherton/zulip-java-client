@@ -11,6 +11,7 @@ import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTe
 import com.github.jamesnetherton.zulip.client.api.server.AuthenticationSettings;
 import com.github.jamesnetherton.zulip.client.api.server.CustomEmoji;
 import com.github.jamesnetherton.zulip.client.api.server.Linkifier;
+import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileFieldType;
 import com.github.jamesnetherton.zulip.client.api.server.ServerSettings;
@@ -251,6 +252,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
