@@ -5,6 +5,7 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UserReques
 import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
+import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -18,6 +19,8 @@ public class SetTypingStatusApiRequest extends ZulipApiRequest implements VoidEx
 
     public static final String OPERATION = "op";
     public static final String TO = "to";
+    public static final String TOPIC = "topic";
+    public static final String TYPE = "type";
 
     /**
      * Constructs a {@link SetTypingStatusApiRequest}.
@@ -30,6 +33,22 @@ public class SetTypingStatusApiRequest extends ZulipApiRequest implements VoidEx
         super(client);
         putParam(OPERATION, operation.toString());
         putParamAsJsonString(TO, userIds);
+    }
+
+    /**
+     * Constructs a {@link SetTypingStatusApiRequest}.
+     *
+     * @param client    The Zulip HTTP client
+     * @param operation The typing operation to apply
+     * @param streamId  The id of the stream in which the message is being typed
+     * @param topic     The name of the topic in which the message is being typed
+     */
+    public SetTypingStatusApiRequest(ZulipHttpClient client, TypingOperation operation, long streamId, String topic) {
+        super(client);
+        putParam(OPERATION, operation.toString());
+        putParamAsJsonString(TO, new long[] { streamId });
+        putParam(TOPIC, topic);
+        putParam(TYPE, MessageType.STREAM.toString());
     }
 
     /**

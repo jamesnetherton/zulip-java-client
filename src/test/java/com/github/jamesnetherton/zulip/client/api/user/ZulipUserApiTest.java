@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
@@ -83,6 +84,20 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         stubZulipResponse(POST, "/typing", params);
 
         zulip.users().setTyping(TypingOperation.START, 1, 2, 3).execute();
+    }
+
+    @Test
+    public void setTypingForStream() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SetTypingStatusApiRequest.OPERATION, TypingOperation.START.toString())
+                .add(SetTypingStatusApiRequest.TO, "[1]")
+                .add(SetTypingStatusApiRequest.TOPIC, "test typing topic")
+                .add(SetTypingStatusApiRequest.TYPE, MessageType.STREAM.toString())
+                .get();
+
+        stubZulipResponse(POST, "/typing", params);
+
+        zulip.users().setTyping(TypingOperation.START, 1, "test typing topic").execute();
     }
 
     @Test
