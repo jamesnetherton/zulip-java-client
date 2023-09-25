@@ -13,6 +13,10 @@ public enum UserRole {
      */
     ORGANIZATION_ADMIN(200),
     /**
+     * Organization moderator role.
+     */
+    ORGANIZATION_MODERATOR(300),
+    /**
      * Member role.
      */
     MEMBER(400),
