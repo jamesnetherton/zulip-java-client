@@ -2,12 +2,12 @@ package com.github.jamesnetherton.zulip.client.api.user.request;
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.response.CreateUserApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS;
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
+
 
 /**
  * Zulip API request builder for Get all the user's configured alert words.
@@ -34,6 +34,6 @@ public class GetAllAlertWordsApiRequest extends ZulipApiRequest implements Execu
      */
     @Override
     public String[] execute() throws ZulipClientException {
-        return client().get(USERS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+        return client().get(USERS_WITH_ME, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
     }
 }

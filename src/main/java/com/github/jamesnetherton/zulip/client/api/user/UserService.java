@@ -390,7 +390,7 @@ public class UserService implements ZulipService {
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link AddAlertWordsApiRequest} builder object
      */
-    public AddAlertWordsApiRequest addAlertWordsApiRequest(String[] alertWords) {
+    public AddAlertWordsApiRequest addAlertWords(String[] alertWords) {
         return new AddAlertWordsApiRequest(this.client, alertWords);
     }
 
@@ -402,7 +402,20 @@ public class UserService implements ZulipService {
      *
      * @return             The {@link AddAlertWordsApiRequest} builder object
      */
-    public GetAllAlertWordsApiRequest getAllAlertWordsApiRequest() {
+    public GetAllAlertWordsApiRequest getAllAlertWords() {
         return new GetAllAlertWordsApiRequest(this.client);
+    }
+
+    /**
+     * remove-alert-words
+     *
+     * @see                <a href=
+     *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
+     *
+     * @param  alertWords An array of strings, where each string is an alert word (or phrase)
+     * @return             The {@link RemoveAlertWordsApiRequest} builder object
+     */
+    public RemoveAlertWordsApiRequest removeAlertWords(String[] alertWords) {
+        return new RemoveAlertWordsApiRequest(this.client, alertWords);
     }
 }

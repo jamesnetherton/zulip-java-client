@@ -1,10 +1,9 @@
 package com.github.jamesnetherton.zulip.client.api.user.request;
 
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS;
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.response.CreateUserApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -36,6 +35,6 @@ public class AddAlertWordsApiRequest extends ZulipApiRequest implements Executab
      */
     @Override
     public String [] execute() throws ZulipClientException {
-        return client().post(USERS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+        return client().post(USERS_WITH_ME, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
     }
 }

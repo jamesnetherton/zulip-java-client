@@ -2,12 +2,11 @@ package com.github.jamesnetherton.zulip.client.api.user.request;
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.response.CreateUserApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS;
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
 
 /**
  * Zulip API request builder for remove alert words.
@@ -36,6 +35,6 @@ public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements Execu
      */
     @Override
     public String[] execute() throws ZulipClientException {
-        return client().delete(USERS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+        return client().delete(USERS_WITH_ME, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
     }
 }
