@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Zulip API response class for getting alert words.
  *
- * @see <a href="https://zulip.com/api/v1/users/me/alert_words#response">https://zulip.com/api/v1/users/me/alert_words#response</a>
+ * @see <a href="https://zulip.com/api/add-alert-words#response">https://zulip.com/api/add-alert-words#response</a>
  */
 public class GetAllAlertWordsApiResponse extends ZulipApiResponse {
 
