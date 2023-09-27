@@ -17,6 +17,7 @@ import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
+import com.github.jamesnetherton.zulip.client.api.user.request.AddAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
@@ -688,5 +689,40 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .execute();
 
         assertTrue(isMember);
+    }
+
+    @Test
+    public void addAlertWords() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddAlertWordsApiRequest.ALERT_WORDS, "[\"foo\",\"bar\"]")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/alert_words", params, "alertWordsResponse.json");
+
+        List<String> alertWords = zulip.users().addAlertWords("foo", "bar").execute();
+        assertEquals(2, alertWords.size());
+        assertTrue(alertWords.containsAll(List.of("foo", "bar")));
+    }
+
+    @Test
+    public void getAllAlertWords() throws Exception {
+        stubZulipResponse(GET, "/users/me/alert_words", "alertWordsResponse.json");
+
+        List<String> alertWords = zulip.users().getAllAlertWords().execute();
+        assertEquals(2, alertWords.size());
+        assertTrue(alertWords.containsAll(List.of("foo", "bar")));
+    }
+
+    @Test
+    public void removeAlertWords() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddAlertWordsApiRequest.ALERT_WORDS, "[\"foo\"]")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/alert_words", params, "removeAlertWordsResponse.json");
+
+        List<String> alertWords = zulip.users().removeAlertWords("foo").execute();
+        assertEquals(1, alertWords.size());
+        assertTrue(alertWords.contains("bar"));
     }
 }

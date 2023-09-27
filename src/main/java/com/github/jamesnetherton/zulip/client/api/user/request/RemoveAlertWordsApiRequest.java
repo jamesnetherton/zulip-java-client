@@ -1,20 +1,20 @@
 package com.github.jamesnetherton.zulip.client.api.user.request;
 
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_ALERT_WORDS;
+
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
+import com.github.jamesnetherton.zulip.client.api.user.response.AlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
-
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_ALERT_WORDS;
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
+import java.util.List;
 
 /**
- * Zulip API request builder for remove alert words.
+ * Zulip API request builder for removing user alert words.
  *
  * @see <a href="https://zulip.com/api/v1/users/me/alert_words">https://zulip.com/api/v1/users/me/alert_wordsr</a>
  */
-public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String[]> {
+public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<String>> {
 
     public static final String ALERT_WORDS = "alert_words";
 
@@ -30,12 +30,13 @@ public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements Execu
     }
 
     /**
-     * Executes the Zulip API request for remove alert words.
+     * Executes the Zulip API request for removing user alert words.
      *
+     * @return                      List of user alert word strings
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public String[] execute() throws ZulipClientException {
-        return client().delete(USERS_ALERT_WORDS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+    public List<String> execute() throws ZulipClientException {
+        return client().delete(USERS_ALERT_WORDS, getParams(), AlertWordsApiResponse.class).getAlertWords();
     }
 }

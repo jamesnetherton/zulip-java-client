@@ -1,13 +1,14 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
-import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.api.user.request.AddAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
@@ -19,6 +20,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiR
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
@@ -28,10 +30,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStat
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.request.AddAlertWordsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
-
+import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
  * Zulip user APIs.
@@ -410,38 +409,38 @@ public class UserService implements ZulipService {
     }
 
     /**
-     * Adds alert words.
+     * Adds user alert words.
      *
-     * @see                <a href=
-     *                     "https://zulip.com/api/add-alert-words">https://zulip.com/api/add-alert-words</a>
+     * @see               <a href=
+     *                    "https://zulip.com/api/add-alert-words">https://zulip.com/api/add-alert-words</a>
      *
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
-     * @return             The {@link AddAlertWordsApiRequest} builder object
+     * @return            The {@link AddAlertWordsApiRequest} builder object
      */
     public AddAlertWordsApiRequest addAlertWords(String... alertWords) {
         return new AddAlertWordsApiRequest(this.client, alertWords);
     }
 
     /**
-     * Gets all alert words.
+     * Gets all user alert words.
      *
-     * @see                <a href=
-     *                     "https://zulip.com/api/get-alert-words">https://zulip.com/api/get-alert-words</a>
+     * @see    <a href=
+     *         "https://zulip.com/api/get-alert-words">https://zulip.com/api/get-alert-words</a>
      *
-     * @return             The {@link GetAllAlertWordsApiRequest} builder object
+     * @return The {@link GetAllAlertWordsApiRequest} builder object
      */
     public GetAllAlertWordsApiRequest getAllAlertWords() {
         return new GetAllAlertWordsApiRequest(this.client);
     }
 
     /**
-     * Removes alert words.
+     * Removes user alert words.
      *
-     * @see                <a href=
-     *                     "https://zulip.com/api/remove-alert-words">https://zulip.com/api/remove-alert-words</a>
+     * @see               <a href=
+     *                    "https://zulip.com/api/remove-alert-words">https://zulip.com/api/remove-alert-words</a>
      *
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
-     * @return             The {@link RemoveAlertWordsApiRequest} builder object
+     * @return            The {@link RemoveAlertWordsApiRequest} builder object
      */
     public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);

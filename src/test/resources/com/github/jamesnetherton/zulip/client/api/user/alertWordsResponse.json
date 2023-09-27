@@ -1,0 +1,8 @@
+{
+  "alert_words": [
+    "foo",
+    "bar"
+  ],
+  "msg": "",
+  "result": "success"
+}
