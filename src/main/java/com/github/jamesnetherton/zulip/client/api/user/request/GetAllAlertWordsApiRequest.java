@@ -5,8 +5,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
-
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_ALERT_WORDS;
 
 
 /**
@@ -34,6 +33,6 @@ public class GetAllAlertWordsApiRequest extends ZulipApiRequest implements Execu
      */
     @Override
     public String[] execute() throws ZulipClientException {
-        return client().get(USERS_WITH_ME, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+        return client().get(USERS_ALERT_WORDS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
     }
 }

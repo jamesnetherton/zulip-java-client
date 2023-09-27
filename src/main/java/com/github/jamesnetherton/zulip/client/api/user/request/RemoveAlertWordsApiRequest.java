@@ -6,6 +6,7 @@ import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWords
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_ALERT_WORDS;
 import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_WITH_ME;
 
 /**
@@ -35,6 +36,6 @@ public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements Execu
      */
     @Override
     public String[] execute() throws ZulipClientException {
-        return client().delete(USERS_WITH_ME, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
+        return client().delete(USERS_ALERT_WORDS, getParams(), GetAllAlertWordsApiResponse.class).getAlertWords();
     }
 }
