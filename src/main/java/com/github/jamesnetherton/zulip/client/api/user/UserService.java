@@ -418,7 +418,7 @@ public class UserService implements ZulipService {
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link AddAlertWordsApiRequest} builder object
      */
-    public AddAlertWordsApiRequest addAlertWords(String[] alertWords) {
+    public AddAlertWordsApiRequest addAlertWords(String... alertWords) {
         return new AddAlertWordsApiRequest(this.client, alertWords);
     }
 
@@ -426,9 +426,9 @@ public class UserService implements ZulipService {
      * Gets all alert words.
      *
      * @see                <a href=
-     *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
+     *                     "https://zulip.com/api/get-alert-words">https://zulip.com/api/get-alert-words</a>
      *
-     * @return             The {@link AddAlertWordsApiRequest} builder object
+     * @return             The {@link GetAllAlertWordsApiRequest} builder object
      */
     public GetAllAlertWordsApiRequest getAllAlertWords() {
         return new GetAllAlertWordsApiRequest(this.client);
@@ -438,12 +438,12 @@ public class UserService implements ZulipService {
      * Removes alert words.
      *
      * @see                <a href=
-     *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
+     *                     "https://zulip.com/api/remove-alert-words">https://zulip.com/api/remove-alert-words</a>
      *
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link RemoveAlertWordsApiRequest} builder object
      */
-    public RemoveAlertWordsApiRequest removeAlertWords(String[] alertWords) {
+    public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);
     }
 }
