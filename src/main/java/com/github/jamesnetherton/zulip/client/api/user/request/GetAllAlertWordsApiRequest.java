@@ -12,7 +12,7 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UserReques
 /**
  * Zulip API request builder for Get all the user's configured alert words.
  *
- * @see <a href="https://zulip.com/api/v1/users/me/alert_words">https://zulip.com/api/v1/users/me/alert_wordsr</a>
+ * @see <a href="https://zulip.com/api/get-alert-words">https://zulip.com/api/get-alert-words</a>
  */
 public class GetAllAlertWordsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String []> {
 
