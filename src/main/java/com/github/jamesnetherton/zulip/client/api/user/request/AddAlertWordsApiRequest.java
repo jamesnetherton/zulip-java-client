@@ -25,7 +25,7 @@ public class AddAlertWordsApiRequest extends ZulipApiRequest implements Executab
      */
     public AddAlertWordsApiRequest(ZulipHttpClient client, String[] alertWords) {
         super(client);
-        putParam(ALERT_WORDS, alertWords);
+        putParamAsJsonString(ALERT_WORDS, alertWords);
     }
 
     /**
