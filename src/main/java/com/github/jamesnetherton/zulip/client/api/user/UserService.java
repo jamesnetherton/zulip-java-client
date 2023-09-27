@@ -426,7 +426,7 @@ public class UserService implements ZulipService {
      * Gets all alert words.
      *
      * @see                <a href=
-     *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
+     *                     "https://zulip.com/api/get-alert-words">https://zulip.com/api/get-alert-words</a>
      *
      * @return             The {@link GetAllAlertWordsApiRequest} builder object
      */
