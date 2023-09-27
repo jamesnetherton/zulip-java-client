@@ -1,5 +1,14 @@
 = Changelog
 
+== 0.5.2
+
+==== Enhancements
+
+* Support for user alert words API
+** Add alert words
+** Get all alert words
+** Remove alert words
+
 == 0.5.1
 
 ==== Bug fixes
