@@ -11,7 +11,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 /**
  * Zulip API request builder for set alert words.
  *
- * @see <a href="https://zulip.com/api/v1/users/me/alert_words">https://zulip.com/api/v1/users/me/alert_wordsr</a>
+ * @see <a href="https://zulip.com/api/add-alert-words">https://zulip.com/api/add-alert-words</a>
  */
 public class AddAlertWordsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String []> {
 
