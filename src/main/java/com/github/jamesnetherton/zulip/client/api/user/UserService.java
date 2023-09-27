@@ -443,7 +443,7 @@ public class UserService implements ZulipService {
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link RemoveAlertWordsApiRequest} builder object
      */
-    public RemoveAlertWordsApiRequest removeAlertWords(String[] alertWords) {
+    public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);
     }
 }
