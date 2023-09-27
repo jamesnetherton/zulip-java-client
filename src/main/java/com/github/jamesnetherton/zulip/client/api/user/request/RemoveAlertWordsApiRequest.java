@@ -23,7 +23,7 @@ public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements Execu
      * @param client     The Zulip HTTP client
      * @param alertWords An array of strings to be removed from the user's set of configured alert words
      */
-    public RemoveAlertWordsApiRequest(ZulipHttpClient client, String[] alertWords) {
+    public RemoveAlertWordsApiRequest(ZulipHttpClient client, String... alertWords) {
         super(client);
         putParamAsJsonString(ALERT_WORDS, alertWords);
     }
