@@ -473,14 +473,19 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void alertWordsManagement() throws Exception {
-        String[] alertWords1={"fuck","foo","fool"};
-        String[] alertWords2={"fuck"};
-        zulip.users().addAlertWords(alertWords1).execute();
-        zulip.users().getAllAlertWords().execute();
-        assertTrue(zulip.users().getAllAlertWords().execute().length==3);
-        zulip.users().removeAlertWords(alertWords2).execute();
-        assertTrue(zulip.users().getAllAlertWords().execute().length==2);
+        List<String> alertWords = List.of("foo", "bar", "cheese");
 
+        // Add alert words
+        List<String> addedAlertWords = zulip.users().addAlertWords(alertWords.toArray(new String[0])).execute();
+        assertTrue(addedAlertWords.containsAll(alertWords));
+
+        // Get all alert words
+        List<String> allAlertWords = zulip.users().getAllAlertWords().execute();
+        assertTrue(allAlertWords.containsAll(alertWords));
+
+        List<String> removedAlertWords = zulip.users().removeAlertWords("foo", "bar").execute();
+        assertEquals(1, removedAlertWords.size());
+        assertTrue(removedAlertWords.contains("cheese"));
     }
 
 }

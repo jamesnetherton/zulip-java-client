@@ -199,6 +199,12 @@ public class ZulipIntegrationTestBase {
                     }
                 }
             }
+
+            // Clean up alert words
+            List<String> alertWords = zulip.users().getAllAlertWords().execute();
+            if (!alertWords.isEmpty()) {
+                zulip.users().removeAlertWords(alertWords.toArray(new String[0]));
+            }
         }
     }
 }
