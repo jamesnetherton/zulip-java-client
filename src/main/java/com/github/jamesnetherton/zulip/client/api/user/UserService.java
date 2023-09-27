@@ -1,9 +1,37 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
-import com.github.jamesnetherton.zulip.client.api.user.request.*;
-import com.github.jamesnetherton.zulip.client.api.user.response.GetAllAlertWordsApiResponse;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.AddAlertWordsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
+
 
 /**
  * Zulip user APIs.
