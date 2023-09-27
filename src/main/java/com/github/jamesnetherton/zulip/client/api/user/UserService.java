@@ -438,7 +438,7 @@ public class UserService implements ZulipService {
      * Removes alert words.
      *
      * @see                <a href=
-     *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
+     *                     "https://zulip.com/api/remove-alert-words">https://zulip.com/api/remove-alert-words</a>
      *
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link RemoveAlertWordsApiRequest} builder object
