@@ -407,7 +407,7 @@ public class UserService implements ZulipService {
     }
 
     /**
-     * remove-alert-words
+     * Removes alert words.
      *
      * @see                <a href=
      *                     "https://biocypher.zulipchat.com/api/v1/users/me/alert_words">https://biocypher.zulipchat.com/api/v1/users/me/alert_words</a>
