@@ -25,7 +25,7 @@ public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements Execu
      */
     public RemoveAlertWordsApiRequest(ZulipHttpClient client, String[] alertWords) {
         super(client);
-        putParam(ALERT_WORDS, alertWords);
+        putParamAsJsonString(ALERT_WORDS, alertWords);
     }
 
     /**
