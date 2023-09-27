@@ -382,7 +382,7 @@ public class UserService implements ZulipService {
     }
 
     /**
-     * add-alert-words
+     * Adds alert words.
      *
      * @see                <a href=
      *                     "https://zulip.com/api/add-alert-words">https://zulip.com/api/add-alert-words</a>
