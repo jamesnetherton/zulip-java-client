@@ -470,4 +470,17 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().deleteUserGroup(groupA.getId()).execute();
         zulip.users().deleteUserGroup(groupB.getId()).execute();
     }
+
+    @Test
+    public void alertWordsManagement() throws Exception {
+        String[] alertWords1={"fuck","foo","fool"};
+        String[] alertWords2={"fuck"};
+        zulip.users().addAlertWords(alertWords1).execute();
+        zulip.users().getAllAlertWords().execute();
+        assertTrue(zulip.users().getAllAlertWords().execute().length==3);
+        zulip.users().removeAlertWords(alertWords2).execute();
+        assertTrue(zulip.users().getAllAlertWords().execute().length==2);
+
+    }
+
 }
