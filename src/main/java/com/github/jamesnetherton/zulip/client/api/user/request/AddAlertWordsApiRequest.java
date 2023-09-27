@@ -23,7 +23,7 @@ public class AddAlertWordsApiRequest extends ZulipApiRequest implements Executab
      * @param client     The Zulip HTTP client
      * @param alertWords Add words (or phrases) to the user's set of configured alert words.
      */
-    public AddAlertWordsApiRequest(ZulipHttpClient client, String[] alertWords) {
+    public AddAlertWordsApiRequest(ZulipHttpClient client, String... alertWords) {
         super(client);
         putParamAsJsonString(ALERT_WORDS, alertWords);
     }
