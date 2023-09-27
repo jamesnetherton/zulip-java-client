@@ -418,7 +418,7 @@ public class UserService implements ZulipService {
      * @param  alertWords An array of strings, where each string is an alert word (or phrase)
      * @return             The {@link AddAlertWordsApiRequest} builder object
      */
-    public AddAlertWordsApiRequest addAlertWords(String[] alertWords) {
+    public AddAlertWordsApiRequest addAlertWords(String... alertWords) {
         return new AddAlertWordsApiRequest(this.client, alertWords);
     }
 
