@@ -473,7 +473,6 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void alertWordsManagement() throws Exception {
-        // Create groups
         String[] alertWords1={"fuck","foo","fool"};
         String[] alertWords2={"fuck"};
         zulip.users().addAlertWords(alertWords1).execute();
