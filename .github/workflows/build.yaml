@@ -27,7 +27,7 @@ jobs:
         java: [ '11', '17' ]
     steps:
       - name: Checkout Zulip Java Client
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Restore cache
         uses: actions/cache@v2
         with:
