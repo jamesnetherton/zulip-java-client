@@ -21,7 +21,7 @@
         <jackson.version>2.16.0</jackson.version>
         <junit.jupiter.version>5.10.1</junit.jupiter.version>
         <slf4j.version>2.0.9</slf4j.version>
-        <wiremock-jre8.version>2.35.1</wiremock-jre8.version>
+        <wiremock.version>3.3.1</wiremock.version>
 
         <!-- Plugin versions -->
         <formatter.plugin.version>2.18.0</formatter.plugin.version>
@@ -111,9 +111,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
-            <version>${wiremock-jre8.version}</version>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

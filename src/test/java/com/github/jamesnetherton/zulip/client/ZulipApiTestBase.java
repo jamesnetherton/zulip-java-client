@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -139,7 +138,7 @@ public class ZulipApiTestBase {
             throw new IllegalStateException("Resource: " + resourceName + " could not be found");
         }
 
-        return IOUtils.toByteArray(resourceAsStream);
+        return resourceAsStream.readAllBytes();
     }
 
     protected static final class QueryParams {

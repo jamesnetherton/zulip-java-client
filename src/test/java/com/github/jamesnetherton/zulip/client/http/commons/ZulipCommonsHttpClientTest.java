@@ -29,7 +29,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
@@ -174,18 +173,19 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
                         OutputStream outputStream = accept.getOutputStream();
 
                         if (secure && !proxyAuthHeaderSent) {
-                            IOUtils.write("HTTP/1.1 407 Proxy Authentication Required\r\n", outputStream,
-                                    StandardCharsets.UTF_8.name());
-                            IOUtils.write("Proxy-Authenticate: Basic\r\n", outputStream, StandardCharsets.UTF_8.name());
+                            outputStream
+                                    .write("HTTP/1.1 407 Proxy Authentication Required\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream.write("Proxy-Authenticate: Basic\r\n".getBytes(StandardCharsets.UTF_8));
                             proxyAuthHeaderSent = true;
                             continue;
                         }
 
-                        IOUtils.write("HTTP/1.1 200 OK\r\n", outputStream, StandardCharsets.UTF_8.name());
-                        IOUtils.write("Content-Length: " + response.length + "\r\n", outputStream,
-                                StandardCharsets.UTF_8.name());
-                        IOUtils.write("Content-Type: Application/json\r\n\r\n", outputStream, StandardCharsets.UTF_8.name());
-                        IOUtils.write(new String(response), outputStream, StandardCharsets.UTF_8.name());
+                        outputStream.write("HTTP/1.1 200 OK\r\n".getBytes(StandardCharsets.UTF_8));
+                        outputStream.write("Content-Length: ".getBytes(StandardCharsets.UTF_8));
+                        outputStream.write(
+                                String.format("Content-Length: %d\r\n", response.length).getBytes(StandardCharsets.UTF_8));
+                        outputStream.write("Content-Type: Application/json\r\n\r\n".getBytes(StandardCharsets.UTF_8));
+                        outputStream.write(new String(response).getBytes(StandardCharsets.UTF_8));
                     } catch (IOException e) {
                         return;
                     }
