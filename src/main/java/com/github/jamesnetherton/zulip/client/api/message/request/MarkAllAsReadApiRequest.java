@@ -13,6 +13,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  *
  * @see <a href="https://zulip.com/api/mark-all-as-read">https://zulip.com/api/mark-all-as-read</a>
  */
+@Deprecated
 public class MarkAllAsReadApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
     /**

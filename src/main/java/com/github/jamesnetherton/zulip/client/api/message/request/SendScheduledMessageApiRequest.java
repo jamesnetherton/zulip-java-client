@@ -18,6 +18,7 @@ import java.time.Instant;
 public class SendScheduledMessageApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
 
     public static final String CONTENT = "content";
+    public static final String READ_BY_SENDER = "read_by_sender";
     public static final String SCHEDULED_DELIVERY_TIMESTAMP = "scheduled_delivery_timestamp";
     public static final String TO = "to";
     public static final String TOPIC = "topic";
@@ -48,6 +49,20 @@ public class SendScheduledMessageApiRequest extends ZulipApiRequest implements E
         } else {
             putParamAsJsonString(TO, to);
         }
+    }
+
+    /**
+     * Sets optional the value of whether the message should be initially marked read by its sender.
+     *
+     * @see                 <a href=
+     *                      "https://zulip.com/api/create-scheduled-message#parameter-read_by_sender">https://zulip.com/api/create-scheduled-message#parameter-read_by_sender</a>
+     *
+     * @param  readBySender Whether the message should be initially marked read by its sender
+     * @return              This {@link SendScheduledMessageApiRequest} instance
+     */
+    public SendScheduledMessageApiRequest withReadBySender(boolean readBySender) {
+        putParam(READ_BY_SENDER, readBySender);
+        return this;
     }
 
     /**

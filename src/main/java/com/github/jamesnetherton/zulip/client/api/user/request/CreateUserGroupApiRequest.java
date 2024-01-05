@@ -18,6 +18,7 @@ public class CreateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
     public static final String MEMBERS = "members";
+    public static final String CAN_MENTION_GROUP = "can_mention_group";
 
     /**
      * Constructs a {@link CreateUserGroupApiRequest}.
@@ -32,6 +33,17 @@ public class CreateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
         putParam(NAME, name);
         putParam(DESCRIPTION, description);
         putParamAsJsonString(MEMBERS, userIds);
+    }
+
+    /**
+     * Sets the optional ID of the user group whose members are allowed to mention the new user group.
+     *
+     * @param  groupId The ID of the user group whose members are allowed to mention the new user group
+     * @return         This {@link CreateUserGroupApiRequest} instance
+     */
+    public CreateUserGroupApiRequest withCanMentionGroup(long groupId) {
+        putParam(CAN_MENTION_GROUP, groupId);
+        return this;
     }
 
     /**

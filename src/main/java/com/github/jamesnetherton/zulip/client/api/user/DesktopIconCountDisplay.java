@@ -11,13 +11,17 @@ public enum DesktopIconCountDisplay {
      */
     ALL_UNREADS(1),
     /**
+     * Display count of all unread private messages, mentions and followed topics.
+     */
+    PRIVATE_MESSAGES_MENTIONS_AND_FOLLOWED_TOPICS(2),
+    /**
      * Display count of all unread private messages and mentions.
      */
-    PRIVATE_MESSAGES_AND_MENTIONS(2),
+    PRIVATE_MESSAGES_AND_MENTIONS(3),
     /**
      * Disable displaying a count.
      */
-    NONE(3),
+    NONE(4),
     /**
      * An unknown icon count display value. This usually indicates an error in the response from Zulip.
      */

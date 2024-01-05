@@ -20,11 +20,12 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     public static final String DESCRIPTION = "description";
     public static final String NEW_NAME = "new_name";
     public static final String PRIVATE = "is_private";
+    public static final String IS_DEFAULT_STREAM = "is_default_stream";
     public static final String IS_WEB_PUBLIC = "is_web_public";
     public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
-    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP_ID = "can_remove_subscribers_group_id";
+    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
 
     private final long streamId;
 
@@ -71,6 +72,18 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withIsPrivate(boolean isPrivate) {
         putParam(PRIVATE, isPrivate);
+        return this;
+    }
+
+    /**
+     * Sets whether any newly created streams will be added as default streams for new users joining the organization.
+     *
+     * @param  defaultStream {@code true} results in any newly created streams as the default. {@code false} results in any
+     *                       newly created streams being the default
+     * @return               This {@link SubscribeStreamsApiRequest} instance
+     */
+    public UpdateStreamApiRequest withDefaultStream(boolean defaultStream) {
+        putParam(IS_DEFAULT_STREAM, defaultStream);
         return this;
     }
 
@@ -138,8 +151,8 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @param  userGroupID The user group id whose members are allowed to unsubscribe others from the stream
      * @return             This {@link UpdateStreamApiRequest} instance
      */
-    public UpdateStreamApiRequest withCanRemoveSubscribersGroupId(long userGroupID) {
-        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP_ID, userGroupID);
+    public UpdateStreamApiRequest withCanRemoveSubscribersGroup(long userGroupID) {
+        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupID);
         return this;
     }
 

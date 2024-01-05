@@ -7,11 +7,11 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
-import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.response.UpdateOwnUserSettingsApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -110,11 +110,11 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      * @see                <a href=
      *                     "https://zulip.com/help/configure-default-view">https://zulip.com/help/configure-default-view</a>
      *
-     * @param  defaultView The default view to use
+     * @param  webHomeView The default view to use
      * @return             This {@link UpdateOwnUserSettingsApiRequest} instance
      */
-    public UpdateOwnUserSettingsApiRequest withDefaultView(DefaultView defaultView) {
-        putParam(DEFAULT_VIEW, defaultView.toString());
+    public UpdateOwnUserSettingsApiRequest withDefaultView(WebHomeView webHomeView) {
+        putParam(DEFAULT_VIEW, webHomeView.toString());
         return this;
     }
 

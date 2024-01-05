@@ -15,14 +15,15 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygrou
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
-import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.File;
 import java.util.Collections;
@@ -89,6 +90,17 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
         assertTrue(linkifiers.isEmpty());
+    }
+
+    @Test
+    public void reorderLinkifiers() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReorderLinkifiersApiRequest.ORDERED_LINKIFIER_IDS, "[5,4,3,2,1]")
+                .get();
+
+        stubZulipResponse(PATCH, "/realm/linkifiers", params);
+
+        zulip.server().reorderLinkifiers(5, 4, 3, 2, 1).execute();
     }
 
     @Test
@@ -322,7 +334,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(AddCodePlaygroundApiRequest.NAME, "Test Playground")
                 .add(AddCodePlaygroundApiRequest.PYGMENTS_LANGUAGE, "java")
-                .add(AddCodePlaygroundApiRequest.URL_PREFIX, "https://localhost/prefix")
+                .add(AddCodePlaygroundApiRequest.URL_TEMPLATE, "https://localhost/prefix")
                 .get();
 
         stubZulipResponse(POST, "/realm/playgrounds", params, "addCodePlayground.json");
@@ -341,8 +353,11 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     @Test
     public void updateRealmNewUserDefaultSettings() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.AUTOMATICALLY_FOLLOW_TOPICS_POLICY, "1")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.AUTOMATICALLY_UNMUTE_TOPICS_IN_MUTED_STREAMS_POLICY, "1")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.AUTOMATICALLY_FOLLOW_TOPICS_WHERE_MENTIONED, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
-                .add(UpdateRealmNewUserDefaultSettingsApiRequest.DEFAULT_VIEW, DefaultView.RECENT_TOPICS.toString())
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_HOME_VIEW, WebHomeView.RECENT_TOPICS.toString())
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
                         String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
@@ -354,6 +369,11 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DIGEST_EMAILS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_DRAFTS_SYNCHRONIZATION, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_FOLLOWED_TOPIC_DESKTOP_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_FOLLOWED_TOPIC_EMAIL_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_FOLLOWED_TOPIC_PUSH_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_FOLLOWED_TOPIC_AUDIBLE_NOTIFICATIONS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_FOLLOWED_TOPIC_WILDCARD_MENTIONS_NOTIFY, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_OFFLINE_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_OFFLINE_PUSH_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_ONLINE_PUSH_NOTIFICATIONS, "true")
@@ -363,7 +383,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENABLE_STREAM_PUSH_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.ENTER_SENDS, "true")
-                .add(UpdateRealmNewUserDefaultSettingsApiRequest.ESCAPE_NAVIGATES_TO_DEFAULT_VIEW, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_ESCAPE_NAVIGATES_TO_HOME_VIEW, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.FLUID_LAYOUT_WIDTH, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.HIGH_CONTRAST_MODE, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.LEFT_SIDE_USERLIST, "true")
@@ -381,14 +401,18 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.USER_LIST_STYLE, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
         stubZulipResponse(PATCH, "/realm/user_settings_defaults", params, "updateRealmNewUserDefaultSettings.json");
 
         List<String> result = zulip.server().updateRealmNewUserDefaultSettings()
+                .withAutomaticallyFollowTopicsPolicy(TopicFollowPolicy.PARTICIPATING)
+                .withAutomaticallyUnmuteTopicsInMutedStreamsPolicy(UnmuteTopicInMutedStreamsPolicy.PARTICIPATING)
+                .withAutomaticallyFollowTopicsWhereMentioned(true)
                 .withColorScheme(ColorScheme.DARK)
-                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withWebHomeView(WebHomeView.RECENT_TOPICS)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
@@ -398,6 +422,11 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withEnableDesktopNotifications(true)
                 .withEnableDigestEmails(true)
                 .withEnableDraftsSynchronization(true)
+                .withEnableFollowedTopicAudibleNotifications(true)
+                .withEnableFollowedTopicDesktopNotifications(true)
+                .withEnableFollowedTopicEmailNotifications(true)
+                .withEnableFollowedTopicPushNotifications(true)
+                .withEnableFollowedTopicWildcardMentionsNotify(true)
                 .withEnableOfflineEmailNotifications(true)
                 .withEnableOfflinePushNotifications(true)
                 .withEnableOnlinePushNotifications(true)
@@ -407,7 +436,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withEnableStreamEmailNotifications(true)
                 .withEnableStreamPushNotifications(true)
                 .withEnterSends(true)
-                .withEscapeNavigatesToDefaultView(true)
+                .withWebEscapeNavigatesToHomeView(true)
                 .withFluidLayoutWidth(true)
                 .withHighContrastMode(true)
                 .withLeftSideUserList(true)
@@ -425,6 +454,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.UNMUTED_STREAMS_TOPICS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

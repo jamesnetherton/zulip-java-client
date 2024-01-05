@@ -3,7 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.server;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- * Defines the mark read policy for when a user scrolls though their feed.
+ * Defines the mark read policy for when a user scrolls through their feed.
  *
  * See <a href=
  * "https://zulip.com/api/update-settings#parameter-web_mark_read_on_scroll_policy">https://zulip.com/api/update-settings#parameter-web_mark_read_on_scroll_policy</a>

@@ -890,8 +890,8 @@ CREATE TABLE zulip.social_auth_partial (
     token character varying(32) NOT NULL,
     next_step smallint NOT NULL,
     backend character varying(32) NOT NULL,
-    data text NOT NULL,
     "timestamp" timestamp with time zone NOT NULL,
+    data jsonb NOT NULL,
     CONSTRAINT social_auth_partial_next_step_check CHECK ((next_step >= 0))
 );
 
@@ -927,10 +927,10 @@ CREATE TABLE zulip.social_auth_usersocialauth (
     id bigint NOT NULL,
     provider character varying(32) NOT NULL,
     uid character varying(255) NOT NULL,
-    extra_data text NOT NULL,
     user_id integer NOT NULL,
     created timestamp with time zone NOT NULL,
-    modified timestamp with time zone NOT NULL
+    modified timestamp with time zone NOT NULL,
+    extra_data jsonb NOT NULL
 );
 
 
@@ -2097,6 +2097,42 @@ ALTER SEQUENCE zulip.zerver_muteduser_id_seq OWNED BY zulip.zerver_muteduser.id;
 
 
 --
+-- Name: zerver_onboardingstep; Type: TABLE; Schema: zulip; Owner: zulip
+--
+
+CREATE TABLE zulip.zerver_onboardingstep (
+    id integer NOT NULL,
+    onboarding_step character varying(30) NOT NULL,
+    "timestamp" timestamp with time zone NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE zulip.zerver_onboardingstep OWNER TO zulip;
+
+--
+-- Name: zerver_onboardingstep_id_seq; Type: SEQUENCE; Schema: zulip; Owner: zulip
+--
+
+CREATE SEQUENCE zulip.zerver_onboardingstep_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE zulip.zerver_onboardingstep_id_seq OWNER TO zulip;
+
+--
+-- Name: zerver_onboardingstep_id_seq; Type: SEQUENCE OWNED BY; Schema: zulip; Owner: zulip
+--
+
+ALTER SEQUENCE zulip.zerver_onboardingstep_id_seq OWNED BY zulip.zerver_onboardingstep.id;
+
+
+--
 -- Name: zerver_preregistrationrealm; Type: TABLE; Schema: zulip; Owner: zulip
 --
 
@@ -2109,6 +2145,7 @@ CREATE TABLE zulip.zerver_preregistrationrealm (
     status integer NOT NULL,
     created_realm_id integer,
     created_user_id integer,
+    default_language character varying(50) NOT NULL,
     CONSTRAINT zerver_preregistrationrealm_org_type_check CHECK ((org_type >= 0))
 );
 
@@ -2337,7 +2374,7 @@ CREATE TABLE zulip.zerver_realm (
     video_chat_provider smallint NOT NULL,
     user_group_edit_policy smallint NOT NULL,
     private_message_policy smallint NOT NULL,
-    default_code_block_language text,
+    default_code_block_language text NOT NULL,
     wildcard_mention_policy smallint NOT NULL,
     deactivated_redirect character varying(128),
     invite_to_realm_policy smallint NOT NULL,
@@ -2355,6 +2392,14 @@ CREATE TABLE zulip.zerver_realm (
     enable_read_receipts boolean NOT NULL,
     move_messages_within_stream_limit_seconds integer,
     move_messages_between_streams_limit_seconds integer,
+    create_multiuse_invite_group_id integer NOT NULL,
+    jitsi_server_url character varying(200),
+    enable_guest_user_indicator boolean NOT NULL,
+    uuid uuid NOT NULL,
+    uuid_owner_secret text NOT NULL,
+    can_access_all_users_group_id integer NOT NULL,
+    push_notifications_enabled boolean NOT NULL,
+    push_notifications_enabled_end_timestamp timestamp with time zone,
     CONSTRAINT zerver_realm_add_custom_emoji_policy_check CHECK ((add_custom_emoji_policy >= 0)),
     CONSTRAINT zerver_realm_bot_creation_policy_check CHECK ((bot_creation_policy >= 0)),
     CONSTRAINT zerver_realm_create_private_stream_policy_check CHECK ((create_private_stream_policy >= 0)),
@@ -2455,9 +2500,10 @@ CREATE TABLE zulip.zerver_realmauditlog (
     modified_stream_id integer,
     modified_user_id integer,
     realm_id integer NOT NULL,
-    extra_data text,
     event_last_message_id integer,
     event_type smallint NOT NULL,
+    extra_data jsonb NOT NULL,
+    modified_user_group_id integer,
     CONSTRAINT zerver_realmauditlog_event_type_bd8f3978_check CHECK ((event_type >= 0))
 );
 
@@ -2560,7 +2606,8 @@ CREATE TABLE zulip.zerver_realmfilter (
     id integer NOT NULL,
     pattern text NOT NULL,
     realm_id integer NOT NULL,
-    url_template text NOT NULL
+    url_template text NOT NULL,
+    "order" integer NOT NULL
 );
 
 
@@ -2594,10 +2641,10 @@ ALTER SEQUENCE zulip.zerver_realmfilter_id_seq OWNED BY zulip.zerver_realmfilter
 
 CREATE TABLE zulip.zerver_realmplayground (
     id integer NOT NULL,
-    url_prefix text NOT NULL,
     name text NOT NULL,
     pygments_language character varying(40) NOT NULL,
-    realm_id integer NOT NULL
+    realm_id integer NOT NULL,
+    url_template text NOT NULL
 );
 
 
@@ -2661,7 +2708,7 @@ CREATE TABLE zulip.zerver_realmuserdefault (
     enter_sends boolean NOT NULL,
     left_side_userlist boolean NOT NULL,
     default_language character varying(50) NOT NULL,
-    default_view text NOT NULL,
+    web_home_view text NOT NULL,
     dense_mode boolean NOT NULL,
     fluid_layout_width boolean NOT NULL,
     high_contrast_mode boolean NOT NULL,
@@ -2695,18 +2742,30 @@ CREATE TABLE zulip.zerver_realmuserdefault (
     send_private_typing_notifications boolean NOT NULL,
     send_stream_typing_notifications boolean NOT NULL,
     send_read_receipts boolean NOT NULL,
-    escape_navigates_to_default_view boolean NOT NULL,
+    web_escape_navigates_to_home_view boolean NOT NULL,
     display_emoji_reaction_users boolean NOT NULL,
     user_list_style smallint NOT NULL,
     email_address_visibility smallint NOT NULL,
     realm_name_in_email_notifications_policy smallint NOT NULL,
     web_mark_read_on_scroll_policy smallint NOT NULL,
+    enable_followed_topic_audible_notifications boolean NOT NULL,
+    enable_followed_topic_desktop_notifications boolean NOT NULL,
+    enable_followed_topic_email_notifications boolean NOT NULL,
+    enable_followed_topic_push_notifications boolean NOT NULL,
+    enable_followed_topic_wildcard_mentions_notify boolean NOT NULL,
+    web_stream_unreads_count_display_policy smallint NOT NULL,
+    automatically_follow_topics_policy smallint NOT NULL,
+    automatically_unmute_topics_in_muted_streams_policy smallint NOT NULL,
+    automatically_follow_topics_where_mentioned boolean NOT NULL,
+    CONSTRAINT zerver_realmuserdefault_automatically_follow_topics_polic_check CHECK ((automatically_follow_topics_policy >= 0)),
+    CONSTRAINT zerver_realmuserdefault_automatically_unmute_topics_in_mu_check CHECK ((automatically_unmute_topics_in_muted_streams_policy >= 0)),
     CONSTRAINT zerver_realmuserdefault_color_scheme_check CHECK ((color_scheme >= 0)),
     CONSTRAINT zerver_realmuserdefault_demote_inactive_streams_check CHECK ((demote_inactive_streams >= 0)),
     CONSTRAINT zerver_realmuserdefault_desktop_icon_count_display_check CHECK ((desktop_icon_count_display >= 0)),
     CONSTRAINT zerver_realmuserdefault_email_address_visibility_check CHECK ((email_address_visibility >= 0)),
     CONSTRAINT zerver_realmuserdefault_realm_name_in_email_notifications_check CHECK ((realm_name_in_email_notifications_policy >= 0)),
-    CONSTRAINT zerver_realmuserdefault_user_list_style_check CHECK ((user_list_style >= 0))
+    CONSTRAINT zerver_realmuserdefault_user_list_style_check CHECK ((user_list_style >= 0)),
+    CONSTRAINT zerver_realmuserdefault_web_stream_unreads_count_display__check CHECK ((web_stream_unreads_count_display_policy >= 0))
 );
 
 
@@ -2865,6 +2924,7 @@ CREATE TABLE zulip.zerver_scheduledmessage (
     failed boolean NOT NULL,
     failure_message text,
     delivered_message_id integer,
+    read_by_sender boolean NOT NULL,
     CONSTRAINT zerver_scheduledmessage_delivery_type_check CHECK ((delivery_type >= 0))
 );
 
@@ -3185,7 +3245,8 @@ CREATE TABLE zulip.zerver_usergroup (
     name character varying(100) NOT NULL,
     realm_id integer NOT NULL,
     description text NOT NULL,
-    is_system_group boolean NOT NULL
+    is_system_group boolean NOT NULL,
+    can_mention_group_id integer NOT NULL
 );
 
 
@@ -3246,42 +3307,6 @@ ALTER TABLE zulip.zerver_usergroupmembership_id_seq OWNER TO zulip;
 --
 
 ALTER SEQUENCE zulip.zerver_usergroupmembership_id_seq OWNED BY zulip.zerver_usergroupmembership.id;
-
-
---
--- Name: zerver_userhotspot; Type: TABLE; Schema: zulip; Owner: zulip
---
-
-CREATE TABLE zulip.zerver_userhotspot (
-    id integer NOT NULL,
-    hotspot character varying(30) NOT NULL,
-    "timestamp" timestamp with time zone NOT NULL,
-    user_id integer NOT NULL
-);
-
-
-ALTER TABLE zulip.zerver_userhotspot OWNER TO zulip;
-
---
--- Name: zerver_userhotspot_id_seq; Type: SEQUENCE; Schema: zulip; Owner: zulip
---
-
-CREATE SEQUENCE zulip.zerver_userhotspot_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE zulip.zerver_userhotspot_id_seq OWNER TO zulip;
-
---
--- Name: zerver_userhotspot_id_seq; Type: SEQUENCE OWNED BY; Schema: zulip; Owner: zulip
---
-
-ALTER SEQUENCE zulip.zerver_userhotspot_id_seq OWNED BY zulip.zerver_userhotspot.id;
 
 
 --
@@ -3411,20 +3436,31 @@ CREATE TABLE zulip.zerver_userprofile (
     zoom_token jsonb,
     color_scheme smallint NOT NULL,
     can_create_users boolean NOT NULL,
-    default_view text NOT NULL,
+    web_home_view text NOT NULL,
     enable_marketing_emails boolean NOT NULL,
     email_notifications_batching_period_seconds integer NOT NULL,
     enable_drafts_synchronization boolean NOT NULL,
     send_private_typing_notifications boolean NOT NULL,
     send_stream_typing_notifications boolean NOT NULL,
     send_read_receipts boolean NOT NULL,
-    escape_navigates_to_default_view boolean NOT NULL,
+    web_escape_navigates_to_home_view boolean NOT NULL,
     uuid uuid NOT NULL,
     display_emoji_reaction_users boolean NOT NULL,
     user_list_style smallint NOT NULL,
     email_address_visibility smallint NOT NULL,
     realm_name_in_email_notifications_policy smallint NOT NULL,
     web_mark_read_on_scroll_policy smallint NOT NULL,
+    enable_followed_topic_audible_notifications boolean NOT NULL,
+    enable_followed_topic_desktop_notifications boolean NOT NULL,
+    enable_followed_topic_email_notifications boolean NOT NULL,
+    enable_followed_topic_push_notifications boolean NOT NULL,
+    enable_followed_topic_wildcard_mentions_notify boolean NOT NULL,
+    web_stream_unreads_count_display_policy smallint NOT NULL,
+    automatically_follow_topics_policy smallint NOT NULL,
+    automatically_unmute_topics_in_muted_streams_policy smallint NOT NULL,
+    automatically_follow_topics_where_mentioned boolean NOT NULL,
+    CONSTRAINT zerver_userprofile_automatically_follow_topics_policy_check CHECK ((automatically_follow_topics_policy >= 0)),
+    CONSTRAINT zerver_userprofile_automatically_unmute_topics_in_muted_s_check CHECK ((automatically_unmute_topics_in_muted_streams_policy >= 0)),
     CONSTRAINT zerver_userprofile_avatar_version_check CHECK ((avatar_version >= 0)),
     CONSTRAINT zerver_userprofile_bot_type_check CHECK ((bot_type >= 0)),
     CONSTRAINT zerver_userprofile_color_scheme_check CHECK ((color_scheme >= 0)),
@@ -3433,7 +3469,8 @@ CREATE TABLE zulip.zerver_userprofile (
     CONSTRAINT zerver_userprofile_email_address_visibility_check CHECK ((email_address_visibility >= 0)),
     CONSTRAINT zerver_userprofile_realm_name_in_email_notifications_poli_check CHECK ((realm_name_in_email_notifications_policy >= 0)),
     CONSTRAINT zerver_userprofile_role_check CHECK ((role >= 0)),
-    CONSTRAINT zerver_userprofile_user_list_style_check CHECK ((user_list_style >= 0))
+    CONSTRAINT zerver_userprofile_user_list_style_check CHECK ((user_list_style >= 0)),
+    CONSTRAINT zerver_userprofile_web_stream_unreads_count_display_polic_check CHECK ((web_stream_unreads_count_display_policy >= 0))
 );
 
 
@@ -3915,6 +3952,13 @@ ALTER TABLE ONLY zulip.zerver_muteduser ALTER COLUMN id SET DEFAULT nextval('zul
 
 
 --
+-- Name: zerver_onboardingstep id; Type: DEFAULT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_onboardingstep ALTER COLUMN id SET DEFAULT nextval('zulip.zerver_onboardingstep_id_seq'::regclass);
+
+
+--
 -- Name: zerver_preregistrationuser id; Type: DEFAULT; Schema: zulip; Owner: zulip
 --
 
@@ -4080,13 +4124,6 @@ ALTER TABLE ONLY zulip.zerver_usergroup ALTER COLUMN id SET DEFAULT nextval('zul
 --
 
 ALTER TABLE ONLY zulip.zerver_usergroupmembership ALTER COLUMN id SET DEFAULT nextval('zulip.zerver_usergroupmembership_id_seq'::regclass);
-
-
---
--- Name: zerver_userhotspot id; Type: DEFAULT; Schema: zulip; Owner: zulip
---
-
-ALTER TABLE ONLY zulip.zerver_userhotspot ALTER COLUMN id SET DEFAULT nextval('zulip.zerver_userhotspot_id_seq'::regclass);
 
 
 --
@@ -4492,6 +4529,10 @@ COPY zulip.auth_permission (id, name, content_type_id, codename) FROM stdin;
 302	Can change phone device	76	change_phonedevice
 303	Can delete phone device	76	delete_phonedevice
 304	Can view phone device	76	view_phonedevice
+305	Can add onboarding step	77	add_onboardingstep
+306	Can change onboarding step	77	change_onboardingstep
+307	Can delete onboarding step	77	delete_onboardingstep
+308	Can view onboarding step	77	view_onboardingstep
 \.
 
 
@@ -4594,6 +4635,7 @@ COPY zulip.django_content_type (id, app_label, model) FROM stdin;
 74	zerver	preregistrationrealm
 75	zerver	realmauthenticationmethod
 76	phonenumber	phonedevice
+77	zerver	onboardingstep
 \.
 
 
@@ -5103,6 +5145,57 @@ COPY zulip.django_migrations (id, app, name, applied) FROM stdin;
 499	zerver	0449_scheduledmessage_zerver_unsent_scheduled_messages_indexes	2023-06-09 13:23:03.471585+00
 500	zerver	0450_backfill_subscription_auditlogs	2023-06-09 13:23:03.530409+00
 501	zerver	0451_add_userprofile_api_key_index	2023-06-09 13:23:03.583924+00
+502	analytics	0017_regenerate_partial_indexes	2023-12-31 14:26:01.303492+00
+503	social_django	0012_usersocialauth_extra_data_new	2023-12-31 14:26:01.340507+00
+504	social_django	0013_migrate_extra_data	2023-12-31 14:26:01.370915+00
+505	social_django	0014_remove_usersocialauth_extra_data	2023-12-31 14:26:01.394675+00
+506	social_django	0015_rename_extra_data_new_usersocialauth_extra_data	2023-12-31 14:26:01.418523+00
+507	zerver	0452_realmauditlog_extra_data_json	2023-12-31 14:26:01.444331+00
+508	zerver	0453_followed_topic_notifications	2023-12-31 14:26:01.695478+00
+509	zerver	0454_usergroup_can_mention_group	2023-12-31 14:26:01.726998+00
+510	zerver	0455_set_default_for_can_mention_group	2023-12-31 14:26:01.765911+00
+511	zerver	0456_alter_usergroup_can_mention_group	2023-12-31 14:26:01.805939+00
+512	zerver	0457_backfill_scheduledmessagenotificationemail_trigger	2023-12-31 14:26:01.809825+00
+513	zerver	0458_realmauditlog_modified_user_group	2023-12-31 14:26:01.887172+00
+514	zerver	0459_remove_invalid_characters_from_user_group_name	2023-12-31 14:26:01.925814+00
+515	zerver	0460_backfill_realmauditlog_extradata_to_json_field	2023-12-31 14:26:01.961334+00
+516	zerver	0461_alter_realm_default_code_block_language	2023-12-31 14:26:02.021282+00
+517	zerver	0462_realmplayground_url_template	2023-12-31 14:26:02.039102+00
+518	zerver	0463_backfill_realmplayground_url_template	2023-12-31 14:26:02.067074+00
+519	zerver	0464_remove_realmplayground_url_prefix	2023-12-31 14:26:02.100182+00
+520	zerver	0465_backfill_scheduledmessagenotificationemail_trigger	2023-12-31 14:26:02.103095+00
+521	zerver	0466_realmfilter_order	2023-12-31 14:26:02.196952+00
+522	zerver	0467_rename_extradata_realmauditlog_extra_data_json	2023-12-31 14:26:02.246857+00
+523	zerver	0468_rename_followup_day_email_templates	2023-12-31 14:26:02.275763+00
+524	zerver	0469_realm_create_multiuse_invite_group	2023-12-31 14:26:02.304503+00
+525	zerver	0470_set_default_value_for_create_multiuse_invite_group	2023-12-31 14:26:02.334042+00
+526	zerver	0471_alter_realm_create_multiuse_invite_group	2023-12-31 14:26:02.364889+00
+527	zerver	0472_add_message_realm_id_indexes	2023-12-31 14:26:02.654531+00
+528	zerver	0473_remove_message_non_realm_id_indexes	2023-12-31 14:26:02.807168+00
+529	zerver	0474_realmuserdefault_web_stream_unreads_count_display_policy_and_more	2023-12-31 14:26:02.849471+00
+530	zerver	0475_realm_jitsi_server_url	2023-12-31 14:26:02.868915+00
+531	zerver	0476_realmuserdefault_automatically_follow_topics_policy_and_more	2023-12-31 14:26:02.949969+00
+532	zerver	0477_alter_realmuserdefault_automatically_follow_topics_policy_and_more	2023-12-31 14:26:02.952308+00
+533	zerver	0478_realm_enable_guest_user_indicator	2023-12-31 14:26:02.971447+00
+534	zerver	0479_realm_uuid_realm_uuid_owner_secret	2023-12-31 14:26:03.062022+00
+535	zerver	0480_realm_backfill_uuid_and_secret	2023-12-31 14:26:03.092594+00
+536	zerver	0481_alter_realm_uuid_alter_realm_uuid_owner_secret	2023-12-31 14:26:03.131229+00
+537	zerver	0482_automatically_follow_unmute_topics_policy_defaults	2023-12-31 14:26:03.265404+00
+538	zerver	0483_rename_escape_navigates_to_default_view_realmuserdefault_web_escape_navigates_to_home_view_and_more	2023-12-31 14:26:03.4343+00
+539	zerver	0484_preregistrationrealm_default_language	2023-12-31 14:26:03.461103+00
+540	zerver	0485_alter_usermessage_flags_and_add_index	2023-12-31 14:26:03.525846+00
+541	zerver	0486_clear_old_data_for_unused_usermessage_flags	2023-12-31 14:26:03.598012+00
+542	zerver	0487_realm_can_access_all_users_group	2023-12-31 14:26:03.628938+00
+543	zerver	0488_set_default_value_for_can_access_all_users_group	2023-12-31 14:26:03.722883+00
+544	zerver	0489_alter_realm_can_access_all_users_group	2023-12-31 14:26:03.756384+00
+545	zerver	0490_renumber_options_desktop_icon_count_display	2023-12-31 14:26:03.787483+00
+546	zerver	0491_alter_realmuserdefault_web_home_view_and_more	2023-12-31 14:26:03.834704+00
+547	zerver	0492_realm_push_notifications_enabled_and_more	2023-12-31 14:26:03.875918+00
+548	zerver	0493_rename_userhotspot_to_onboardingstep	2023-12-31 14:26:04.018613+00
+549	zerver	0494_realmuserdefault_automatically_follow_topics_where_mentioned_and_more	2023-12-31 14:26:04.061845+00
+550	zerver	0495_scheduledmessage_read_by_sender	2023-12-31 14:26:04.088383+00
+551	zerver	0496_alter_scheduledmessage_read_by_sender	2023-12-31 14:26:04.147161+00
+552	two_factor	0001_squashed_0008_delete_phonedevice	2023-12-31 14:26:04.153064+00
 \.
 
 
@@ -5175,7 +5268,7 @@ COPY zulip.social_auth_nonce (id, server_url, "timestamp", salt) FROM stdin;
 -- Data for Name: social_auth_partial; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.social_auth_partial (id, token, next_step, backend, data, "timestamp") FROM stdin;
+COPY zulip.social_auth_partial (id, token, next_step, backend, "timestamp", data) FROM stdin;
 \.
 
 
@@ -5183,7 +5276,7 @@ COPY zulip.social_auth_partial (id, token, next_step, backend, data, "timestamp"
 -- Data for Name: social_auth_usersocialauth; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.social_auth_usersocialauth (id, provider, uid, extra_data, user_id, created, modified) FROM stdin;
+COPY zulip.social_auth_usersocialauth (id, provider, uid, user_id, created, modified, extra_data) FROM stdin;
 \.
 
 
@@ -5451,10 +5544,18 @@ COPY zulip.zerver_muteduser (id, date_muted, muted_user_id, user_profile_id) FRO
 
 
 --
+-- Data for Name: zerver_onboardingstep; Type: TABLE DATA; Schema: zulip; Owner: zulip
+--
+
+COPY zulip.zerver_onboardingstep (id, onboarding_step, "timestamp", user_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: zerver_preregistrationrealm; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_preregistrationrealm (id, name, org_type, string_id, email, status, created_realm_id, created_user_id) FROM stdin;
+COPY zulip.zerver_preregistrationrealm (id, name, org_type, string_id, email, status, created_realm_id, created_user_id, default_language) FROM stdin;
 \.
 
 
@@ -5496,9 +5597,9 @@ COPY zulip.zerver_reaction (id, user_profile_id, message_id, emoji_name, emoji_c
 -- Data for Name: zerver_realm; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_realm (id, name, emails_restricted_to_domains, invite_required, mandatory_topics, digest_emails_enabled, name_changes_disabled, date_created, deactivated, notifications_stream_id, allow_message_editing, message_content_edit_limit_seconds, default_language, string_id, org_type, message_retention_days, waiting_period_threshold, icon_source, icon_version, email_changes_disabled, description, inline_image_preview, inline_url_embed_preview, allow_edit_history, signup_notifications_stream_id, max_invites, message_visibility_limit, upload_quota_gb, send_welcome_emails, bot_creation_policy, disallow_disposable_email_addresses, message_content_delete_limit_seconds, plan_type, first_visible_message_id, logo_source, logo_version, message_content_allowed_in_email_notifications, night_logo_source, night_logo_version, digest_weekday, invite_to_stream_policy, avatar_changes_disabled, video_chat_provider, user_group_edit_policy, private_message_policy, default_code_block_language, wildcard_mention_policy, deactivated_redirect, invite_to_realm_policy, giphy_rating, move_messages_between_streams_policy, edit_topic_policy, add_custom_emoji_policy, demo_organization_scheduled_deletion_date, delete_own_message_policy, create_private_stream_policy, create_public_stream_policy, create_web_public_stream_policy, enable_spectator_access, want_advertise_in_communities_directory, enable_read_receipts, move_messages_within_stream_limit_seconds, move_messages_between_streams_limit_seconds) FROM stdin;
-1	System bot realm	f	t	f	f	f	2022-04-23 08:50:54.621821+00	f	\N	t	600	en	zulipinternal	0	-1	0	G	1	f		t	f	t	\N	\N	\N	\N	t	1	t	600	1	0	D	1	t	D	1	1	1	f	1	1	1	\N	5	\N	1	2	2	5	1	\N	2	1	1	7	f	f	t	604800	604800
-2	testing	f	t	f	f	f	2022-04-23 08:50:54.873981+00	f	1	t	600	en		10	-1	0	G	1	f		t	f	t	2	\N	\N	\N	t	1	t	600	1	0	D	1	t	D	1	1	1	f	1	1	1	\N	5	\N	1	2	2	5	1	\N	2	1	1	7	f	f	t	604800	604800
+COPY zulip.zerver_realm (id, name, emails_restricted_to_domains, invite_required, mandatory_topics, digest_emails_enabled, name_changes_disabled, date_created, deactivated, notifications_stream_id, allow_message_editing, message_content_edit_limit_seconds, default_language, string_id, org_type, message_retention_days, waiting_period_threshold, icon_source, icon_version, email_changes_disabled, description, inline_image_preview, inline_url_embed_preview, allow_edit_history, signup_notifications_stream_id, max_invites, message_visibility_limit, upload_quota_gb, send_welcome_emails, bot_creation_policy, disallow_disposable_email_addresses, message_content_delete_limit_seconds, plan_type, first_visible_message_id, logo_source, logo_version, message_content_allowed_in_email_notifications, night_logo_source, night_logo_version, digest_weekday, invite_to_stream_policy, avatar_changes_disabled, video_chat_provider, user_group_edit_policy, private_message_policy, default_code_block_language, wildcard_mention_policy, deactivated_redirect, invite_to_realm_policy, giphy_rating, move_messages_between_streams_policy, edit_topic_policy, add_custom_emoji_policy, demo_organization_scheduled_deletion_date, delete_own_message_policy, create_private_stream_policy, create_public_stream_policy, create_web_public_stream_policy, enable_spectator_access, want_advertise_in_communities_directory, enable_read_receipts, move_messages_within_stream_limit_seconds, move_messages_between_streams_limit_seconds, create_multiuse_invite_group_id, jitsi_server_url, enable_guest_user_indicator, uuid, uuid_owner_secret, can_access_all_users_group_id, push_notifications_enabled, push_notifications_enabled_end_timestamp) FROM stdin;
+1	System bot realm	f	t	f	f	f	2022-04-23 08:50:54.621821+00	f	\N	t	600	en	zulipinternal	0	-1	0	G	1	f		t	f	t	\N	\N	\N	\N	t	1	t	600	1	0	D	1	t	D	1	1	1	f	1	1	1		5	\N	1	2	2	5	1	\N	2	1	1	7	f	f	t	604800	604800	9	\N	t	062152ee-6a9a-4625-b4da-7f3da9b3db47	zuliprealm_7iircLBb3UavPP9tWDiaBKBqR72jh33C	13	f	\N
+2	testing	f	t	f	f	f	2022-04-23 08:50:54.873981+00	f	1	t	600	en		10	-1	0	G	1	f		t	f	t	2	\N	\N	\N	t	1	t	600	1	0	D	1	t	D	1	1	1	f	1	1	1		5	\N	1	2	2	5	1	\N	2	1	1	7	f	f	t	604800	604800	2	\N	t	32a73aea-ff10-45d4-8ee3-c78b5ec818c0	zuliprealm_4YE3BT2BIsSJ5cASRwWUzE87bTx9xi38	6	f	\N
 \.
 
 
@@ -5506,21 +5607,21 @@ COPY zulip.zerver_realm (id, name, emails_restricted_to_domains, invite_required
 -- Data for Name: zerver_realmauditlog; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_realmauditlog (id, backfilled, event_time, acting_user_id, modified_stream_id, modified_user_id, realm_id, extra_data, event_last_message_id, event_type) FROM stdin;
-1	f	2022-04-23 08:50:54.621821+00	\N	\N	\N	1	\N	\N	215
-2	f	2022-04-23 08:50:54.676975+00	\N	\N	1	1	\N	\N	101
-3	f	2022-04-23 08:50:54.677875+00	\N	\N	2	1	\N	\N	101
-4	f	2022-04-23 08:50:54.67837+00	\N	\N	3	1	\N	\N	101
-5	f	2022-04-23 08:50:54.678796+00	\N	\N	4	1	\N	\N	101
-6	f	2022-04-23 08:50:54.679357+00	\N	\N	5	1	\N	\N	101
-7	f	2022-04-23 08:50:54.680045+00	\N	\N	6	1	\N	\N	101
-8	f	2022-04-23 08:50:54.680469+00	\N	\N	7	1	\N	\N	101
-10	f	2022-04-23 08:50:54.977232+00	\N	1	\N	2	\N	\N	601
-11	f	2022-04-23 08:50:55.010443+00	\N	2	\N	2	\N	\N	601
-12	f	2022-04-23 08:50:55.05282+00	8	\N	8	2	{"10":{"11":{"200":0,"100":1,"300":0,"400":0,"600":0},"12":0}}	\N	101
-9	f	2022-04-23 08:50:54.873981+00	8	\N	\N	2	\N	\N	215
-13	f	2022-04-23 08:50:55.246779+00	\N	1	8	2	\N	-1	301
-14	f	2022-04-23 08:50:55.349274+00	\N	2	8	2	\N	1	301
+COPY zulip.zerver_realmauditlog (id, backfilled, event_time, acting_user_id, modified_stream_id, modified_user_id, realm_id, event_last_message_id, event_type, extra_data, modified_user_group_id) FROM stdin;
+1	f	2022-04-23 08:50:54.621821+00	\N	\N	\N	1	\N	215	{}	\N
+2	f	2022-04-23 08:50:54.676975+00	\N	\N	1	1	\N	101	{}	\N
+3	f	2022-04-23 08:50:54.677875+00	\N	\N	2	1	\N	101	{}	\N
+4	f	2022-04-23 08:50:54.67837+00	\N	\N	3	1	\N	101	{}	\N
+5	f	2022-04-23 08:50:54.678796+00	\N	\N	4	1	\N	101	{}	\N
+6	f	2022-04-23 08:50:54.679357+00	\N	\N	5	1	\N	101	{}	\N
+7	f	2022-04-23 08:50:54.680045+00	\N	\N	6	1	\N	101	{}	\N
+8	f	2022-04-23 08:50:54.680469+00	\N	\N	7	1	\N	101	{}	\N
+10	f	2022-04-23 08:50:54.977232+00	\N	1	\N	2	\N	601	{}	\N
+11	f	2022-04-23 08:50:55.010443+00	\N	2	\N	2	\N	601	{}	\N
+9	f	2022-04-23 08:50:54.873981+00	8	\N	\N	2	\N	215	{}	\N
+13	f	2022-04-23 08:50:55.246779+00	\N	1	8	2	-1	301	{}	\N
+14	f	2022-04-23 08:50:55.349274+00	\N	2	8	2	1	301	{}	\N
+12	f	2022-04-23 08:50:55.05282+00	8	\N	8	2	\N	101	{"10": {"11": {"100": 1, "200": 0, "300": 0, "400": 0, "600": 0}, "12": 0}}	\N
 \.
 
 
@@ -5574,7 +5675,7 @@ COPY zulip.zerver_realmemoji (id, name, realm_id, author_id, file_name, deactiva
 -- Data for Name: zerver_realmfilter; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_realmfilter (id, pattern, realm_id, url_template) FROM stdin;
+COPY zulip.zerver_realmfilter (id, pattern, realm_id, url_template, "order") FROM stdin;
 \.
 
 
@@ -5582,7 +5683,7 @@ COPY zulip.zerver_realmfilter (id, pattern, realm_id, url_template) FROM stdin;
 -- Data for Name: zerver_realmplayground; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_realmplayground (id, url_prefix, name, pygments_language, realm_id) FROM stdin;
+COPY zulip.zerver_realmplayground (id, name, pygments_language, realm_id, url_template) FROM stdin;
 \.
 
 
@@ -5598,9 +5699,9 @@ COPY zulip.zerver_realmreactivationstatus (id, status, realm_id) FROM stdin;
 -- Data for Name: zerver_realmuserdefault; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_realmuserdefault (id, enter_sends, left_side_userlist, default_language, default_view, dense_mode, fluid_layout_width, high_contrast_mode, translate_emoticons, twenty_four_hour_time, starred_message_counts, color_scheme, demote_inactive_streams, emojiset, enable_stream_desktop_notifications, enable_stream_email_notifications, enable_stream_push_notifications, enable_stream_audible_notifications, notification_sound, wildcard_mentions_notify, enable_desktop_notifications, pm_content_in_desktop_notifications, enable_sounds, enable_offline_email_notifications, message_content_in_email_notifications, enable_offline_push_notifications, enable_online_push_notifications, desktop_icon_count_display, enable_digest_emails, enable_login_emails, enable_marketing_emails, presence_enabled, realm_id, email_notifications_batching_period_seconds, enable_drafts_synchronization, send_private_typing_notifications, send_stream_typing_notifications, send_read_receipts, escape_navigates_to_default_view, display_emoji_reaction_users, user_list_style, email_address_visibility, realm_name_in_email_notifications_policy, web_mark_read_on_scroll_policy) FROM stdin;
-1	f	f	en	recent_topics	t	f	f	f	f	t	1	1	google	f	f	f	f	zulip	t	t	t	t	t	t	t	t	1	t	t	t	t	1	120	t	t	t	t	t	t	2	1	1	1
-2	f	f	en	recent_topics	t	f	f	f	f	t	1	1	google	f	f	f	f	zulip	t	t	t	t	t	t	t	t	1	t	t	t	t	2	120	t	t	t	t	t	t	2	1	1	1
+COPY zulip.zerver_realmuserdefault (id, enter_sends, left_side_userlist, default_language, web_home_view, dense_mode, fluid_layout_width, high_contrast_mode, translate_emoticons, twenty_four_hour_time, starred_message_counts, color_scheme, demote_inactive_streams, emojiset, enable_stream_desktop_notifications, enable_stream_email_notifications, enable_stream_push_notifications, enable_stream_audible_notifications, notification_sound, wildcard_mentions_notify, enable_desktop_notifications, pm_content_in_desktop_notifications, enable_sounds, enable_offline_email_notifications, message_content_in_email_notifications, enable_offline_push_notifications, enable_online_push_notifications, desktop_icon_count_display, enable_digest_emails, enable_login_emails, enable_marketing_emails, presence_enabled, realm_id, email_notifications_batching_period_seconds, enable_drafts_synchronization, send_private_typing_notifications, send_stream_typing_notifications, send_read_receipts, web_escape_navigates_to_home_view, display_emoji_reaction_users, user_list_style, email_address_visibility, realm_name_in_email_notifications_policy, web_mark_read_on_scroll_policy, enable_followed_topic_audible_notifications, enable_followed_topic_desktop_notifications, enable_followed_topic_email_notifications, enable_followed_topic_push_notifications, enable_followed_topic_wildcard_mentions_notify, web_stream_unreads_count_display_policy, automatically_follow_topics_policy, automatically_unmute_topics_in_muted_streams_policy, automatically_follow_topics_where_mentioned) FROM stdin;
+1	f	f	en	recent_topics	t	f	f	f	f	t	1	1	google	f	f	f	f	zulip	t	t	t	t	t	t	t	t	1	t	t	t	t	1	120	t	t	t	t	t	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+2	f	f	en	recent_topics	t	f	f	f	f	t	1	1	google	f	f	f	f	zulip	t	t	t	t	t	t	t	t	1	t	t	t	t	2	120	t	t	t	t	t	t	2	1	1	1	t	t	t	t	t	2	3	2	t
 \.
 
 
@@ -5642,7 +5743,7 @@ COPY zulip.zerver_scheduledemail_users (id, scheduledemail_id, userprofile_id) F
 -- Data for Name: zerver_scheduledmessage; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_scheduledmessage (id, subject, content, scheduled_timestamp, delivered, realm_id, recipient_id, sender_id, sending_client_id, stream_id, delivery_type, rendered_content, has_attachment, failed, failure_message, delivered_message_id) FROM stdin;
+COPY zulip.zerver_scheduledmessage (id, subject, content, scheduled_timestamp, delivered, realm_id, recipient_id, sender_id, sending_client_id, stream_id, delivery_type, rendered_content, has_attachment, failed, failure_message, delivered_message_id, read_by_sender) FROM stdin;
 \.
 
 
@@ -5728,23 +5829,23 @@ COPY zulip.zerver_useractivityinterval (id, start, "end", user_profile_id) FROM 
 -- Data for Name: zerver_usergroup; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_usergroup (id, name, realm_id, description, is_system_group) FROM stdin;
-1	@role:owners	2	Owners of this organization	t
-2	@role:administrators	2	Administrators of this organization, including owners	t
-3	@role:moderators	2	Moderators of this organization, including administrators	t
-4	@role:fullmembers	2	Members of this organization, not including new accounts and guests	t
-5	@role:members	2	Members of this organization, not including guests	t
-6	@role:everyone	2	Everyone in this organization, including guests	t
-7	@role:internet	2	Everyone on the Internet	t
-8	@role:owners	1	Owners of this organization	t
-9	@role:administrators	1	Administrators of this organization, including owners	t
-10	@role:moderators	1	Moderators of this organization, including administrators	t
-11	@role:fullmembers	1	Members of this organization, not including new accounts and guests	t
-12	@role:members	1	Members of this organization, not including guests	t
-13	@role:everyone	1	Everyone in this organization, including guests	t
-14	@role:internet	1	Everyone on the Internet	t
-15	@role:nobody	1	Nobody	t
-16	@role:nobody	2	Nobody	t
+COPY zulip.zerver_usergroup (id, name, realm_id, description, is_system_group, can_mention_group_id) FROM stdin;
+8	role:owners	1	Owners of this organization	t	15
+9	role:administrators	1	Administrators of this organization, including owners	t	15
+10	role:moderators	1	Moderators of this organization, including administrators	t	15
+11	role:fullmembers	1	Members of this organization, not including new accounts and guests	t	15
+12	role:members	1	Members of this organization, not including guests	t	15
+13	role:everyone	1	Everyone in this organization, including guests	t	15
+14	role:internet	1	Everyone on the Internet	t	15
+15	role:nobody	1	Nobody	t	15
+1	role:owners	2	Owners of this organization	t	16
+2	role:administrators	2	Administrators of this organization, including owners	t	16
+3	role:moderators	2	Moderators of this organization, including administrators	t	16
+4	role:fullmembers	2	Members of this organization, not including new accounts and guests	t	16
+5	role:members	2	Members of this organization, not including guests	t	16
+6	role:everyone	2	Everyone in this organization, including guests	t	16
+7	role:internet	2	Everyone on the Internet	t	16
+16	role:nobody	2	Nobody	t	16
 \.
 
 
@@ -5768,14 +5869,6 @@ COPY zulip.zerver_usergroupmembership (id, user_group_id, user_profile_id) FROM 
 13	11	7
 14	12	1
 15	11	1
-\.
-
-
---
--- Data for Name: zerver_userhotspot; Type: TABLE DATA; Schema: zulip; Owner: zulip
---
-
-COPY zulip.zerver_userhotspot (id, hotspot, "timestamp", user_id) FROM stdin;
 \.
 
 
@@ -5806,15 +5899,15 @@ COPY zulip.zerver_userpresence (id, last_connected_time, last_active_time, realm
 -- Data for Name: zerver_userprofile; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_userprofile (id, password, last_login, is_superuser, email, is_staff, is_active, is_bot, date_joined, is_mirror_dummy, full_name, api_key, enable_stream_desktop_notifications, enable_stream_audible_notifications, enable_desktop_notifications, enable_sounds, enable_offline_email_notifications, enable_offline_push_notifications, enable_digest_emails, last_reminder, rate_limits, default_all_public_streams, enter_sends, twenty_four_hour_time, avatar_source, tutorial_status, onboarding_steps, bot_owner_id, default_events_register_stream_id, default_sending_stream_id, realm_id, left_side_userlist, can_forge_sender, bot_type, default_language, tos_version, enable_online_push_notifications, pm_content_in_desktop_notifications, avatar_version, timezone, emojiset, last_active_message_id, long_term_idle, high_contrast_mode, enable_stream_push_notifications, enable_stream_email_notifications, translate_emoticons, message_content_in_email_notifications, dense_mode, delivery_email, starred_message_counts, is_billing_admin, enable_login_emails, notification_sound, fluid_layout_width, demote_inactive_streams, avatar_hash, desktop_icon_count_display, role, wildcard_mentions_notify, recipient_id, presence_enabled, zoom_token, color_scheme, can_create_users, default_view, enable_marketing_emails, email_notifications_batching_period_seconds, enable_drafts_synchronization, send_private_typing_notifications, send_stream_typing_notifications, send_read_receipts, escape_navigates_to_default_view, uuid, display_emoji_reaction_users, user_list_style, email_address_visibility, realm_name_in_email_notifications_policy, web_mark_read_on_scroll_policy) FROM stdin;
-2	!1AwW0LFTkP1PYjZNnpG6gTUYsjjftwaBSw1Y3pji	2022-04-23 08:50:54.677875+00	f	nagios-receive-bot@zulip.com	f	t	t	2022-04-23 08:50:54.677875+00	f	Nagios Receive Bot	nTG8r6uvvJGKdQ3tV4NsxO9jZSCV1gXj	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	2	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-receive-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	2	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	289855e5-91b4-4845-b01a-78406555b931	t	2	1	1	1
-3	!ff2cIWnT6MjrPBpFSVtvcCxwwZzNVhmeepcp4pnI	2022-04-23 08:50:54.67837+00	f	nagios-send-bot@zulip.com	f	t	t	2022-04-23 08:50:54.67837+00	f	Nagios Send Bot	mw1VGjZT3zeQ17El1sywsemzYPzUyYSt	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	3	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-send-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	3	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	60274dc7-ae4a-4cd4-aa11-4e177ad780e3	t	2	1	1	1
-4	!NggBYBvz38U1RnOrZtf3sQ40EaN4LBg7tIwDc0R6	2022-04-23 08:50:54.678796+00	f	nagios-staging-receive-bot@zulip.com	f	t	t	2022-04-23 08:50:54.678796+00	f	Nagios Staging Receive Bot	eS5XwAqTjUTpUw2v7s3pVowhNIn07HOu	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	4	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-staging-receive-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	4	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	e2ab3224-ad6c-4fc9-b323-a44dc5918e18	t	2	1	1	1
-5	!7R52jbBS4vVwKOWdXqhOICksp9jNnUpGxbgoD5AP	2022-04-23 08:50:54.679357+00	f	nagios-staging-send-bot@zulip.com	f	t	t	2022-04-23 08:50:54.679357+00	f	Nagios Staging Send Bot	pGlFFp5w5w9aBLAk06PXtKr0AkcRDHrQ	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	5	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-staging-send-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	5	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	5623963e-64d6-494e-b7d6-7408232916a2	t	2	1	1	1
-6	!F3iJjkzRFqkbnJkl08GayNQ9t7GpUGD4lQ4U0JMc	2022-04-23 08:50:54.680045+00	f	notification-bot@zulip.com	f	t	t	2022-04-23 08:50:54.680045+00	f	Notification Bot	9W6kY8jUdnsFFauTtsKsHJr6Z74xg8Al	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	6	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	notification-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	6	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	12e9f3dd-03aa-471d-9a3f-a0dbe1f2efb4	t	2	1	1	1
-7	!oqgN6KFWZxwfI3O1JKFvXdxXCReo6OgcYgAAB5Al	2022-04-23 08:50:54.680469+00	f	welcome-bot@zulip.com	f	t	t	2022-04-23 08:50:54.680469+00	f	Welcome Bot	9yEPZTOPbO6k7UHwrHMmHQjEYRD5MtHw	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	7	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	welcome-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	7	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	fcab4980-2a19-4374-a082-6f017554e060	t	2	1	1	1
-1	!rxck8AsPDDQDFqVPjn0jmIRLqgWBzlSgoN54f9OB	2022-04-23 08:50:54.676975+00	f	emailgateway@zulip.com	f	t	t	2022-04-23 08:50:54.676975+00	f	Email Gateway	xJ0BENMQQtlU6sMFqhzKwZ7bMVABxY2q	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	1	\N	\N	1	f	t	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	emailgateway@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	1	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	8b6d6cee-47f5-4551-bc1f-f334cd24a4a6	t	2	1	1	1
-8	argon2$argon2id$v=19$m=102400,t=2,p=8$VjFZUWpPTllFdDVESEg4SkdCbEc5ZQ$m+ST6Xde1vvG3CEgsll1qSL2dVKf1fFFGiQvqWcsI9s	2022-04-23 08:50:55.636819+00	f	test@test.com	f	t	f	2022-04-23 08:50:55.05282+00	f	tester	lDxDG5uoqwOhCdeA2d9iHvboTYAcOlVb	f	f	t	t	t	t	t	\N		f	f	f	G	S	[]	\N	\N	\N	2	f	f	\N	en	\N	t	t	1	Europe/London	google	\N	f	f	f	f	f	t	t	test@test.com	t	f	t	zulip	f	1	\N	1	100	t	10	t	\N	1	t	recent_topics	f	120	t	t	t	t	t	6f58568b-d24c-4400-86a5-2c89c327d275	t	2	1	1	1
+COPY zulip.zerver_userprofile (id, password, last_login, is_superuser, email, is_staff, is_active, is_bot, date_joined, is_mirror_dummy, full_name, api_key, enable_stream_desktop_notifications, enable_stream_audible_notifications, enable_desktop_notifications, enable_sounds, enable_offline_email_notifications, enable_offline_push_notifications, enable_digest_emails, last_reminder, rate_limits, default_all_public_streams, enter_sends, twenty_four_hour_time, avatar_source, tutorial_status, onboarding_steps, bot_owner_id, default_events_register_stream_id, default_sending_stream_id, realm_id, left_side_userlist, can_forge_sender, bot_type, default_language, tos_version, enable_online_push_notifications, pm_content_in_desktop_notifications, avatar_version, timezone, emojiset, last_active_message_id, long_term_idle, high_contrast_mode, enable_stream_push_notifications, enable_stream_email_notifications, translate_emoticons, message_content_in_email_notifications, dense_mode, delivery_email, starred_message_counts, is_billing_admin, enable_login_emails, notification_sound, fluid_layout_width, demote_inactive_streams, avatar_hash, desktop_icon_count_display, role, wildcard_mentions_notify, recipient_id, presence_enabled, zoom_token, color_scheme, can_create_users, web_home_view, enable_marketing_emails, email_notifications_batching_period_seconds, enable_drafts_synchronization, send_private_typing_notifications, send_stream_typing_notifications, send_read_receipts, web_escape_navigates_to_home_view, uuid, display_emoji_reaction_users, user_list_style, email_address_visibility, realm_name_in_email_notifications_policy, web_mark_read_on_scroll_policy, enable_followed_topic_audible_notifications, enable_followed_topic_desktop_notifications, enable_followed_topic_email_notifications, enable_followed_topic_push_notifications, enable_followed_topic_wildcard_mentions_notify, web_stream_unreads_count_display_policy, automatically_follow_topics_policy, automatically_unmute_topics_in_muted_streams_policy, automatically_follow_topics_where_mentioned) FROM stdin;
+2	!1AwW0LFTkP1PYjZNnpG6gTUYsjjftwaBSw1Y3pji	2022-04-23 08:50:54.677875+00	f	nagios-receive-bot@zulip.com	f	t	t	2022-04-23 08:50:54.677875+00	f	Nagios Receive Bot	nTG8r6uvvJGKdQ3tV4NsxO9jZSCV1gXj	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	2	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-receive-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	2	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	289855e5-91b4-4845-b01a-78406555b931	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+3	!ff2cIWnT6MjrPBpFSVtvcCxwwZzNVhmeepcp4pnI	2022-04-23 08:50:54.67837+00	f	nagios-send-bot@zulip.com	f	t	t	2022-04-23 08:50:54.67837+00	f	Nagios Send Bot	mw1VGjZT3zeQ17El1sywsemzYPzUyYSt	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	3	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-send-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	3	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	60274dc7-ae4a-4cd4-aa11-4e177ad780e3	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+4	!NggBYBvz38U1RnOrZtf3sQ40EaN4LBg7tIwDc0R6	2022-04-23 08:50:54.678796+00	f	nagios-staging-receive-bot@zulip.com	f	t	t	2022-04-23 08:50:54.678796+00	f	Nagios Staging Receive Bot	eS5XwAqTjUTpUw2v7s3pVowhNIn07HOu	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	4	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-staging-receive-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	4	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	e2ab3224-ad6c-4fc9-b323-a44dc5918e18	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+5	!7R52jbBS4vVwKOWdXqhOICksp9jNnUpGxbgoD5AP	2022-04-23 08:50:54.679357+00	f	nagios-staging-send-bot@zulip.com	f	t	t	2022-04-23 08:50:54.679357+00	f	Nagios Staging Send Bot	pGlFFp5w5w9aBLAk06PXtKr0AkcRDHrQ	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	5	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	nagios-staging-send-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	5	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	5623963e-64d6-494e-b7d6-7408232916a2	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+6	!F3iJjkzRFqkbnJkl08GayNQ9t7GpUGD4lQ4U0JMc	2022-04-23 08:50:54.680045+00	f	notification-bot@zulip.com	f	t	t	2022-04-23 08:50:54.680045+00	f	Notification Bot	9W6kY8jUdnsFFauTtsKsHJr6Z74xg8Al	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	6	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	notification-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	6	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	12e9f3dd-03aa-471d-9a3f-a0dbe1f2efb4	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+7	!oqgN6KFWZxwfI3O1JKFvXdxXCReo6OgcYgAAB5Al	2022-04-23 08:50:54.680469+00	f	welcome-bot@zulip.com	f	t	t	2022-04-23 08:50:54.680469+00	f	Welcome Bot	9yEPZTOPbO6k7UHwrHMmHQjEYRD5MtHw	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	7	\N	\N	1	f	f	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	welcome-bot@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	7	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	fcab4980-2a19-4374-a082-6f017554e060	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+1	!rxck8AsPDDQDFqVPjn0jmIRLqgWBzlSgoN54f9OB	2022-04-23 08:50:54.676975+00	f	emailgateway@zulip.com	f	t	t	2022-04-23 08:50:54.676975+00	f	Email Gateway	xJ0BENMQQtlU6sMFqhzKwZ7bMVABxY2q	f	f	t	t	t	t	t	\N		f	t	f	G	F	[]	1	\N	\N	1	f	t	1	en	\N	t	t	1		google	\N	f	f	f	f	f	t	t	emailgateway@zulip.com	t	f	t	zulip	f	1	\N	1	400	t	1	t	\N	1	f	recent_topics	t	120	t	t	t	t	t	8b6d6cee-47f5-4551-bc1f-f334cd24a4a6	t	2	1	1	1	t	t	t	t	t	2	3	2	t
+8	argon2$argon2id$v=19$m=102400,t=2,p=8$VjFZUWpPTllFdDVESEg4SkdCbEc5ZQ$m+ST6Xde1vvG3CEgsll1qSL2dVKf1fFFGiQvqWcsI9s	2022-04-23 08:50:55.636819+00	f	test@test.com	f	t	f	2022-04-23 08:50:55.05282+00	f	tester	lDxDG5uoqwOhCdeA2d9iHvboTYAcOlVb	f	f	t	t	t	t	t	\N		f	f	f	G	S	[]	\N	\N	\N	2	f	f	\N	en	\N	t	t	1	Europe/London	google	\N	f	f	f	f	f	t	t	test@test.com	t	f	t	zulip	f	1	\N	1	100	t	10	t	\N	1	t	recent_topics	f	120	t	t	t	t	t	6f58568b-d24c-4400-86a5-2c89c327d275	t	2	1	1	1	t	t	t	t	t	2	3	2	t
 \.
 
 
@@ -5903,7 +5996,7 @@ SELECT pg_catalog.setval('zulip.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
 --
 
-SELECT pg_catalog.setval('zulip.auth_permission_id_seq', 304, true);
+SELECT pg_catalog.setval('zulip.auth_permission_id_seq', 308, true);
 
 
 --
@@ -5924,14 +6017,14 @@ SELECT pg_catalog.setval('zulip.confirmation_realmcreationkey_id_seq', 1, true);
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
 --
 
-SELECT pg_catalog.setval('zulip.django_content_type_id_seq', 76, true);
+SELECT pg_catalog.setval('zulip.django_content_type_id_seq', 77, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
 --
 
-SELECT pg_catalog.setval('zulip.django_migrations_id_seq', 501, true);
+SELECT pg_catalog.setval('zulip.django_migrations_id_seq', 552, true);
 
 
 --
@@ -6208,6 +6301,13 @@ SELECT pg_catalog.setval('zulip.zerver_muteduser_id_seq', 1, false);
 
 
 --
+-- Name: zerver_onboardingstep_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
+--
+
+SELECT pg_catalog.setval('zulip.zerver_onboardingstep_id_seq', 1, false);
+
+
+--
 -- Name: zerver_preregistrationrealm_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
 --
 
@@ -6394,13 +6494,6 @@ SELECT pg_catalog.setval('zulip.zerver_usergroup_id_seq', 16, true);
 --
 
 SELECT pg_catalog.setval('zulip.zerver_usergroupmembership_id_seq', 15, true);
-
-
---
--- Name: zerver_userhotspot_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
---
-
-SELECT pg_catalog.setval('zulip.zerver_userhotspot_id_seq', 1, false);
 
 
 --
@@ -7118,6 +7211,22 @@ ALTER TABLE ONLY zulip.zerver_muteduser
 
 
 --
+-- Name: zerver_onboardingstep zerver_onboardingstep_id_45d37e68_pk; Type: CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_onboardingstep
+    ADD CONSTRAINT zerver_onboardingstep_id_45d37e68_pk PRIMARY KEY (id);
+
+
+--
+-- Name: zerver_onboardingstep zerver_onboardingstep_user_id_onboarding_step_82524e0a_uniq; Type: CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_onboardingstep
+    ADD CONSTRAINT zerver_onboardingstep_user_id_onboarding_step_82524e0a_uniq UNIQUE (user_id, onboarding_step);
+
+
+--
 -- Name: zerver_preregistrationrealm zerver_preregistrationrealm_pkey; Type: CONSTRAINT; Schema: zulip; Owner: zulip
 --
 
@@ -7195,6 +7304,14 @@ ALTER TABLE ONLY zulip.zerver_realm
 
 ALTER TABLE ONLY zulip.zerver_realm
     ADD CONSTRAINT zerver_realm_subdomain_key UNIQUE (string_id);
+
+
+--
+-- Name: zerver_realm zerver_realm_uuid_key; Type: CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_realm
+    ADD CONSTRAINT zerver_realm_uuid_key UNIQUE (uuid);
 
 
 --
@@ -7459,22 +7576,6 @@ ALTER TABLE ONLY zulip.zerver_usergroupmembership
 
 ALTER TABLE ONLY zulip.zerver_usergroupmembership
     ADD CONSTRAINT zerver_usergroupmembership_pkey PRIMARY KEY (id);
-
-
---
--- Name: zerver_userhotspot zerver_userhotspot_pkey; Type: CONSTRAINT; Schema: zulip; Owner: zulip
---
-
-ALTER TABLE ONLY zulip.zerver_userhotspot
-    ADD CONSTRAINT zerver_userhotspot_pkey PRIMARY KEY (id);
-
-
---
--- Name: zerver_userhotspot zerver_userhotspot_user_id_hotspot_9292d57f_uniq; Type: CONSTRAINT; Schema: zulip; Owner: zulip
---
-
-ALTER TABLE ONLY zulip.zerver_userhotspot
-    ADD CONSTRAINT zerver_userhotspot_user_id_hotspot_9292d57f_uniq UNIQUE (user_id, hotspot);
 
 
 --
@@ -7936,13 +8037,6 @@ CREATE INDEX upper_preregistration_email_idx ON zulip.zerver_preregistrationuser
 --
 
 CREATE INDEX upper_stream_name_idx ON zulip.zerver_stream USING btree (upper((name)::text));
-
-
---
--- Name: upper_subject_idx; Type: INDEX; Schema: zulip; Owner: zulip
---
-
-CREATE INDEX upper_subject_idx ON zulip.zerver_message USING btree (upper((subject)::text));
 
 
 --
@@ -8464,6 +8558,20 @@ CREATE INDEX zerver_message_has_link_4171c207 ON zulip.zerver_message USING btre
 
 
 --
+-- Name: zerver_message_realm_date_sent; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_date_sent ON zulip.zerver_message USING btree (realm_id, date_sent);
+
+
+--
+-- Name: zerver_message_realm_id; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_id ON zulip.zerver_message USING btree (realm_id, id DESC NULLS LAST);
+
+
+--
 -- Name: zerver_message_realm_id_849a39c8; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
@@ -8471,24 +8579,52 @@ CREATE INDEX zerver_message_realm_id_849a39c8 ON zulip.zerver_message USING btre
 
 
 --
+-- Name: zerver_message_realm_recipient_date_sent; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_recipient_date_sent ON zulip.zerver_message USING btree (realm_id, recipient_id, date_sent);
+
+
+--
+-- Name: zerver_message_realm_recipient_id; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_recipient_id ON zulip.zerver_message USING btree (realm_id, recipient_id, id);
+
+
+--
+-- Name: zerver_message_realm_recipient_subject; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_recipient_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, subject, id DESC NULLS LAST);
+
+
+--
+-- Name: zerver_message_realm_recipient_upper_subject; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_recipient_upper_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, upper((subject)::text), id DESC NULLS LAST);
+
+
+--
+-- Name: zerver_message_realm_sender_recipient; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_sender_recipient ON zulip.zerver_message USING btree (realm_id, sender_id, recipient_id);
+
+
+--
+-- Name: zerver_message_realm_upper_subject; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_message_realm_upper_subject ON zulip.zerver_message USING btree (realm_id, upper((subject)::text), id DESC NULLS LAST);
+
+
+--
 -- Name: zerver_message_recipient_id_5a7b6f03; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
 CREATE INDEX zerver_message_recipient_id_5a7b6f03 ON zulip.zerver_message USING btree (recipient_id);
-
-
---
--- Name: zerver_message_recipient_subject; Type: INDEX; Schema: zulip; Owner: zulip
---
-
-CREATE INDEX zerver_message_recipient_subject ON zulip.zerver_message USING btree (recipient_id, subject, id DESC NULLS LAST);
-
-
---
--- Name: zerver_message_recipient_upper_subject; Type: INDEX; Schema: zulip; Owner: zulip
---
-
-CREATE INDEX zerver_message_recipient_upper_subject ON zulip.zerver_message USING btree (recipient_id, upper((subject)::text), id DESC NULLS LAST);
 
 
 --
@@ -8632,6 +8768,13 @@ CREATE INDEX zerver_muteduser_user_profile_id_aeb57a40 ON zulip.zerver_muteduser
 
 
 --
+-- Name: zerver_onboardingstep_user_id_3ced3a3a; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_onboardingstep_user_id_3ced3a3a ON zulip.zerver_onboardingstep USING btree (user_id);
+
+
+--
 -- Name: zerver_preregistrationrealm_created_realm_id_0c7c7c75; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
@@ -8723,10 +8866,31 @@ CREATE INDEX zerver_reaction_user_profile_id_468ce1ef ON zulip.zerver_reaction U
 
 
 --
+-- Name: zerver_realm_can_access_all_users_group_id_692c7cc6; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_realm_can_access_all_users_group_id_692c7cc6 ON zulip.zerver_realm USING btree (can_access_all_users_group_id);
+
+
+--
+-- Name: zerver_realm_create_multiuse_invite_group_id_28a8b9cb; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_realm_create_multiuse_invite_group_id_28a8b9cb ON zulip.zerver_realm USING btree (create_multiuse_invite_group_id);
+
+
+--
 -- Name: zerver_realm_notifications_stream_id_f07609e9; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
 CREATE INDEX zerver_realm_notifications_stream_id_f07609e9 ON zulip.zerver_realm USING btree (notifications_stream_id);
+
+
+--
+-- Name: zerver_realm_push_notifications_enabled_f806b849; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_realm_push_notifications_enabled_f806b849 ON zulip.zerver_realm USING btree (push_notifications_enabled);
 
 
 --
@@ -8741,6 +8905,13 @@ CREATE INDEX zerver_realm_signup_notifications_stream_id_1e735af4 ON zulip.zerve
 --
 
 CREATE INDEX zerver_realm_subdomain_375be8b1_like ON zulip.zerver_realm USING btree (string_id varchar_pattern_ops);
+
+
+--
+-- Name: zerver_realm_unsent_scheduled_messages_by_user; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_realm_unsent_scheduled_messages_by_user ON zulip.zerver_scheduledmessage USING btree (realm_id, sender_id, delivery_type, scheduled_timestamp) WHERE (NOT delivered);
 
 
 --
@@ -8790,6 +8961,13 @@ CREATE INDEX zerver_realmauditlog_event_time_799bd0ca ON zulip.zerver_realmaudit
 --
 
 CREATE INDEX zerver_realmauditlog_modified_stream_id_4de0252c ON zulip.zerver_realmauditlog USING btree (modified_stream_id);
+
+
+--
+-- Name: zerver_realmauditlog_modified_user_group_id_56329312; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_realmauditlog_modified_user_group_id_56329312 ON zulip.zerver_realmauditlog USING btree (modified_user_group_id);
 
 
 --
@@ -9143,13 +9321,6 @@ CREATE INDEX zerver_unsent_scheduled_messages_by_time ON zulip.zerver_scheduledm
 
 
 --
--- Name: zerver_unsent_scheduled_messages_by_user; Type: INDEX; Schema: zulip; Owner: zulip
---
-
-CREATE INDEX zerver_unsent_scheduled_messages_by_user ON zulip.zerver_scheduledmessage USING btree (sender_id, delivery_type, scheduled_timestamp) WHERE (NOT delivered);
-
-
---
 -- Name: zerver_useractivity_client_id_bb848fef; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
@@ -9206,6 +9377,13 @@ CREATE INDEX zerver_useractivityinterval_user_profile_id_end_bb3bfc37_idx ON zul
 
 
 --
+-- Name: zerver_usergroup_can_mention_group_id_3f5cd6cd; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_usergroup_can_mention_group_id_3f5cd6cd ON zulip.zerver_usergroup USING btree (can_mention_group_id);
+
+
+--
 -- Name: zerver_usergroup_realm_id_8b78d3b3; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
@@ -9227,17 +9405,17 @@ CREATE INDEX zerver_usergroupmembership_user_profile_id_6aa688e2 ON zulip.zerver
 
 
 --
--- Name: zerver_userhotspot_user_id_26216f4c; Type: INDEX; Schema: zulip; Owner: zulip
---
-
-CREATE INDEX zerver_userhotspot_user_id_26216f4c ON zulip.zerver_userhotspot USING btree (user_id);
-
-
---
 -- Name: zerver_usermessage_active_mobile_push_notification_id; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
 CREATE INDEX zerver_usermessage_active_mobile_push_notification_id ON zulip.zerver_usermessage USING btree (user_profile_id, message_id) WHERE ((flags & (4096)::bigint) <> 0);
+
+
+--
+-- Name: zerver_usermessage_any_mentioned_message_id; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_usermessage_any_mentioned_message_id ON zulip.zerver_usermessage USING btree (user_profile_id, message_id) WHERE ((flags & (120)::bigint) <> 0);
 
 
 --
@@ -9519,6 +9697,24 @@ CREATE INDEX zerver_usertopic_stream_topic_user_visibility_idx ON zulip.zerver_u
 
 CREATE INDEX zerver_usertopic_user_visibility_idx ON zulip.zerver_usertopic USING btree (user_profile_id, visibility_policy, stream_id, topic_name);
 
+
+--
+-- Name: zerver_message_realm_recipient; Type: STATISTICS; Schema: zulip; Owner: zulip
+--
+
+CREATE STATISTICS zulip.zerver_message_realm_recipient ON recipient_id, realm_id FROM zulip.zerver_message;
+
+
+ALTER STATISTICS zulip.zerver_message_realm_recipient OWNER TO zulip;
+
+--
+-- Name: zerver_message_realm_sender; Type: STATISTICS; Schema: zulip; Owner: zulip
+--
+
+CREATE STATISTICS zulip.zerver_message_realm_sender ON sender_id, realm_id FROM zulip.zerver_message;
+
+
+ALTER STATISTICS zulip.zerver_message_realm_sender OWNER TO zulip;
 
 --
 -- Name: fts_update_log fts_update_log_notify; Type: TRIGGER; Schema: zulip; Owner: zulip
@@ -10103,6 +10299,14 @@ ALTER TABLE ONLY zulip.zerver_muteduser
 
 
 --
+-- Name: zerver_onboardingstep zerver_onboardingstep_user_id_3ced3a3a_fk_zerver_userprofile_id; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_onboardingstep
+    ADD CONSTRAINT zerver_onboardingstep_user_id_3ced3a3a_fk_zerver_userprofile_id FOREIGN KEY (user_id) REFERENCES zulip.zerver_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: zerver_preregistrationrealm zerver_preregistrati_created_realm_id_0c7c7c75_fk_zerver_re; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
 --
 
@@ -10191,6 +10395,22 @@ ALTER TABLE ONLY zulip.zerver_reaction
 
 
 --
+-- Name: zerver_realm zerver_realm_can_access_all_users_692c7cc6_fk_zerver_us; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_realm
+    ADD CONSTRAINT zerver_realm_can_access_all_users_692c7cc6_fk_zerver_us FOREIGN KEY (can_access_all_users_group_id) REFERENCES zulip.zerver_usergroup(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: zerver_realm zerver_realm_create_multiuse_invi_28a8b9cb_fk_zerver_us; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_realm
+    ADD CONSTRAINT zerver_realm_create_multiuse_invi_28a8b9cb_fk_zerver_us FOREIGN KEY (create_multiuse_invite_group_id) REFERENCES zulip.zerver_usergroup(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: zerver_realm zerver_realm_notifications_stream_f07609e9_fk_zerver_st; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
 --
 
@@ -10228,6 +10448,14 @@ ALTER TABLE ONLY zulip.zerver_realmauditlog
 
 ALTER TABLE ONLY zulip.zerver_realmauditlog
     ADD CONSTRAINT zerver_realmauditlog_modified_stream_id_4de0252c_fk_zerver_st FOREIGN KEY (modified_stream_id) REFERENCES zulip.zerver_stream(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: zerver_realmauditlog zerver_realmauditlog_modified_user_group__56329312_fk_zerver_us; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_realmauditlog
+    ADD CONSTRAINT zerver_realmauditlog_modified_user_group__56329312_fk_zerver_us FOREIGN KEY (modified_user_group_id) REFERENCES zulip.zerver_usergroup(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -10487,6 +10715,14 @@ ALTER TABLE ONLY zulip.zerver_useractivityinterval
 
 
 --
+-- Name: zerver_usergroup zerver_usergroup_can_mention_group_id_3f5cd6cd_fk_zerver_us; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
+--
+
+ALTER TABLE ONLY zulip.zerver_usergroup
+    ADD CONSTRAINT zerver_usergroup_can_mention_group_id_3f5cd6cd_fk_zerver_us FOREIGN KEY (can_mention_group_id) REFERENCES zulip.zerver_usergroup(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: zerver_usergroup zerver_usergroup_realm_id_8b78d3b3_fk_zerver_realm_id; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
 --
 
@@ -10508,14 +10744,6 @@ ALTER TABLE ONLY zulip.zerver_usergroupmembership
 
 ALTER TABLE ONLY zulip.zerver_usergroupmembership
     ADD CONSTRAINT zerver_usergroupmemb_user_profile_id_6aa688e2_fk_zerver_us FOREIGN KEY (user_profile_id) REFERENCES zulip.zerver_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: zerver_userhotspot zerver_userhotspot_user_id_26216f4c_fk_zerver_userprofile_id; Type: FK CONSTRAINT; Schema: zulip; Owner: zulip
---
-
-ALTER TABLE ONLY zulip.zerver_userhotspot
-    ADD CONSTRAINT zerver_userhotspot_user_id_26216f4c_fk_zerver_userprofile_id FOREIGN KEY (user_id) REFERENCES zulip.zerver_userprofile(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

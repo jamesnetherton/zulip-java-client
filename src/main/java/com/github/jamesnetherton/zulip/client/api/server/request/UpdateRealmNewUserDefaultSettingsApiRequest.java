@@ -7,13 +7,16 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.EmailAddressVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.TopicFollowPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.UnmuteTopicInMutedStreamsPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.WebStreamUnreadsCountDisplayPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.response.UpdateRealmNewUserDefaultSettingsApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
-import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -26,8 +29,10 @@ import java.util.List;
  *      "https://zulip.com/api/update-realm-user-settings-defaults">https://zulip.com/api/update-realm-user-settings-defaults</a>
  */
 public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<String>> {
+    public static final String AUTOMATICALLY_FOLLOW_TOPICS_POLICY = "automatically_follow_topics_policy";
+    public static final String AUTOMATICALLY_UNMUTE_TOPICS_IN_MUTED_STREAMS_POLICY = "automatically_unmute_topics_in_muted_streams_policy";
+    public static final String AUTOMATICALLY_FOLLOW_TOPICS_WHERE_MENTIONED = "automatically_follow_topics_where_mentioned";
     public static final String COLOR_SCHEME = "color_scheme";
-    public static final String DEFAULT_VIEW = "default_view";
     public static final String DEMOTE_INACTIVE_STREAMS = "demote_inactive_streams";
     public static final String DISPLAY_EMOJI_REACTION_USERS = "display_emoji_reaction_users";
     public static final String DESKTOP_ICON_COUNT_DISPLAY = "desktop_icon_count_display";
@@ -37,6 +42,11 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String EMOJISET = "emojiset";
     public static final String ENABLE_DIGEST_EMAILS = "enable_digest_emails";
     public static final String ENABLE_DRAFTS_SYNCHRONIZATION = "enable_drafts_synchronization";
+    public static final String ENABLE_FOLLOWED_TOPIC_DESKTOP_NOTIFICATIONS = "enable_followed_topic_desktop_notifications";
+    public static final String ENABLE_FOLLOWED_TOPIC_EMAIL_NOTIFICATIONS = "enable_followed_topic_email_notifications";
+    public static final String ENABLE_FOLLOWED_TOPIC_PUSH_NOTIFICATIONS = "enable_followed_topic_push_notifications";
+    public static final String ENABLE_FOLLOWED_TOPIC_AUDIBLE_NOTIFICATIONS = "enable_followed_topic_audible_notifications";
+    public static final String ENABLE_FOLLOWED_TOPIC_WILDCARD_MENTIONS_NOTIFY = "enable_followed_topic_wildcard_mentions_notify";
     public static final String ENABLE_OFFLINE_EMAIL_NOTIFICATIONS = "enable_offline_email_notifications";
     public static final String ENABLE_OFFLINE_PUSH_NOTIFICATIONS = "enable_offline_push_notifications";
     public static final String ENABLE_ONLINE_PUSH_NOTIFICATIONS = "enable_online_push_notifications";
@@ -46,7 +56,6 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String ENABLE_STREAM_EMAIL_NOTIFICATIONS = "enable_stream_email_notifications";
     public static final String ENABLE_STREAM_PUSH_NOTIFICATIONS = "enable_stream_push_notifications";
     public static final String ENTER_SENDS = "enter_sends";
-    public static final String ESCAPE_NAVIGATES_TO_DEFAULT_VIEW = "escape_navigates_to_default_view";
     public static final String FLUID_LAYOUT_WIDTH = "fluid_layout_width";
     public static final String HIGH_CONTRAST_MODE = "high_contrast_mode";
     public static final String LEFT_SIDE_USERLIST = "left_side_userlist";
@@ -63,7 +72,10 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String TRANSLATE_EMOTICONS = "translate_emoticons";
     public static final String TWENTY_FOUR_HOUR_TIME = "twenty_four_hour_time";
     public static final String USER_LIST_STYLE = "user_list_style";
+    public static final String WEB_ESCAPE_NAVIGATES_TO_HOME_VIEW = "web_escape_navigates_to_home_view";
     public static final String WEB_MARK_READ_ON_SCROLL_POLICY = "web_mark_read_on_scroll_policy";
+    public static final String WEB_HOME_VIEW = "web_home_view";
+    public static final String WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY = "web_stream_unreads_count_display_policy";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
 
     /**
@@ -76,7 +88,41 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     }
 
     /**
-     * Sets whether stream desktop notifications should be enabled.
+     * Sets the topics to follow automatically.
+     *
+     * @param  policy The {@link TopicFollowPolicy} to use
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withAutomaticallyFollowTopicsPolicy(TopicFollowPolicy policy) {
+        putParam(AUTOMATICALLY_FOLLOW_TOPICS_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets the topics to unmute automatically in muted streams.
+     *
+     * @param  policy The {@link UnmuteTopicInMutedStreamsPolicy} to use
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withAutomaticallyUnmuteTopicsInMutedStreamsPolicy(
+            UnmuteTopicInMutedStreamsPolicy policy) {
+        putParam(AUTOMATICALLY_UNMUTE_TOPICS_IN_MUTED_STREAMS_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets whether the server will automatically mark the user as following topics where the user is mentioned.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withAutomaticallyFollowTopicsWhereMentioned(boolean enable) {
+        putParam(AUTOMATICALLY_FOLLOW_TOPICS_WHERE_MENTIONED, enable);
+        return this;
+    }
+
+    /**
+     * Sets the color scheme to use.
      *
      * @param  colorScheme The color scheme to use
      * @return             This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
@@ -87,16 +133,16 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     }
 
     /**
-     * Sets the default view to use.
+     * Sets the web home view to use.
      *
      * @see                <a href=
-     *                     "htt`ps://zulip.com/help/configure-default-view">https://zulip.com/help/configure-default-view</a>
+     *                     "https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_home_view</a>
      *
-     * @param  defaultView The default view to use
+     * @param  webHomeView The default web home view to use
      * @return             This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
      */
-    public UpdateRealmNewUserDefaultSettingsApiRequest withDefaultView(DefaultView defaultView) {
-        putParam(DEFAULT_VIEW, defaultView.toString());
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebHomeView(WebHomeView webHomeView) {
+        putParam(WEB_HOME_VIEW, webHomeView.toString());
         return this;
     }
 
@@ -206,6 +252,62 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     }
 
     /**
+     * Sets whether visual desktop notifications for messages sent to followed topics is enabled.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEnableFollowedTopicDesktopNotifications(boolean enable) {
+        putParam(ENABLE_FOLLOWED_TOPIC_DESKTOP_NOTIFICATIONS, enable);
+        return this;
+    }
+
+    /**
+     * Sets whether email notifications for messages sent to followed topics is enabled.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEnableFollowedTopicEmailNotifications(boolean enable) {
+        putParam(ENABLE_FOLLOWED_TOPIC_EMAIL_NOTIFICATIONS, enable);
+        return this;
+    }
+
+    /**
+     * Sets whether push notifications for messages sent to followed topics is enabled.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEnableFollowedTopicPushNotifications(boolean enable) {
+        putParam(ENABLE_FOLLOWED_TOPIC_PUSH_NOTIFICATIONS, enable);
+        return this;
+    }
+
+    /**
+     * Sets whether audible desktop notifications for messages sent to followed topics is enabled.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEnableFollowedTopicAudibleNotifications(boolean enable) {
+        putParam(ENABLE_FOLLOWED_TOPIC_AUDIBLE_NOTIFICATIONS, enable);
+        return this;
+    }
+
+    /**
+     * Sets whether wildcard mentions in messages sent to followed topics should send notifications like a personal mention is
+     * enabled.
+     *
+     * @param  enable {@code true} to enable. {@code false} to disable
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withEnableFollowedTopicWildcardMentionsNotify(boolean enable) {
+        putParam(ENABLE_FOLLOWED_TOPIC_WILDCARD_MENTIONS_NOTIFY, enable);
+        return this;
+    }
+
+    /**
      * Sets whether offline email notifications are enabled.
      *
      * @param  enable {@code true} to enable. {@code false} to disable
@@ -306,17 +408,17 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     }
 
     /**
-     * Sets whether pressing the escape key navigates to the default view.
+     * Sets whether pressing the escape key navigates to the web home view.
      *
      * @see                                 <a href=
-     *                                      "https://zulip.com/help/configure-default-view">https://zulip.com/help/configure-default-view</a>
+     *                                      "https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_escape_navigates_to_home_view">https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_escape_navigates_to_home_view</a>
      *
-     * @param  escapeNavigatesToDefaultView {@code true} causes the escape key press to navigate to the default view.
+     * @param  webEscapeNavigatesToHomeView {@code true} causes the escape key press to navigate to the default view.
      *                                      {@code false} the default view is not navigated to when the escape key is pressed
      * @return                              This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
      */
-    public UpdateRealmNewUserDefaultSettingsApiRequest withEscapeNavigatesToDefaultView(boolean escapeNavigatesToDefaultView) {
-        putParam(ESCAPE_NAVIGATES_TO_DEFAULT_VIEW, escapeNavigatesToDefaultView);
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebEscapeNavigatesToHomeView(boolean webEscapeNavigatesToHomeView) {
+        putParam(WEB_ESCAPE_NAVIGATES_TO_HOME_VIEW, webEscapeNavigatesToHomeView);
         return this;
     }
 
@@ -539,6 +641,18 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy policy) {
         putParam(WEB_MARK_READ_ON_SCROLL_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets which streams should be displayed with a numeric unread count in the left sidebar in the Zulip UI.
+     *
+     * @param  policy The {@link WebStreamUnreadsCountDisplayPolicy} to determine which streams are to be displayed
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebStreamUnreadsCountDisplayPolicy(
+            WebStreamUnreadsCountDisplayPolicy policy) {
+        putParam(WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY, policy.getId());
         return this;
     }
 

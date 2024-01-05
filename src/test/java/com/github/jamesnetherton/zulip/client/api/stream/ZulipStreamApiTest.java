@@ -51,7 +51,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("A Scandinavian country", subscriptionA.getDescription());
         assertEquals("<p>A Scandinavian country</p>", subscriptionA.getRenderedDescription());
         assertTrue(subscriptionA.isDesktopNotifications());
-        assertEquals("Denmark+187b4125ed36d6af8b5d03ef4f65c0cf@zulipdev.com:9981", subscriptionA.getEmailAddress());
         assertFalse(subscriptionA.isInviteOnly());
         assertFalse(subscriptionA.isMuted());
         assertEquals("Denmark", subscriptionA.getName());
@@ -61,7 +60,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
         assertEquals(1, subscriptionA.getStreamWeeklyTraffic());
-        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroupId());
+        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroup());
         assertEquals(30, subscriptionA.getMessageRetentionDays());
         assertTrue(subscriptionA.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionA.getFirstMessageId());
@@ -74,7 +73,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("#e79ab5", subscriptionB.getColor());
         assertEquals("<p>Located in the United Kingdom</p>", subscriptionB.getRenderedDescription());
         assertTrue(subscriptionB.isDesktopNotifications());
-        assertEquals("Scotland+f5786390183e60a1ccb18374f9d05649@zulipdev.com:9981", subscriptionB.getEmailAddress());
         assertFalse(subscriptionB.isInviteOnly());
         assertFalse(subscriptionB.isMuted());
         assertEquals("Scotland", subscriptionB.getName());
@@ -84,7 +82,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
         assertEquals(1, subscriptionB.getStreamWeeklyTraffic());
-        assertEquals(2, subscriptionB.getCanRemoveSubscribersGroupId());
+        assertEquals(2, subscriptionB.getCanRemoveSubscribersGroup());
         assertEquals(30, subscriptionB.getMessageRetentionDays());
         assertTrue(subscriptionB.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionB.getFirstMessageId());
@@ -98,9 +96,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SubscribeStreamsApiRequest.ANNOUNCE, "true")
                 .add(SubscribeStreamsApiRequest.AUTHORIZATION_ERRORS_FATAL, "false")
-                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP_ID, "1")
+                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "1")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
+                .add(SubscribeStreamsApiRequest.IS_DEFAULT_STREAM, "true")
                 .add(SubscribeStreamsApiRequest.IS_WEB_PUBLIC, "true")
                 .add(SubscribeStreamsApiRequest.MESSAGE_RETENTION_DAYS, "\"unlimited\"")
                 .add(SubscribeStreamsApiRequest.PRINCIPALS, "[1,2,3]")
@@ -118,9 +117,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 StreamSubscriptionRequest.of("cheese", "wine"))
                 .withAnnounce(true)
                 .withAuthorizationErrorsFatal(false)
-                .withCanRemoveSubscribersGroupId(1)
+                .withCanRemoveSubscribersGroup(1)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
+                .withDefaultStream(true)
                 .withWebPublic(true)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withPrincipals(1, 2, 3)
@@ -300,12 +300,13 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     @Test
     public void updateStream() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateStreamApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP_ID, "99")
+                .add(UpdateStreamApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "99")
                 .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
                 .add(UpdateStreamApiRequest.NEW_NAME, "New name")
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
+                .add(UpdateStreamApiRequest.IS_DEFAULT_STREAM, "true")
                 .add(UpdateStreamApiRequest.IS_WEB_PUBLIC, "true")
                 .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();
@@ -313,12 +314,13 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         stubZulipResponse(PATCH, "/streams/1", params);
 
         zulip.streams().updateStream(1)
-                .withCanRemoveSubscribersGroupId(99)
+                .withCanRemoveSubscribersGroup(99)
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetention(30)
                 .withName("New name")
                 .withIsPrivate(true)
+                .withDefaultStream(true)
                 .withWebPublic(true)
                 .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
@@ -382,7 +384,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(i, stream.canRemoveSubscribersGroupId());
+            assertEquals(i, stream.canRemoveSubscribersGroup());
+            assertEquals(i, stream.getStreamWeeklyTraffic());
 
             if (i < 3) {
                 assertEquals(StreamPostPolicy.fromInt(i), stream.getStreamPostPolicy());
@@ -408,7 +411,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(10, stream.getMessageRetentionDays());
         assertFalse(stream.isDefault());
         assertTrue(stream.isAnnouncementOnly());
-        assertEquals(1, stream.canRemoveSubscribersGroupId());
+        assertEquals(1, stream.canRemoveSubscribersGroup());
+        assertEquals(1, stream.getStreamWeeklyTraffic());
     }
 
     @Test
@@ -554,5 +558,13 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(2, streamSubscribers.size());
         assertEquals(5, streamSubscribers.get(0));
         assertEquals(6, streamSubscribers.get(1));
+    }
+
+    @Test
+    public void getStreamEmailAddress() throws Exception {
+        stubZulipResponse(GET, "/streams/1/email_address", Collections.emptyMap(), "streamEmailAddress.json");
+
+        String email = zulip.streams().getStreamEmailAddress(1).execute();
+        assertEquals("test@test.com", email);
     }
 }

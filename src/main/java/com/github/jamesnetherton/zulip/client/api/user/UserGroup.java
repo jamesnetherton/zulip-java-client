@@ -26,6 +26,9 @@ public class UserGroup {
     @JsonProperty
     private boolean isSystemGroup;
 
+    @JsonProperty
+    private long canMentionGroup;
+
     public long getId() {
         return id;
     }
@@ -48,5 +51,9 @@ public class UserGroup {
 
     public boolean isSystemGroup() {
         return isSystemGroup;
+    }
+
+    public long getCanMentionGroup() {
+        return canMentionGroup;
     }
 }

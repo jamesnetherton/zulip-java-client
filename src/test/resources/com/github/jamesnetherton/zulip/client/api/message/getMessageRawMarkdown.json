@@ -66,6 +66,8 @@
       "mentioned",
       "read",
       "starred",
+      "stream_wildcard_mentioned",
+      "topic_wildcard_mentioned",
       "wildcard_mentioned"
     ],
     "id": 16,

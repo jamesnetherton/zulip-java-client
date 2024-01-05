@@ -52,7 +52,9 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         Long streamId = zulip.streams().getStreamId("Test Message Stream 2").execute();
 
         // Create messages using each variant of sendStreamMessage
-        zulip.messages().sendStreamMessage("Test Content", "Test Message Stream 1", "Test Topic 1").execute();
+        zulip.messages().sendStreamMessage("Test Content", "Test Message Stream 1", "Test Topic 1")
+                .withReadBySender(true)
+                .execute();
         zulip.messages().sendStreamMessage("Test Content", streamId, "Test Topic 2").execute();
 
         List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
@@ -436,6 +438,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         Instant deliveryTimestamp = Instant.now().plusSeconds(10);
         zulip.messages()
                 .sendScheduledMessage(MessageType.DIRECT, "test scheduled message", deliveryTimestamp, ownUser.getUserId())
+                .withReadBySender(true)
                 .execute();
 
         List<ScheduledMessage> scheduledMessages = zulip.messages().getScheduledMessages().execute();

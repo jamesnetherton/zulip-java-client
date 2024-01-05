@@ -45,10 +45,13 @@ public class Stream {
     private StreamPostPolicy streamPostPolicy;
 
     @JsonProperty
+    private int streamWeeklyTraffic;
+
+    @JsonProperty
     private boolean isWebPublic;
 
     @JsonProperty
-    private int canRemoveSubscribersGroupId;
+    private int canRemoveSubscribersGroup;
 
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
@@ -98,11 +101,15 @@ public class Stream {
         return streamPostPolicy;
     }
 
+    public int getStreamWeeklyTraffic() {
+        return streamWeeklyTraffic;
+    }
+
     public boolean isWebPublic() {
         return isWebPublic;
     }
 
-    public int canRemoveSubscribersGroupId() {
-        return canRemoveSubscribersGroupId;
+    public int canRemoveSubscribersGroup() {
+        return canRemoveSubscribersGroup;
     }
 }

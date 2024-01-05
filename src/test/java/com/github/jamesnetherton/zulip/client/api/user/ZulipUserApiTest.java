@@ -93,7 +93,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     public void setTypingForStream() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SetTypingStatusApiRequest.OPERATION, TypingOperation.START.toString())
-                .add(SetTypingStatusApiRequest.TO, "[1]")
+                .add(SetTypingStatusApiRequest.STREAM_ID, "1")
                 .add(SetTypingStatusApiRequest.TOPIC, "test typing topic")
                 .add(SetTypingStatusApiRequest.TYPE, MessageType.STREAM.toString())
                 .get();
@@ -109,11 +109,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(CreateUserGroupApiRequest.NAME, "Test Group Name")
                 .add(CreateUserGroupApiRequest.DESCRIPTION, "Test Group Description")
                 .add(CreateUserGroupApiRequest.MEMBERS, "[1,2,3]")
+                .add(CreateUserGroupApiRequest.CAN_MENTION_GROUP, "1")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/create", params);
 
-        zulip.users().createUserGroup("Test Group Name", "Test Group Description", 1, 2, 3).execute();
+        zulip.users().createUserGroup("Test Group Name", "Test Group Description", 1, 2, 3)
+                .withCanMentionGroup(1)
+                .execute();
     }
 
     @Test
@@ -121,11 +124,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserGroupApiRequest.NAME, "New Group Name")
                 .add(UpdateUserGroupApiRequest.DESCRIPTION, "New Group Description")
+                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP, "1")
                 .get();
 
         stubZulipResponse(PATCH, "/user_groups/3", params);
 
-        zulip.users().updateUserGroup("New Group Name", "New Group Description", 3).execute();
+        zulip.users().updateUserGroup("New Group Name", "New Group Description", 3)
+                .withCanMentionGroup(1)
+                .execute();
     }
 
     @Test
@@ -179,6 +185,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             assertEquals("Test Group Name " + i, group.getName());
             assertArrayEquals(new Long[] { 1L, 2L, 3L }, group.getMembers().toArray(new Long[3]));
             assertEquals(i == 1 ? true : false, group.isSystemGroup());
+            assertEquals(i, group.getCanMentionGroup());
 
             List<Long> directGroupSubIds = group.getDirectSubgroupIds();
             assertEquals(1, directGroupSubIds.size());
@@ -189,7 +196,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @Test
     public void updateNotificationSettings() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateNotificationSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY, "2")
+                .add(UpdateNotificationSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY, "3")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_PUSH_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_AUDIBLE_NOTIFICATIONS, "true")
@@ -514,7 +521,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateOwnUserSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
                 .add(UpdateOwnUserSettingsApiRequest.DEFAULT_LANGUAGE, "de")
-                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, DefaultView.RECENT_TOPICS.toString())
+                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, WebHomeView.RECENT_TOPICS.toString())
                 .add(UpdateOwnUserSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
                         String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
                 .add(UpdateOwnUserSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
@@ -568,7 +575,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         List<String> result = zulip.users().updateOwnUserSettings()
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("de")
-                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDefaultView(WebHomeView.RECENT_TOPICS)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
