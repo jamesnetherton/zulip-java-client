@@ -17,12 +17,15 @@ import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileFieldType;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.ServerSettings;
+import com.github.jamesnetherton.zulip.client.api.server.TopicFollowPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.UnmuteTopicInMutedStreamsPolicy;
+import com.github.jamesnetherton.zulip.client.api.server.WebStreamUnreadsCountDisplayPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
-import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
 import java.util.ArrayList;
@@ -63,6 +66,11 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
             assertEquals(id, linkifier.getId());
             assertEquals("#(?P<id>[0-5]+)", linkifier.getPattern());
             assertEquals("https://github.com/zulip/zulip/pulls/{id}s", linkifier.getUrlTemplate());
+
+            // Reorder linkifiers
+            Collections.reverse(linkifiers);
+            long[] newOrder = linkifiers.stream().mapToLong(Linkifier::getId).toArray();
+            zulip.server().reorderLinkifiers(newOrder).execute();
 
             // Delete linkifiers
             zulip.server().deleteLinkifier(id).execute();
@@ -224,15 +232,18 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
     @Test
     public void codePlayground() throws ZulipClientException {
-        long id = zulip.server().addCodePlayground("test", "java", "http://localhost/java/playground").execute();
+        long id = zulip.server().addCodePlayground("test", "java", "http://localhost/java/playground?code={code}").execute();
         zulip.server().removeCodePlayground(id).execute();
     }
 
     @Test
     public void updateRealmNewUserDefaultSettings() throws ZulipClientException {
         List<String> result = zulip.server().updateRealmNewUserDefaultSettings()
+                .withAutomaticallyFollowTopicsPolicy(TopicFollowPolicy.PARTICIPATING)
+                .withAutomaticallyUnmuteTopicsInMutedStreamsPolicy(UnmuteTopicInMutedStreamsPolicy.PARTICIPATING)
+                .withAutomaticallyFollowTopicsWhereMentioned(true)
                 .withColorScheme(ColorScheme.DARK)
-                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withWebHomeView(WebHomeView.RECENT_TOPICS)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
@@ -242,6 +253,11 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withEnableDesktopNotifications(true)
                 .withEnableDigestEmails(true)
                 .withEnableDraftsSynchronization(true)
+                .withEnableFollowedTopicAudibleNotifications(true)
+                .withEnableFollowedTopicDesktopNotifications(true)
+                .withEnableFollowedTopicEmailNotifications(true)
+                .withEnableFollowedTopicPushNotifications(true)
+                .withEnableFollowedTopicWildcardMentionsNotify(true)
                 .withEnableOfflineEmailNotifications(true)
                 .withEnableOfflinePushNotifications(true)
                 .withEnableOnlinePushNotifications(true)
@@ -251,7 +267,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withEnableStreamEmailNotifications(true)
                 .withEnableStreamPushNotifications(true)
                 .withEnterSends(true)
-                .withEscapeNavigatesToDefaultView(true)
+                .withWebEscapeNavigatesToHomeView(true)
                 .withFluidLayoutWidth(true)
                 .withHighContrastMode(true)
                 .withLeftSideUserList(true)
@@ -269,6 +285,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.ALL_STREAMS)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

@@ -14,6 +14,7 @@ final class StreamRequestConstants {
     public static final String USER_SUBSCRIPTIONS = "users/%d/subscriptions/%d";
     public static final String USER_TOPICS = "user_topics";
     public static final String MEMBERS = STREAMS_WITH_ID + "/members";
+    public static final String EMAIL_ADDRESS = STREAMS_WITH_ID + "/email_address";
 
     private StreamRequestConstants() {
     }

@@ -14,7 +14,7 @@
   "message_content_in_email_notifications": true,
   "pm_content_in_desktop_notifications": true,
   "wildcard_mentions_notify": true,
-  "desktop_icon_count_display": 2,
+  "desktop_icon_count_display": 3,
   "realm_name_in_notifications": true,
   "presence_enabled": true,
   "msg": "",

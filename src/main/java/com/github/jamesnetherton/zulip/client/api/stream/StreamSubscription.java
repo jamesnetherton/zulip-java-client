@@ -25,9 +25,6 @@ public class StreamSubscription {
     private boolean desktopNotifications;
 
     @JsonProperty
-    private String emailAddress;
-
-    @JsonProperty
     private boolean emailNotifications;
 
     @JsonProperty
@@ -73,7 +70,7 @@ public class StreamSubscription {
     private boolean wildcardMentionsNotify;
 
     @JsonProperty
-    private int canRemoveSubscribersGroupId;
+    private int canRemoveSubscribersGroup;
 
     public boolean isAudibleNotifications() {
         return audibleNotifications;
@@ -93,10 +90,6 @@ public class StreamSubscription {
 
     public boolean isDesktopNotifications() {
         return desktopNotifications;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
     }
 
     public boolean isEmailNotifications() {
@@ -159,7 +152,7 @@ public class StreamSubscription {
         return wildcardMentionsNotify;
     }
 
-    public int getCanRemoveSubscribersGroupId() {
-        return canRemoveSubscribersGroupId;
+    public int getCanRemoveSubscribersGroup() {
+        return canRemoveSubscribersGroup;
     }
 }

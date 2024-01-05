@@ -12,6 +12,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersAp
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
@@ -83,6 +84,19 @@ public class ServerService implements ZulipService {
      */
     public GetLinkifiersApiRequest getLinkifiers() {
         return new GetLinkifiersApiRequest(this.client);
+    }
+
+    /**
+     * Reorders linkifiers.
+     *
+     * @see          <a href=
+     *               "https://zulip.com/api/reorder-linkifiers">https://zulip.com/api/reorder-linkifiers</a>
+     *
+     * @param  order The array of linkifier ids representing their order
+     * @return       The {@link ReorderLinkifiersApiRequest} builder object
+     */
+    public ReorderLinkifiersApiRequest reorderLinkifiers(long... order) {
+        return new ReorderLinkifiersApiRequest(this.client, order);
     }
 
     /**
@@ -201,11 +215,11 @@ public class ServerService implements ZulipService {
      *
      * @param  name             The name of the playground
      * @param  pygmentsLanguage The name of the Pygments language lexer for that programming language
-     * @param  urlPrefix        The URL prefix for the playground
+     * @param  urlTemplate      The URL template for the playground
      * @return                  The {@link AddCodePlaygroundApiRequest} builder object
      */
-    public AddCodePlaygroundApiRequest addCodePlayground(String name, String pygmentsLanguage, String urlPrefix) {
-        return new AddCodePlaygroundApiRequest(this.client, name, pygmentsLanguage, urlPrefix);
+    public AddCodePlaygroundApiRequest addCodePlayground(String name, String pygmentsLanguage, String urlTemplate) {
+        return new AddCodePlaygroundApiRequest(this.client, name, pygmentsLanguage, urlTemplate);
     }
 
     /**

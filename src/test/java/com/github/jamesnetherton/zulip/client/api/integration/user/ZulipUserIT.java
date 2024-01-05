@@ -12,7 +12,6 @@ import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotification
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
-import com.github.jamesnetherton.zulip.client.api.user.DefaultView;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
@@ -24,6 +23,7 @@ import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
+import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
@@ -296,7 +296,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void userGroupCrud() throws ZulipClientException {
         // Create group
-        zulip.users().createUserGroup("Test Group Name", "Test Group Description", ownUser.getUserId()).execute();
+        zulip.users().createUserGroup("Test Group Name", "Test Group Description", ownUser.getUserId())
+                .withCanMentionGroup(2)
+                .execute();
 
         // Get group
         List<UserGroup> groups = zulip.users().getUserGroups().execute();
@@ -308,6 +310,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(group.getId() > 0);
         assertNotNull(group.getDirectSubgroupIds());
         assertFalse(group.isSystemGroup());
+        assertEquals(2, group.getCanMentionGroup());
 
         List<Long> members = group.getMembers();
         assertEquals(1, members.size());
@@ -315,7 +318,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         // Update group
         zulip.users().updateUserGroup(group.getId()).withName("Updated Group Name").execute();
-        zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId()).execute();
+        zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId())
+                .withCanMentionGroup(3)
+                .execute();
 
         groups = zulip.users().getUserGroups().execute();
         assertFalse(groups.isEmpty());
@@ -323,6 +328,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         group = groups.get(groups.size() - 1);
         assertEquals("Updated Group Name", group.getName());
         assertEquals("Updated Group Description", group.getDescription());
+        assertEquals(3, group.getCanMentionGroup());
 
         // Add new user to group
         String id = UUID.randomUUID().toString().split("-")[0];
@@ -393,7 +399,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<String> result = zulip.users().updateOwnUserSettings()
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("en")
-                .withDefaultView(DefaultView.RECENT_TOPICS)
+                .withDefaultView(WebHomeView.RECENT_TOPICS)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)

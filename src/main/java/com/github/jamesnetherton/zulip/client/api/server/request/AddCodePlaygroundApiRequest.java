@@ -17,7 +17,7 @@ public class AddCodePlaygroundApiRequest extends ZulipApiRequest implements Exec
 
     public static final String NAME = "name";
     public static final String PYGMENTS_LANGUAGE = "pygments_language";
-    public static final String URL_PREFIX = "url_prefix";
+    public static final String URL_TEMPLATE = "url_template";
 
     /**
      * Constructs a {@link AddCodePlaygroundApiRequest}.
@@ -25,13 +25,13 @@ public class AddCodePlaygroundApiRequest extends ZulipApiRequest implements Exec
      * @param client           The Zulip HTTP client
      * @param name             The name of the playground
      * @param pygmentsLanguage The name of the Pygments language lexer for that programming language
-     * @param urlPrefix        The URL prefix for the playground
+     * @param urlTemplate      The URL template for the playground
      */
-    public AddCodePlaygroundApiRequest(ZulipHttpClient client, String name, String pygmentsLanguage, String urlPrefix) {
+    public AddCodePlaygroundApiRequest(ZulipHttpClient client, String name, String pygmentsLanguage, String urlTemplate) {
         super(client);
         putParam(NAME, name);
         putParam(PYGMENTS_LANGUAGE, pygmentsLanguage);
-        putParam(URL_PREFIX, urlPrefix);
+        putParam(URL_TEMPLATE, urlTemplate);
     }
 
     /**

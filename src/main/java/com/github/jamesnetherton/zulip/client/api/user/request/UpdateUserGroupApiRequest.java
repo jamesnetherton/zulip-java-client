@@ -17,6 +17,7 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
+    public static final String CAN_MENTION_GROUP = "can_mention_group";
 
     private final long groupId;
 
@@ -46,13 +47,36 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
         withDescription(description);
     }
 
+    /**
+     * Sets the updated description of the user group.
+     *
+     * @param  description The new description of the user group
+     * @return             This {@link UpdateUserGroupApiRequest} instance
+     */
     public UpdateUserGroupApiRequest withDescription(String description) {
         putParam(DESCRIPTION, description);
         return this;
     }
 
+    /**
+     * Sets the updated name of the user group.
+     *
+     * @param  name The new name of the user group
+     * @return      This {@link UpdateUserGroupApiRequest} instance
+     */
     public UpdateUserGroupApiRequest withName(String name) {
         putParam(NAME, name);
+        return this;
+    }
+
+    /**
+     * Sets the optional ID of the user group whose members are allowed to mention the new user group.
+     *
+     * @param  groupId The ID of the user group whose members are allowed to mention the new user group
+     * @return         This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanMentionGroup(long groupId) {
+        putParam(CAN_MENTION_GROUP, groupId);
         return this;
     }
 

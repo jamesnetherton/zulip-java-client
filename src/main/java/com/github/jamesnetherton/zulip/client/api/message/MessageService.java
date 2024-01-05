@@ -240,10 +240,13 @@ public class MessageService implements ZulipService {
     /**
      * Marks all of the current user unread messages as read.
      *
-     * @see    <a href="https://zulip.com/api/mark-all-as-read">https://zulip.com/api/mark-all-as-read</a>
+     * @see        <a href="https://zulip.com/api/mark-all-as-read">https://zulip.com/api/mark-all-as-read</a>
      *
-     * @return The {@link MarkAllAsReadApiRequest} builder object
+     * @return     The {@link MarkAllAsReadApiRequest} builder object
+     *
+     * @deprecated use {@code updateMessageFlagsForNarrow} instead.
      */
+    @Deprecated
     public MarkAllAsReadApiRequest markAllAsRead() {
         return new MarkAllAsReadApiRequest(this.client);
     }

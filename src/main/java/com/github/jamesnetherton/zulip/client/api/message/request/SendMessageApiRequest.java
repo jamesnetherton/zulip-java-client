@@ -23,6 +23,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
     public static final String CONTENT = "content";
     public static final String LOCAL_ID = "local_id";
     public static final String QUEUE_ID = "queue_id";
+    public static final String READ_BY_SENDER = "read_by_sender";
     public static final String TO = "to";
     public static final String TO_DIRECT = "to_direct";
     public static final String TO_STREAM = "to_stream";
@@ -114,6 +115,20 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
      */
     public SendMessageApiRequest withQueueId(String queueId) {
         putParam(QUEUE_ID, queueId);
+        return this;
+    }
+
+    /**
+     * The optional value of whether the message should be initially marked read by its sender.
+     *
+     * @see                 <a href=
+     *                      "https://zulip.com/api/send-message#parameter-read_by_sender">https://zulip.com/api/send-message#parameter-read_by_sender</a>
+     *
+     * @param  readBySender Whether the message should be initially marked read by its sender
+     * @return              This {@link SendMessageApiRequest} instance
+     */
+    public SendMessageApiRequest withReadBySender(boolean readBySender) {
+        putParam(READ_BY_SENDER, readBySender);
         return this;
     }
 

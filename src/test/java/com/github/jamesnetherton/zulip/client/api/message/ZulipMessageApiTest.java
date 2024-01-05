@@ -650,6 +650,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(SendMessageApiRequest.CONTENT, "test stream message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
+                .add(SendMessageApiRequest.READ_BY_SENDER, "true")
                 .add(SendMessageApiRequest.TO, "1")
                 .add(SendMessageApiRequest.TOPIC, "test topic")
                 .add(SendMessageApiRequest.TYPE, MessageType.STREAM.toString())
@@ -660,6 +661,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         long messageId = zulip.messages().sendStreamMessage("test stream message", 1, "test topic")
                 .withLocalId("foo")
                 .withQueueId("bar")
+                .withReadBySender(true)
                 .execute();
 
         assertEquals(42, messageId);
@@ -671,6 +673,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(SendMessageApiRequest.CONTENT, "test stream message")
                 .add(SendMessageApiRequest.LOCAL_ID, "foo")
                 .add(SendMessageApiRequest.QUEUE_ID, "bar")
+                .add(SendMessageApiRequest.READ_BY_SENDER, "true")
                 .add(SendMessageApiRequest.TO, "test stream")
                 .add(SendMessageApiRequest.TOPIC, "test topic")
                 .add(SendMessageApiRequest.TYPE, MessageType.STREAM.toString())
@@ -681,6 +684,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         long messageId = zulip.messages().sendStreamMessage("test stream message", "test stream", "test topic")
                 .withLocalId("foo")
                 .withQueueId("bar")
+                .withReadBySender(true)
                 .execute();
 
         assertEquals(42, messageId);
@@ -692,6 +696,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SendScheduledMessageApiRequest.CONTENT, "test scheduled direct message")
+                .add(SendScheduledMessageApiRequest.READ_BY_SENDER, "true")
                 .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
                 .add(SendScheduledMessageApiRequest.TO, "[1,2,3]")
                 .add(SendScheduledMessageApiRequest.TYPE, MessageType.DIRECT.toString())
@@ -702,6 +707,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         long messageId = zulip.messages()
                 .sendScheduledMessage(MessageType.DIRECT, "test scheduled direct message", now, 1, 2, 3)
+                .withReadBySender(true)
                 .withTopic("test topic")
                 .execute();
 
@@ -714,6 +720,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SendScheduledMessageApiRequest.CONTENT, "test scheduled stream message")
+                .add(SendScheduledMessageApiRequest.READ_BY_SENDER, "true")
                 .add(SendScheduledMessageApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
                 .add(SendScheduledMessageApiRequest.TO, "1")
                 .add(SendScheduledMessageApiRequest.TYPE, MessageType.STREAM.toString())
@@ -727,6 +734,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         });
 
         long messageId = zulip.messages().sendScheduledMessage(MessageType.STREAM, "test scheduled stream message", now, 1)
+                .withReadBySender(true)
                 .withTopic("test topic")
                 .execute();
 

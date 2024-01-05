@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.ArchiveStreamAp
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamEmailAddressApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamSubscribersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamTopicsApiRequest;
@@ -120,6 +121,19 @@ public class StreamService implements ZulipService {
      */
     public GetStreamIdApiRequest getStreamId(String stream) {
         return new GetStreamIdApiRequest(this.client, stream);
+    }
+
+    /**
+     * Gets the email address of a stream.
+     *
+     * @see             <a href=
+     *                  "https://zulip.com/api/get-stream-email-address">https://zulip.com/api/get-stream-email-address</a>
+     *
+     * @param  streamId The id of the stream to fetch the email address for
+     * @return          The {@link GetStreamEmailAddressApiRequest} builder object
+     */
+    public GetStreamEmailAddressApiRequest getStreamEmailAddress(long streamId) {
+        return new GetStreamEmailAddressApiRequest(this.client, streamId);
     }
 
     /**
