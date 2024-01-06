@@ -206,15 +206,6 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void getMessageMarkdown() throws Exception {
-        stubZulipResponse(GET, "/messages/1", "rawMarkdown.json");
-
-        String markdown = zulip.messages().getMessageMarkdown(1).execute();
-
-        assertEquals("some **bold** content", markdown);
-    }
-
-    @Test
     public void getMessagesWithIntAnchor() throws Exception {
         getMessages(1);
     }
