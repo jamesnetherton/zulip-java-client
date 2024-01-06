@@ -11,7 +11,6 @@ import com.github.jamesnetherton.zulip.client.api.message.request.EditScheduledM
 import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
-import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageMarkdownApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageReadReceiptsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetScheduledMessagesApiRequest;
@@ -143,19 +142,6 @@ public class MessageService implements ZulipService {
      */
     public GetMessageHistoryApiRequest getMessageHistory(long messageId) {
         return new GetMessageHistoryApiRequest(this.client, messageId);
-    }
-
-    /**
-     * Gets the raw content of a message.
-     *
-     * @see              <a href="https://zulip.com/api/get-raw-message">https://zulip.com/api/get-raw-message</a>
-     *
-     * @param  messageId The id of the message to get raw content
-     * @return           The {@link GetMessageMarkdownApiRequest} builder object
-     */
-    @Deprecated
-    public GetMessageMarkdownApiRequest getMessageMarkdown(long messageId) {
-        return new GetMessageMarkdownApiRequest(this.client, messageId);
     }
 
     /**

@@ -422,9 +422,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .sendStreamMessage("**content**", "Markdown Stream", "Test Topic")
                 .execute();
 
-        String markdown = zulip.messages().getMessageMarkdown(messageId).execute();
-        assertEquals("**content**", markdown);
-
         Message message = zulip.messages().getMessage(messageId).withApplyMarkdown(false).execute();
         assertEquals("**content**", message.getContent());
 
