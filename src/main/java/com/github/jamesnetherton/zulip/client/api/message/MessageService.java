@@ -215,7 +215,7 @@ public class MessageService implements ZulipService {
     /**
      * Fetch all scheduled messages for the current user.
      *
-     * @see    <a href="https://zulip.com/api/get-scheduled-messages"/>https://zulip.com/api/get-scheduled-messages</a>
+     * @see    <a href="https://zulip.com/api/get-scheduled-messages">https://zulip.com/api/get-scheduled-messages</a>
      *
      * @return The {@link GetScheduledMessagesApiRequest} builder object
      */

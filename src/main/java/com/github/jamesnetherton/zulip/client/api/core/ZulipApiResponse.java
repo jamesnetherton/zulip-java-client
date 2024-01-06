@@ -71,7 +71,7 @@ public class ZulipApiResponse {
     /**
      * Gets the ist of parameters sent in the request that are not supported by the target endpoint.
      *
-     * Will be null if no parameters were ignored or if the request was made to a Zulip server with a version < 7.0.
+     * Will be null if no parameters were ignored or if the request was made to a Zulip server with a version less than 7.0.
      *
      * @return The list of ignored parameters that are not supported by the request target endpoint
      */

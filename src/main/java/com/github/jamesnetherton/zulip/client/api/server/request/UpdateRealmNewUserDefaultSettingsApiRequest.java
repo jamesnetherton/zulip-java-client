@@ -136,7 +136,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      * Sets the web home view to use.
      *
      * @see                <a href=
-     *                     "https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_home_view</a>
+     *                     "https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_home_view">https://zulip.com/api/update-realm-user-settings-defaults#parameter-web_home_view</a>
      *
      * @param  webHomeView The default web home view to use
      * @return             This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
