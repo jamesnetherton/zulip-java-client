@@ -43,7 +43,7 @@ jobs:
       - name: Setup Zulip
         run: |
           cd src/test/resources/docker/
-          docker-compose up -d
+          docker compose up -d
 
           while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost/login)" != "200" ]
           do
