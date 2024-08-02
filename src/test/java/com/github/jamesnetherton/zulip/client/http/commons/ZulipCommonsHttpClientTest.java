@@ -35,7 +35,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void errorResponseCodeThrowsZulipClientException() throws Exception {
-        server.stubFor(request("GET", urlPathEqualTo("/api/v1/"))
+        server.stubFor(request("GET", urlPathEqualTo("/api/v1"))
                 .willReturn(aResponse()
                         .withStatus(500)
                         .withBody((String) null)));
@@ -46,7 +46,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
         assertThrows(ZulipClientException.class, () -> {
-            client.get("/", Collections.emptyMap(), ZulipApiResponse.class);
+            client.get("", Collections.emptyMap(), ZulipApiResponse.class);
         });
     }
 
@@ -64,7 +64,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
         try {
-            client.get("/", Collections.emptyMap(), ZulipApiResponse.class);
+            client.get("", Collections.emptyMap(), ZulipApiResponse.class);
         } catch (ZulipClientException e) {
             ZulipRateLimitExceededException cause = (ZulipRateLimitExceededException) e.getCause();
             assertEquals(0, cause.getReteLimitReset());
@@ -95,7 +95,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void proxyServerAuthentication() throws Exception {
-        CountDownLatch latch = new CountDownLatch(3);
+        CountDownLatch latch = new CountDownLatch(2);
         FakeServer server = new FakeServer(latch, true);
         server.start();
 
@@ -125,7 +125,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
         ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
-        ZulipApiResponse response = client.get("/test", Collections.emptyMap(), ZulipApiResponse.class);
+        ZulipApiResponse response = client.get("test", Collections.emptyMap(), ZulipApiResponse.class);
         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
         assertNotNull(ignoredParametersUnsupported);
         assertEquals(2, ignoredParametersUnsupported.size());
@@ -156,6 +156,8 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
                         InputStreamReader isr = new InputStreamReader(accept.getInputStream());
                         BufferedReader reader = new BufferedReader(isr);
                         String line = reader.readLine();
+                        latch.countDown();
+
                         while (!line.isEmpty()) {
                             if (secure && proxyAuthHeaderSent && line.startsWith("Proxy-Authorization")) {
                                 latch.countDown();
@@ -181,7 +183,6 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
                         }
 
                         outputStream.write("HTTP/1.1 200 OK\r\n".getBytes(StandardCharsets.UTF_8));
-                        outputStream.write("Content-Length: ".getBytes(StandardCharsets.UTF_8));
                         outputStream.write(
                                 String.format("Content-Length: %d\r\n", response.length).getBytes(StandardCharsets.UTF_8));
                         outputStream.write("Content-Type: Application/json\r\n\r\n".getBytes(StandardCharsets.UTF_8));

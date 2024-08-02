@@ -388,7 +388,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(GetUserApiRequest.INCLUDE_CUSTOM_PROFILE_FIELDS, "true")
                 .get();
 
-        stubZulipResponse(GET, "/users/test@test.com", params, "getUser.json");
+        stubZulipResponse(GET, "/users/test%40test.com", params, "getUser.json");
 
         User user = zulip.users().getUser("test@test.com")
                 .withClientGravatar(true)
@@ -442,7 +442,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
 
     @Test
     public void userPresence() throws Exception {
-        stubZulipResponse(GET, "/users/test@test.com/presence", "getUserPresence.json");
+        stubZulipResponse(GET, "/users/test%40test.com/presence", "getUserPresence.json");
 
         Map<String, UserPresenceDetail> presence = zulip.users().getUserPresence("test@test.com").execute();
         assertEquals(2, presence.size());

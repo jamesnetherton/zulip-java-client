@@ -21,38 +21,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPatch;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 /**
  * A {@link ZulipHttpClient} implementation that uses the Apache Commons HTTP Client.
@@ -86,23 +87,25 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
      * @throws ZulipClientException if configuration fails
      */
     public void configure() throws ZulipClientException {
+        URL zulipUrl = configuration.getZulipUrl();
+        HttpHost targetHost = new HttpHost(zulipUrl.getProtocol(), zulipUrl.getHost(), zulipUrl.getPort());
+
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(configuration.getEmail(),
-                configuration.getApiKey());
-        CredentialsProvider provider = new BasicCredentialsProvider();
-        provider.setCredentials(AuthScope.ANY, credentials);
+                configuration.getApiKey().toCharArray());
+        BasicCredentialsProvider provider = new BasicCredentialsProvider();
+        provider.setCredentials(new AuthScope(targetHost), credentials);
 
         HttpClientBuilder builder = HttpClientBuilder.create()
                 .setDefaultCredentialsProvider(provider);
 
-        URL zulipUrl = configuration.getZulipUrl();
-        HttpHost targetHost = new HttpHost(zulipUrl.getHost(), zulipUrl.getPort(), zulipUrl.getProtocol());
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
+        basicAuth.initPreemptive(credentials);
         authCache.put(targetHost, basicAuth);
 
         URL proxyUrl = configuration.getProxyUrl();
         if (proxyUrl != null) {
-            HttpHost proxyHost = new HttpHost(proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getProtocol());
+            HttpHost proxyHost = new HttpHost(proxyUrl.getProtocol(), proxyUrl.getHost(), proxyUrl.getPort());
             builder.setProxy(proxyHost);
 
             String proxyUsername = configuration.getProxyUsername();
@@ -110,7 +113,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
             if (proxyUsername != null && !proxyUsername.isEmpty() && proxyPassword != null && !proxyPassword.isEmpty()) {
                 provider.setCredentials(
                         new AuthScope(proxyHost.getHostName(), proxyHost.getPort()),
-                        new UsernamePasswordCredentials(proxyUsername, proxyPassword));
+                        new UsernamePasswordCredentials(proxyUsername, proxyPassword.toCharArray()));
             }
         }
 
@@ -120,18 +123,22 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
 
         if (configuration.isInsecure()) {
             try {
-                SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-                sslContextBuilder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                SSLContext sslContext = sslContextBuilder.build();
+                SSLContext sslContext = new SSLContextBuilder()
+                        .loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
+                        .build();
                 SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
                         NoopHostnameVerifier.INSTANCE);
-                builder.setSSLSocketFactory(sslConnectionSocketFactory);
+                HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
+                        .create()
+                        .setSSLSocketFactory(sslConnectionSocketFactory)
+                        .build();
+                builder.setConnectionManager(connectionManager);
             } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                 throw new ZulipClientException(e);
             }
         }
 
-        this.client = builder.build();
+        this.client = builder.useSystemProperties().build();
     }
 
     @Override
@@ -174,19 +181,24 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
         return doRequest(httpPost, responseAs);
     }
 
-    private <T extends ZulipApiResponse> T doRequest(HttpUriRequest request, Class<T> responseAs) throws ZulipClientException {
+    private <T extends ZulipApiResponse> T doRequest(ClassicHttpRequest request, Class<T> responseAs)
+            throws ZulipClientException {
         try {
-            ResponseHolder response = client.execute(request, new ResponseHandler<ResponseHolder>() {
+            ResponseHolder response = client.execute(request, context, new HttpClientResponseHandler<ResponseHolder>() {
                 @Override
-                public ResponseHolder handleResponse(HttpResponse response) throws IOException {
+                public ResponseHolder handleResponse(ClassicHttpResponse response) throws IOException {
                     Header header = response.getFirstHeader("x-ratelimit-reset");
-                    int status = response.getStatusLine().getStatusCode();
+                    int status = response.getCode();
                     if ((status >= 200 && status < 300) || (status == 400)) {
                         HttpEntity entity = response.getEntity();
                         if (entity != null) {
-                            String json = EntityUtils.toString(entity);
-                            ZulipApiResponse zulipApiResponse = JsonUtils.getMapper().readValue(json, responseAs);
-                            return new ResponseHolder(zulipApiResponse, status, header);
+                            try {
+                                String json = EntityUtils.toString(entity);
+                                ZulipApiResponse zulipApiResponse = JsonUtils.getMapper().readValue(json, responseAs);
+                                return new ResponseHolder(zulipApiResponse, status, header);
+                            } catch (ParseException e) {
+                                return new ResponseHolder(new ZulipApiResponse(), status, header);
+                            }
                         } else {
                             return new ResponseHolder(null, status, header);
                         }
@@ -196,7 +208,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
                         throw new ClientProtocolException("Unexpected response status: " + status);
                     }
                 }
-            }, context);
+            });
 
             if (response.getStatusCode() == 429) {
                 ZulipRateLimitExceededException rateLimitExceededException = new ZulipRateLimitExceededException(
@@ -242,7 +254,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
         }
     }
 
-    private void configureFormEntity(HttpEntityEnclosingRequestBase request, Map<String, Object> parameters) {
+    private void configureFormEntity(ClassicHttpRequest request, Map<String, Object> parameters) {
         List<NameValuePair> urlParameters = new ArrayList<>();
         if (!parameters.isEmpty()) {
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
