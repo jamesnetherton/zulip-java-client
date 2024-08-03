@@ -34,6 +34,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStat
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
 import java.util.List;
@@ -124,13 +125,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserGroupApiRequest.NAME, "New Group Name")
                 .add(UpdateUserGroupApiRequest.DESCRIPTION, "New Group Description")
-                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP, "1")
+                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP,
+                        JsonUtils.getMapper().writeValueAsString(Map.of("old", 1, "new", 2)))
                 .get();
 
         stubZulipResponse(PATCH, "/user_groups/3", params);
 
         zulip.users().updateUserGroup("New Group Name", "New Group Description", 3)
-                .withCanMentionGroup(1)
+                .withCanMentionGroup(1, 2)
                 .execute();
     }
 

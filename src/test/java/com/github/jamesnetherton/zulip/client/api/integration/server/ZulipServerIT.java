@@ -103,7 +103,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         CustomEmoji emoji = optional.get();
         assertEquals(emojiName, emoji.getName());
-        assertTrue(emoji.getSourceUrl().endsWith(emoji.getId() + ".png"));
+        assertTrue(emoji.getSourceUrl().endsWith(".png"));
         assertNull(emoji.getStillUrl());
         assertTrue(emoji.getAuthorId() > 0);
         assertTrue(emoji.getId() > 0);

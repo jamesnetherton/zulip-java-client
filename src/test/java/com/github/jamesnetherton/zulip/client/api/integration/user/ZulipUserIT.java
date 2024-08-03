@@ -296,8 +296,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void userGroupCrud() throws ZulipClientException {
         // Create group
+        List<UserGroup> execute = zulip.users().getUserGroups().execute();
         zulip.users().createUserGroup("Test Group Name", "Test Group Description", ownUser.getUserId())
-                .withCanMentionGroup(2)
+                .withCanMentionGroup(11)
                 .execute();
 
         // Get group
@@ -310,7 +311,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(group.getId() > 0);
         assertNotNull(group.getDirectSubgroupIds());
         assertFalse(group.isSystemGroup());
-        assertEquals(2, group.getCanMentionGroup());
+        assertEquals(11, group.getCanMentionGroup());
 
         List<Long> members = group.getMembers();
         assertEquals(1, members.size());
@@ -319,7 +320,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         // Update group
         zulip.users().updateUserGroup(group.getId()).withName("Updated Group Name").execute();
         zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId())
-                .withCanMentionGroup(3)
+                .withCanMentionGroup(11, 12)
                 .execute();
 
         groups = zulip.users().getUserGroups().execute();
@@ -328,7 +329,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         group = groups.get(groups.size() - 1);
         assertEquals("Updated Group Name", group.getName());
         assertEquals("Updated Group Description", group.getDescription());
-        assertEquals(3, group.getCanMentionGroup());
+        assertEquals(12, group.getCanMentionGroup());
 
         // Add new user to group
         String id = UUID.randomUUID().toString().split("-")[0];
