@@ -37,6 +37,6 @@ public class FileUploadApiRequest extends ZulipApiRequest implements ExecutableA
     @Override
     public String execute() throws ZulipClientException {
         FileUploadApiResponse response = client().upload(USER_UPLOADS_API_PATH, file, FileUploadApiResponse.class);
-        return response.getUri();
+        return response.getUrl();
     }
 }

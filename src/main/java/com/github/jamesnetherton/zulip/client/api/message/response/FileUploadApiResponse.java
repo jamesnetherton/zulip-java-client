@@ -11,9 +11,9 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 public class FileUploadApiResponse extends ZulipApiResponse {
 
     @JsonProperty
-    private String uri;
+    private String url;
 
-    public String getUri() {
-        return uri;
+    public String getUrl() {
+        return url;
     }
 }
