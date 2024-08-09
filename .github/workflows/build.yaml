@@ -51,17 +51,13 @@ jobs:
           done
 
           ./populatedb.sh
-          cd -
 
           while [ "$(curl -k -L -s -o /dev/null -w "%{http_code}" http://localhost/login)" != "200" ]
           do
             sleep 5
           done
 
-          echo "key=lDxDG5uoqwOhCdeA2d9iHvboTYAcOlVb" > zuliprc
-          echo "email=test@test.com" >> zuliprc
-          echo "site=https://localhost" >> zuliprc
-          echo "insecure=true" >> zuliprc
+          ./createzuliprc.sh
       - name: Build JDK ${{ matrix.java }}
         run: |
           ./mvnw clean verify -ntp -B

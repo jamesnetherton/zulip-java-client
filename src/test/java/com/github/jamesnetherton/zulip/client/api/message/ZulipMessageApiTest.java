@@ -596,6 +596,52 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void sendChannelMessageWithChannelId() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendMessageApiRequest.CONTENT, "test channel message")
+                .add(SendMessageApiRequest.LOCAL_ID, "foo")
+                .add(SendMessageApiRequest.QUEUE_ID, "bar")
+                .add(SendMessageApiRequest.READ_BY_SENDER, "true")
+                .add(SendMessageApiRequest.TO, "1")
+                .add(SendMessageApiRequest.TOPIC, "test topic")
+                .add(SendMessageApiRequest.TYPE, MessageType.CHANNEL.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages", params, "sendMessage.json");
+
+        long messageId = zulip.messages().sendChannelMessage("test channel message", 1, "test topic")
+                .withLocalId("foo")
+                .withQueueId("bar")
+                .withReadBySender(true)
+                .execute();
+
+        assertEquals(42, messageId);
+    }
+
+    @Test
+    public void sendStreamMessageWithChannelName() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendMessageApiRequest.CONTENT, "test channel message")
+                .add(SendMessageApiRequest.LOCAL_ID, "foo")
+                .add(SendMessageApiRequest.QUEUE_ID, "bar")
+                .add(SendMessageApiRequest.READ_BY_SENDER, "true")
+                .add(SendMessageApiRequest.TO, "test channel")
+                .add(SendMessageApiRequest.TOPIC, "test topic")
+                .add(SendMessageApiRequest.TYPE, MessageType.CHANNEL.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages", params, "sendMessage.json");
+
+        long messageId = zulip.messages().sendChannelMessage("test channel message", "test channel", "test topic")
+                .withLocalId("foo")
+                .withQueueId("bar")
+                .withReadBySender(true)
+                .execute();
+
+        assertEquals(42, messageId);
+    }
+
+    @Test
     public void sendDirectMessageWithUserIds() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SendMessageApiRequest.CONTENT, "test direct message")

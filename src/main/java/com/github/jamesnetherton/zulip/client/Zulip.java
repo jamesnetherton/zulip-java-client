@@ -73,6 +73,17 @@ public final class Zulip implements Closeable {
     }
 
     /**
+     * Access the collection of channel Zulip APIs.
+     * <p>
+     * Since channels are analogous to streams. The {@link StreamService} is returned.
+     *
+     * @return The {@link StreamService} Zulip channel APIs
+     */
+    public StreamService channels() {
+        return streams();
+    }
+
+    /**
      * Access the collection of draft Zulip APIs.
      *
      * @return The {@link DraftService} Zulip draft APIs

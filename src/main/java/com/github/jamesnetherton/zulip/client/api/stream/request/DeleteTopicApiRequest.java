@@ -4,7 +4,7 @@ import static com.github.jamesnetherton.zulip.client.api.stream.request.StreamRe
 
 import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
+import com.github.jamesnetherton.zulip.client.api.stream.response.DeleteTopicApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
@@ -38,9 +38,12 @@ public class DeleteTopicApiRequest extends ZulipApiRequest implements VoidExecut
      */
     @Override
     public void execute() throws ZulipClientException {
-        ZulipApiResponse response = null;
+        DeleteTopicApiResponse response = null;
         while (response == null || response.isPartiallyCompleted()) {
-            response = client().post(this.path, getParams(), ZulipApiResponse.class);
+            response = client().post(this.path, getParams(), DeleteTopicApiResponse.class);
+        }
+        while (!response.isComplete()) {
+            response = client().post(this.path, getParams(), DeleteTopicApiResponse.class);
         }
     }
 }

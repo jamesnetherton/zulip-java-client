@@ -1,0 +1,10 @@
+{
+  "msg": "",
+  "result": "success",
+  "status": {
+    "emoji_code": "1f697",
+    "emoji_name": "car",
+    "reaction_type": "unicode_emoji",
+    "status_text": "on vacation"
+  }
+}

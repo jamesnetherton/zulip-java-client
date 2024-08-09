@@ -3,6 +3,7 @@
   "result": "success",
   "streams": [
     {
+      "creator_id": 1,
       "description": "Test Stream Description 1",
       "date_created": 1603913066,
       "rendered_description": "<p>Test Stream Description 1<\/p>",
@@ -20,6 +21,7 @@
       "stream_weekly_traffic": 1
     },
     {
+      "creator_id": 2,
       "description": "Test Stream Description 2",
       "date_created": 1603913066,
       "rendered_description": "<p>Test Stream Description 2<\/p>",
@@ -37,6 +39,7 @@
       "stream_weekly_traffic": 2
     },
     {
+      "creator_id": 3,
       "description": "Test Stream Description 3",
       "date_created": 1603913066,
       "rendered_description": "<p>Test Stream Description 3<\/p>",

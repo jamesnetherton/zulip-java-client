@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 public class EmojiEnumGenerator {
     private static final String ENUM_VALUE_INDENT = " ".repeat(4);
-    private static final String ZULIP_EMOJI_JSON = "https://raw.githubusercontent.com/zulip/zulip/8.0/tools/setup/emoji/emoji_map.json";
+    private static final String ZULIP_EMOJI_JSON = "https://raw.githubusercontent.com/zulip/zulip/9.0/tools/setup/emoji/emoji_map.json";
     private static final Path ZULIP_ENUM_JAVA = Paths
             .get("src/main/java/com/github/jamesnetherton/zulip/client/api/message/Emoji.java");
 

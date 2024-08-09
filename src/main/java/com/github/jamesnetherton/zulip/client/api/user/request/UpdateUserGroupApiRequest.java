@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import java.util.Map;
 
 /**
  * Zulip API request builder for updating a user group.
@@ -72,11 +73,13 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     /**
      * Sets the optional ID of the user group whose members are allowed to mention the new user group.
      *
-     * @param  groupId The ID of the user group whose members are allowed to mention the new user group
-     * @return         This {@link UpdateUserGroupApiRequest} instance
+     * @param  oldGroupId The current ID of the user group whose members are allowed to mention the new user group
+     * @param  newGroupId The new ID of the user group whose members are allowed to mention the new user group
+     * @return            This {@link UpdateUserGroupApiRequest} instance
      */
-    public UpdateUserGroupApiRequest withCanMentionGroup(long groupId) {
-        putParam(CAN_MENTION_GROUP, groupId);
+    public UpdateUserGroupApiRequest withCanMentionGroup(long oldGroupId, long newGroupId) {
+        Map<String, Long> canMentionGroup = Map.of("old", oldGroupId, "new", newGroupId);
+        putParamAsJsonString(CAN_MENTION_GROUP, canMentionGroup);
         return this;
     }
 

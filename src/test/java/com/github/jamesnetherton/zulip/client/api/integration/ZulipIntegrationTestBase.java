@@ -153,11 +153,11 @@ public class ZulipIntegrationTestBase {
             }
 
             // Clean up streams
-            List<Stream> streams = zulip.streams().getAll().withIncludeDefault(false).execute();
+            List<Stream> streams = zulip.channels().getAll().withIncludeDefault(false).execute();
             if (streams != null) {
                 for (Stream stream : streams) {
                     try {
-                        zulip.streams().delete(stream.getStreamId()).execute();
+                        zulip.channels().delete(stream.getStreamId()).execute();
                     } catch (ZulipClientException e) {
                         // Ignore
                     }

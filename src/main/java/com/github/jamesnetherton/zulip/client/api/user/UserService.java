@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
@@ -18,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
@@ -337,6 +339,18 @@ public class UserService implements ZulipService {
     }
 
     /**
+     * Deletes an attachment.
+     *
+     * @see                 <a href="https://zulip.com/api/remove-attachment">https://zulip.com/api/remove-attachment</a>
+     *
+     * @param  attachmentId The id of the attachment to delete
+     * @return              The {@link DeleteUserAttachmentApiRequest} builder object
+     */
+    public DeleteUserAttachmentApiRequest deleteAttachment(long attachmentId) {
+        return new DeleteUserAttachmentApiRequest(this.client, attachmentId);
+    }
+
+    /**
      * Mute a user.
      *
      * @see           <a href="https://zulip.com/api/mute-user">https://zulip.com/api/mute-user</a>
@@ -444,5 +458,17 @@ public class UserService implements ZulipService {
      */
     public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);
+    }
+
+    /**
+     * Gets a user status.
+     *
+     * @see           <a href="https://zulip.com/api/get-user-status">https://zulip.com/api/get-user-status</a>
+     *
+     * @param  userId The ID of the user to fetch the status for
+     * @return        The {@link GetUserStatusApiRequest} builder object
+     */
+    public GetUserStatusApiRequest getUserStatus(long userId) {
+        return new GetUserStatusApiRequest(this.client, userId);
     }
 }

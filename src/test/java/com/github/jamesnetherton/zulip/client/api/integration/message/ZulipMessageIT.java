@@ -64,7 +64,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(2, messages.size());
         Message message = messages.get(0);
         assertEquals("Internal", message.getClient());
-        assertEquals("stream events", message.getSubject());
+        assertEquals("channel events", message.getSubject());
         assertEquals("Test Message Stream 1", message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
 
@@ -110,7 +110,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals(2, messages.size());
         message = messages.get(0);
         assertEquals("Internal", message.getClient());
-        assertEquals("stream events", message.getSubject());
+        assertEquals("channel events", message.getSubject());
         assertEquals("Test Message Stream 2", message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
 
@@ -191,6 +191,102 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
     }
 
     @Test
+    public void channelMessages() throws ZulipClientException {
+        zulip.channels().subscribe(
+                StreamSubscriptionRequest.of("Test Message Channel 1", "Test Message Channel 1"),
+                StreamSubscriptionRequest.of("Test Message Channel 2", "Test Message Channel 2"))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withAnnounce(true)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        Long streamId = zulip.channels().getStreamId("Test Message Channel 2").execute();
+
+        // Create messages using each variant of sendStreamMessage
+        zulip.messages().sendChannelMessage("Test Content", "Test Message Channel 1", "Test Topic 1")
+                .withReadBySender(true)
+                .execute();
+        zulip.messages().sendChannelMessage("Test Content", streamId, "Test Topic 2").execute();
+
+        List<Message> messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("channel", "Test Message Channel 1"))
+                .execute();
+
+        assertEquals(2, messages.size());
+        Message message = messages.get(0);
+        assertEquals("Internal", message.getClient());
+        assertEquals("channel events", message.getSubject());
+        assertEquals("Test Message Channel 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        message = messages.get(1);
+        // TODO: Handle null avatar URL properly
+        // https://github.com/jamesnetherton/zulip-java-client/issues/149
+        assertNull(message.getAvatarUrl());
+        // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Channel 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("tester", message.getSenderFullName());
+        assertEquals("Test Topic 1", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        message = zulip.messages().getMessage(message.getId()).execute();
+        // TODO: Handle null avatar URL properly
+        // https://github.com/jamesnetherton/zulip-java-client/issues/149
+        assertNull(message.getAvatarUrl());
+        // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Channel 1", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("tester", message.getSenderFullName());
+        assertEquals("Test Topic 1", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+
+        messages = zulip.messages().getMessages(100, 0, Anchor.NEWEST)
+                .withIncludeAnchor(true)
+                .withNarrows(Narrow.of("channel", "Test Message Channel 2"))
+                .execute();
+
+        assertEquals(2, messages.size());
+        message = messages.get(0);
+        assertEquals("Internal", message.getClient());
+        assertEquals("channel events", message.getSubject());
+        assertEquals("Test Message Channel 2", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+
+        message = messages.get(1);
+        // TODO: Handle null avatar URL properly
+        // https://github.com/jamesnetherton/zulip-java-client/issues/149
+        assertNull(message.getAvatarUrl());
+        // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+        assertEquals("<p>Test Content</p>", message.getContent());
+        assertEquals("text/html", message.getContentType());
+        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Test Message Channel 2", message.getStream());
+        assertEquals(MessageType.STREAM, message.getType());
+        assertTrue(message.getId() > 0);
+        assertEquals("test@test.com", message.getSenderEmail());
+        assertEquals("tester", message.getSenderFullName());
+        assertEquals("Test Topic 2", message.getSubject());
+        assertNotNull(message.getTimestamp());
+        assertFalse(message.isMeMessage());
+    }
+
+    @Test
     public void reactions() throws ZulipClientException {
         zulip.streams().subscribe(
                 StreamSubscriptionRequest.of("Test Message Reaction", "Test Message Reaction"))
@@ -250,7 +346,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         long firstMessageId = zulip.messages().sendDirectMessage("Test Direct Message 1", "test@test.com")
                 .execute();
 
-        long secondMessageId = zulip.messages().sendPrivateMessage("Test Direct Message 2", ownUser.getUserId())
+        long secondMessageId = zulip.messages().sendDirectMessage("Test Direct Message 2", ownUser.getUserId())
                 .execute();
 
         // Get private messages

@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +45,7 @@ import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
@@ -171,8 +173,14 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
 
     @Override
     public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs) throws ZulipClientException {
+        ContentType contentType;
+        try {
+            contentType = ContentType.create(Files.probeContentType(file.toPath()));
+        } catch (IOException e) {
+            contentType = ContentType.DEFAULT_BINARY;
+        }
         HttpEntity entity = MultipartEntityBuilder.create()
-                .addBinaryBody("files", file)
+                .addBinaryBody("files", file, contentType, file.getName())
                 .build();
 
         HttpPost httpPost = new HttpPost(getRequestUri(path, null));

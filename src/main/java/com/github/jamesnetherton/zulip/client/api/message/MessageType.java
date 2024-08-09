@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  */
 public enum MessageType {
     /**
+     * The message is a channel message.
+     */
+    CHANNEL,
+    /**
      * The message is a direct message.
      */
     DIRECT,
