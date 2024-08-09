@@ -205,8 +205,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<UserAttachment> attachments = zulip.users().getUserAttachments().execute();
         assertFalse(attachments.isEmpty());
 
-        Thread.sleep(10000);
-
+        long attachmentId = 0;
         boolean matched = false;
         for (UserAttachment attachment : attachments) {
             if (!attachment.getMessages().isEmpty()) {
@@ -226,11 +225,30 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                     UserAttachmentMessage message = optional.get();
                     assertEquals(messageId, message.getId());
                     assertTrue(message.getDateSent().toEpochMilli() > 0);
+
+                    attachmentId = attachment.getId();
                 }
             }
         }
 
         assertTrue(matched);
+
+        boolean deletedMessageMatched = false;
+        zulip.users().deleteAttachment(attachmentId).execute();
+        attachments = zulip.users().getUserAttachments().execute();
+        for (UserAttachment attachment : attachments) {
+            if (!attachment.getMessages().isEmpty()) {
+                Optional<UserAttachmentMessage> optional = attachment.getMessages().stream()
+                        .filter(m -> m.getId() == messageId)
+                        .findFirst();
+
+                if (optional.isPresent()) {
+                    deletedMessageMatched = true;
+                }
+            }
+        }
+
+        assertFalse(deletedMessageMatched);
     }
 
     @Test

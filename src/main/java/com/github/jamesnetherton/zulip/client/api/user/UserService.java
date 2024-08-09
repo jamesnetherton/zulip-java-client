@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
@@ -335,6 +336,18 @@ public class UserService implements ZulipService {
      */
     public GetUserAttachmentsApiRequest getUserAttachments() {
         return new GetUserAttachmentsApiRequest(this.client);
+    }
+
+    /**
+     * Deletes an attachment.
+     *
+     * @see                 <a href="https://zulip.com/api/remove-attachment">https://zulip.com/api/remove-attachment</a>
+     *
+     * @param  attachmentId The id of the attachment to delete
+     * @return              The {@link DeleteUserAttachmentApiRequest} builder object
+     */
+    public DeleteUserAttachmentApiRequest deleteAttachment(long attachmentId) {
+        return new DeleteUserAttachmentApiRequest(this.client, attachmentId);
     }
 
     /**

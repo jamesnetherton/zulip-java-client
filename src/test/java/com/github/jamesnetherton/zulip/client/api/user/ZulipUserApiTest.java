@@ -484,6 +484,13 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void deleteAttachment() throws Exception {
+        stubZulipResponse(DELETE, "/attachments/1", SUCCESS_JSON);
+
+        zulip.users().deleteAttachment(1).execute();
+    }
+
+    @Test
     public void muteUser() throws Exception {
         stubZulipResponse(POST, "/users/me/muted_users/5", Collections.emptyMap());
 

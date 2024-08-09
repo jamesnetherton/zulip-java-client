@@ -2,6 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.user.request;
 
 final class UserRequestConstants {
     public static final String ATTACHMENTS = "attachments";
+    public static final String ATTACHMENTS_WITH_ID = "attachments/%d";
     public static final String SETTINGS = "settings";
     public static final String SETTINGS_NOTIFICATIONS = SETTINGS + "/notifications";
     public static final String TYPING = "typing";
