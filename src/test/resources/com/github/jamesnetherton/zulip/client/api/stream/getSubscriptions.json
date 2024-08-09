@@ -5,6 +5,7 @@
     {
       "audible_notifications": true,
       "color": "#e79ab5",
+      "creator_id": 1,
       "description": "A Scandinavian country",
       "rendered_description": "<p>A Scandinavian country</p>",
       "desktop_notifications": true,
@@ -35,6 +36,7 @@
     {
       "audible_notifications": true,
       "color": "#e79ab5",
+      "creator_id": 2,
       "description": "Located in the United Kingdom",
       "rendered_description": "<p>Located in the United Kingdom</p>",
       "desktop_notifications": true,

@@ -18,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
@@ -444,5 +445,17 @@ public class UserService implements ZulipService {
      */
     public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);
+    }
+
+    /**
+     * Gets a user status.
+     *
+     * @see           <a href="https://zulip.com/api/get-user-status">https://zulip.com/api/get-user-status</a>
+     *
+     * @param  userId The ID of the user to fetch the status for
+     * @return        The {@link GetUserStatusApiRequest} builder object
+     */
+    public GetUserStatusApiRequest getUserStatus(long userId) {
+        return new GetUserStatusApiRequest(this.client, userId);
     }
 }

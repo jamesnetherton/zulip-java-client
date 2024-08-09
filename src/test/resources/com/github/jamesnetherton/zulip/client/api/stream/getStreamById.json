@@ -3,6 +3,7 @@
   "result": "success",
   "stream": {
     "can_remove_subscribers_group": 1,
+    "creator_id": 1,
     "description": "Test Stream Description",
     "first_message_id": 1,
     "history_public_to_subscribers": true,

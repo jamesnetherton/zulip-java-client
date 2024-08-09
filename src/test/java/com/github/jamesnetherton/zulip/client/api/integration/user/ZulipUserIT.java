@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
@@ -23,6 +24,9 @@ import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
+import com.github.jamesnetherton.zulip.client.api.user.UserStatus;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -387,12 +391,32 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().updateOwnUserStatus()
                 .withAway(true)
                 .withStatusText("test status")
+                .withEmojiCode("1f697")
+                .withEmojiName("car")
+                .withReactionType(ReactionType.UNICODE)
                 .execute();
+
+        UserStatus userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertTrue(userStatus.isAway());
+        assertEquals("test status", userStatus.getStatusText());
+        assertEquals("1f697", userStatus.getEmojiCode());
+        assertEquals("car", userStatus.getEmojiName());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
 
         zulip.users().updateOwnUserStatus()
                 .withAway(false)
-                .withStatusText("")
+                .withStatusText(null)
+                .withEmojiCode("")
+                .withReactionType(null)
                 .execute();
+
+        userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertFalse(userStatus.isAway());
+        assertTrue(userStatus.getStatusText().isEmpty());
+        assertTrue(userStatus.getEmojiCode().isEmpty());
+        assertTrue(userStatus.getEmojiName().isEmpty());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
+
     }
 
     @Test
@@ -430,6 +454,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -438,7 +463,12 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.COMPACT)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

@@ -63,6 +63,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             Stream stream = createdStreams.get(i - 1);
             assertEquals("Test Stream " + i, stream.getDescription());
             assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(ownUser.getUserId(), stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertFalse(stream.isInviteOnly());
             assertEquals("Test Stream " + i, stream.getName());
@@ -82,6 +83,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             Stream stream = zulip.channels().getStream(createdStreams.get(i - 1).getStreamId()).execute();
             assertEquals("Test Stream " + i, stream.getDescription());
             assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(ownUser.getUserId(), stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertFalse(stream.isInviteOnly());
             assertEquals("Test Stream " + i, stream.getName());
@@ -203,6 +205,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertFalse(streamSubscription.isWildcardMentionsNotify());
         assertNotNull(streamSubscription.getColor());
         assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
+        assertEquals(ownUser.getUserId(), streamSubscription.getCreatorId());
         assertEquals("Test Subscribed", streamSubscription.getDescription());
         assertTrue(streamSubscription.getFirstMessageId() > 0);
         assertEquals(0, streamSubscription.getMessageRetentionDays());

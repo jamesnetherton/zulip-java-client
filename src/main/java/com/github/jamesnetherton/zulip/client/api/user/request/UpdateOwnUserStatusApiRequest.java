@@ -1,6 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.user.request;
 
-import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_STATUS;
+import static com.github.jamesnetherton.zulip.client.api.user.request.UserRequestConstants.USERS_OWN_STATUS;
 
 import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
@@ -99,6 +99,6 @@ public class UpdateOwnUserStatusApiRequest extends ZulipApiRequest implements Vo
      */
     @Override
     public void execute() throws ZulipClientException {
-        client().post(USERS_STATUS, getParams(), ZulipApiResponse.class);
+        client().post(USERS_OWN_STATUS, getParams(), ZulipApiResponse.class);
     }
 }

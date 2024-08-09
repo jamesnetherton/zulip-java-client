@@ -48,6 +48,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         StreamSubscription subscriptionA = subscriptions.get(0);
         assertTrue(subscriptionA.isAudibleNotifications());
         assertEquals("#e79ab5", subscriptionA.getColor());
+        assertEquals(1, subscriptionA.getCreatorId());
         assertEquals("A Scandinavian country", subscriptionA.getDescription());
         assertEquals("<p>A Scandinavian country</p>", subscriptionA.getRenderedDescription());
         assertTrue(subscriptionA.isDesktopNotifications());
@@ -71,6 +72,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         StreamSubscription subscriptionB = subscriptions.get(1);
         assertTrue(subscriptionB.isAudibleNotifications());
         assertEquals("#e79ab5", subscriptionB.getColor());
+        assertEquals(2, subscriptionB.getCreatorId());
         assertEquals("<p>Located in the United Kingdom</p>", subscriptionB.getRenderedDescription());
         assertTrue(subscriptionB.isDesktopNotifications());
         assertFalse(subscriptionB.isInviteOnly());
@@ -375,6 +377,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             Stream stream = streams.get(i - 1);
             assertEquals("Test Stream Description " + i, stream.getDescription());
             assertEquals("<p>Test Stream Description " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(i, stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertTrue(stream.isInviteOnly());
             assertEquals("Test Stream Name " + i, stream.getName());
@@ -402,6 +405,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Stream stream = zulip.channels().getStream(1).execute();
         assertEquals("Test Stream Description", stream.getDescription());
         assertEquals("<p>Test Stream Description</p>", stream.getRenderedDescription());
+        assertEquals(1, stream.getCreatorId());
         assertTrue(stream.getDateCreated().toEpochMilli() > 0);
         assertTrue(stream.isInviteOnly());
         assertEquals("Test Stream Name", stream.getName());
@@ -508,7 +512,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void deleteTopic() throws Exception {
+    public void deleteTopicPartiallyCompleted() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
                 .get();
@@ -516,7 +520,25 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         String scenarioName = "deleteTopicPartiallyCompleted";
         stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicPartiallyCompleted.json", scenarioName, STARTED,
                 "retry");
-        stubZulipResponse(POST, "/streams/1/delete_topic", params, SUCCESS_JSON, scenarioName, "retry", "success");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicIncomplete.json", scenarioName, "retry",
+                "incomplete");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicComplete.json", scenarioName, "incomplete",
+                "success");
+
+        zulip.channels().deleteTopic(1, "Test Topic").execute();
+    }
+
+    @Test
+    public void deleteTopic() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
+                .get();
+
+        String scenarioName = "deleteTopic";
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicIncomplete.json", scenarioName, STARTED,
+                "retry");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicComplete.json", scenarioName, "retry",
+                "success");
 
         zulip.channels().deleteTopic(1, "Test Topic").execute();
     }

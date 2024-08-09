@@ -560,6 +560,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
+                .add(UpdateOwnUserSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_READ_RECEIPTS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
@@ -568,7 +569,12 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
                 .add(UpdateOwnUserSettingsApiRequest.USER_LIST_STYLE, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_ANIMATE_IMAGE_PREVIEWS, "on_hover")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_CHANNEL_DEFAULT_VIEW, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_FONT_SIZE_PX, "11")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_LINE_HEIGHT_PERCENT, "120")
                 .add(UpdateOwnUserSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -611,6 +617,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -619,7 +626,12 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
@@ -733,5 +745,17 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         List<String> alertWords = zulip.users().removeAlertWords("foo").execute();
         assertEquals(1, alertWords.size());
         assertTrue(alertWords.contains("bar"));
+    }
+
+    @Test
+    public void getUserStatus() throws Exception {
+        stubZulipResponse(GET, "/users/1/status", "getUserStatus.json");
+
+        UserStatus userStatus = zulip.users().getUserStatus(1).execute();
+        assertFalse(userStatus.isAway());
+        assertEquals("on vacation", userStatus.getStatusText());
+        assertEquals("1f697", userStatus.getEmojiCode());
+        assertEquals("car", userStatus.getEmojiName());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
     }
 }

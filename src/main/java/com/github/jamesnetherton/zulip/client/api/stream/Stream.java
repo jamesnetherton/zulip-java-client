@@ -15,6 +15,9 @@ public class Stream {
     private Instant dateCreated;
 
     @JsonProperty
+    private long creatorId;
+
+    @JsonProperty
     private boolean isDefault;
 
     @JsonProperty
@@ -55,6 +58,10 @@ public class Stream {
 
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
     }
 
     public Instant getDateCreated() {
