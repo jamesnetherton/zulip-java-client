@@ -405,17 +405,17 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
         zulip.users().updateOwnUserStatus()
                 .withAway(false)
-                .withStatusText(null)
+                .withStatusText("")
                 .withEmojiCode("")
-                .withReactionType(null)
+                .withEmojiName("")
                 .execute();
 
         userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
         assertFalse(userStatus.isAway());
-        assertTrue(userStatus.getStatusText().isEmpty());
-        assertTrue(userStatus.getEmojiCode().isEmpty());
-        assertTrue(userStatus.getEmojiName().isEmpty());
-        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
+        assertNull(userStatus.getStatusText());
+        assertNull(userStatus.getEmojiCode());
+        assertNull(userStatus.getEmojiName());
+        assertNull(userStatus.getReactionType());
 
     }
 
