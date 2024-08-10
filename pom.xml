@@ -158,7 +158,7 @@
                     <releaseProfiles>release</releaseProfiles>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <preparationGoals>clean install</preparationGoals>
-                    <arguments>-DskipTests -Dimpsort.skip</arguments>
+                    <arguments>-DskipTests -Dformatter.skip -Dimpsort.skip</arguments>
                 </configuration>
             </plugin>
             <plugin>
