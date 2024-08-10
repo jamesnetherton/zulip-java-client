@@ -70,24 +70,25 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
         List<Invitation> invitations = zulip.invitations().getAllInvitations().execute();
         assertEquals(2, invitations.size());
 
-        Invitation invitation = invitations.get(0);
-        assertTrue(invitation.getId() > 0);
-        assertEquals(ownUser.getUserId(), invitation.getInvitedByUserId());
-        assertEquals(UserRole.MEMBER, invitation.getInvitedAs());
-        assertTrue(invitation.getInvited().getEpochSecond() > 0);
-        assertTrue(invitation.getExpiryDate().getEpochSecond() > 0);
-        assertEquals("cheese@wine.com", invitation.getEmail());
-        assertNull(invitation.getLinkUrl());
-        assertTrue(invitation.isNotifyReferrerOnJoin());
-        assertFalse(invitation.isMultiuse());
-
-        invitation = invitations.get(1);
+        Invitation invitation = invitations.stream().filter(invite -> invite.getEmail().equals("foo@bar.com")).findFirst()
+                .get();
         assertTrue(invitation.getId() > 0);
         assertEquals(ownUser.getUserId(), invitation.getInvitedByUserId());
         assertEquals(UserRole.MEMBER, invitation.getInvitedAs());
         assertTrue(invitation.getInvited().getEpochSecond() > 0);
         assertTrue(invitation.getExpiryDate().getEpochSecond() > 0);
         assertEquals("foo@bar.com", invitation.getEmail());
+        assertNull(invitation.getLinkUrl());
+        assertTrue(invitation.isNotifyReferrerOnJoin());
+        assertFalse(invitation.isMultiuse());
+
+        invitation = invitations.stream().filter(invite -> invite.getEmail().equals("cheese@wine.com")).findFirst().get();
+        assertTrue(invitation.getId() > 0);
+        assertEquals(ownUser.getUserId(), invitation.getInvitedByUserId());
+        assertEquals(UserRole.MEMBER, invitation.getInvitedAs());
+        assertTrue(invitation.getInvited().getEpochSecond() > 0);
+        assertTrue(invitation.getExpiryDate().getEpochSecond() > 0);
+        assertEquals("cheese@wine.com", invitation.getEmail());
         assertNull(invitation.getLinkUrl());
         assertTrue(invitation.isNotifyReferrerOnJoin());
         assertFalse(invitation.isMultiuse());
