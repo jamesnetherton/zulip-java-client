@@ -25,6 +25,8 @@ import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOptio
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
@@ -162,6 +164,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
         long externalId = zulip.server().createCustomProfileField()
                 .withExternalAccountFieldType(externalData)
                 .withDisplayInProfileSummary(true)
+                .withRequired(true)
                 .execute();
         assertTrue(externalId > 0);
 
@@ -277,6 +280,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -284,8 +288,13 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.ALL_STREAMS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
