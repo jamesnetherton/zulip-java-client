@@ -305,4 +305,16 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     public void sendMobilePushTestNotification() throws ZulipClientException {
         zulip.server().sendMobilePushTestNotification().execute();
     }
+
+    @Test
+    public void apnsDeviceToken() throws ZulipClientException {
+        zulip.server().addApnsDeviceToken("test", "test").execute();
+        zulip.server().removeApnsDeviceToken("test").execute();
+    }
+
+    @Test
+    public void fcmRegistrationToken() throws ZulipClientException {
+        zulip.server().addFcmRegsitrationToken("test").execute();
+        zulip.server().removeFcmRegistrationToken("test").execute();
+    }
 }

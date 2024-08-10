@@ -11,10 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
@@ -498,5 +503,62 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         zulip.server().sendMobilePushTestNotification()
                 .withToken("abc123")
                 .execute();
+    }
+
+    @Test
+    public void addApnsDeviceToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddApnsDeviceTokenApiRequest.TOKEN, "abc123")
+                .add(AddApnsDeviceTokenApiRequest.APP_ID, "456def")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/apns_device_token", params, SUCCESS_JSON);
+
+        zulip.server().addApnsDeviceToken("abc123", "456def").execute();
+    }
+
+    @Test
+    public void removeApnsDeviceToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveApnsDeviceTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/apns_device_token", params, SUCCESS_JSON);
+
+        zulip.server().removeApnsDeviceToken("abc123").execute();
+    }
+
+    @Test
+    public void addFcmRegistrationToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddFcmRegistrationTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/android_gcm_reg_id", params, SUCCESS_JSON);
+
+        zulip.server().addFcmRegsitrationToken("abc123").execute();
+    }
+
+    @Test
+    public void removeFcmRegistrationToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveFcmRegistrationTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/android_gcm_reg_id", params, SUCCESS_JSON);
+
+        zulip.server().removeFcmRegistrationToken("abc123").execute();
+    }
+
+    @Test
+    public void createBigBlueButtonMeeting() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateBigBlueButtonVideoCallApiRequest.MEETING_NAME, "Test Meeting")
+                .get();
+
+        stubZulipResponse(GET, "/calls/bigbluebutton/create", params, "createBigBlueButtonMeeting.json");
+
+        String url = zulip.server().createBigBlueButtonVideoCall("Test Meeting").execute();
+        assertEquals("https://test.com/test/meeting/url", url);
     }
 }
