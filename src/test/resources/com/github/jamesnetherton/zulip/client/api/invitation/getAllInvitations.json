@@ -1,0 +1,28 @@
+{
+  "invites": [
+    {
+      "email": "example@zulip.com",
+      "expiry_date": 1710606654,
+      "id": 1,
+      "invited": 1710606654,
+      "invited_as": 100,
+      "invited_by_user_id": 1,
+      "is_multiuse": true,
+      "link_url": "https://example.zulipchat.com/join/1/",
+      "notify_referrer_on_join": true
+    },
+    {
+      "email": "example@zulip.com",
+      "expiry_date": 1710606654,
+      "id": 2,
+      "invited": 1710606654,
+      "invited_as": 200,
+      "invited_by_user_id": 2,
+      "is_multiuse": true,
+      "link_url": "https://example.zulipchat.com/join/2/",
+      "notify_referrer_on_join": true
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

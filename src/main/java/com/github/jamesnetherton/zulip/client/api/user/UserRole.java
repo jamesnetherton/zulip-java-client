@@ -1,5 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * Defines Zulip user roles.
  */
@@ -23,7 +25,11 @@ public enum UserRole {
     /**
      * Guest role.
      */
-    GUEST(600);
+    GUEST(600),
+    /**
+     * Unknown role.
+     */
+    UNKNOWN(999);
 
     private final int id;
 
@@ -33,5 +39,15 @@ public enum UserRole {
 
     public int getId() {
         return id;
+    }
+
+    @JsonCreator
+    public static UserRole fromInt(int userRole) {
+        for (UserRole role : UserRole.values()) {
+            if (role.getId() == userRole) {
+                return role;
+            }
+        }
+        return UNKNOWN;
     }
 }

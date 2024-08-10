@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.draft.DraftService;
 import com.github.jamesnetherton.zulip.client.api.event.EventService;
+import com.github.jamesnetherton.zulip.client.api.invitation.InvitationService;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
 import com.github.jamesnetherton.zulip.client.api.server.ServerService;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
@@ -99,6 +100,15 @@ public final class Zulip implements Closeable {
      */
     public EventService events() {
         return (EventService) services.computeIfAbsent(EventService.class, key -> new EventService(this.client));
+    }
+
+    /**
+     * Access the collection of invitation Zulip APIs.
+     *
+     * @return The {@link InvitationService} Zulip event APIs
+     */
+    public InvitationService invitations() {
+        return (InvitationService) services.computeIfAbsent(InvitationService.class, key -> new InvitationService(this.client));
     }
 
     /**
