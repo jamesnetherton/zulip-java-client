@@ -300,4 +300,9 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         assertNotNull(result);
     }
+
+    @Test
+    public void sendMobilePushTestNotification() throws ZulipClientException {
+        zulip.server().sendMobilePushTestNotification().execute();
+    }
 }

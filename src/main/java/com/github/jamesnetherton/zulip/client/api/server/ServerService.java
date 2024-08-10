@@ -14,6 +14,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettin
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
@@ -245,5 +246,16 @@ public class ServerService implements ZulipService {
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest updateRealmNewUserDefaultSettings() {
         return new UpdateRealmNewUserDefaultSettingsApiRequest(this.client);
+    }
+
+    /**
+     * Sends mobile push test notifications.
+     *
+     * @see    <a href="https://zulip.com/api/test-notify">https://zulip.com/api/test-notify</a>
+     *
+     * @return The {@link SendMobilePushTestNotification} builder object
+     */
+    public SendMobilePushTestNotification sendMobilePushTestNotification() {
+        return new SendMobilePushTestNotification(this.client);
     }
 }

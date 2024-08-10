@@ -4,6 +4,7 @@ final class ServerRequestConstants {
 
     public static final String DEV_FETCH_API_KEY = "dev_fetch_api_key";
     public static final String FETCH_API_KEY = "fetch_api_key";
+    public static final String MOBILE_PUSH_TEST = "mobile_push/test_notification";
     public static final String REALM = "realm";
     public static final String REALM_EMOJI = REALM + "/emoji";
     public static final String REALM_EMOJI_WITH_NAME = REALM_EMOJI + "/%s";

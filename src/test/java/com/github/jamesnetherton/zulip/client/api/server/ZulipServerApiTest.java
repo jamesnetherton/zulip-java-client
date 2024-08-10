@@ -17,6 +17,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFi
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
@@ -484,5 +485,18 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals(2, result.size());
         assertEquals("desktop_notifications", result.get(0));
         assertEquals("demote_streams", result.get(1));
+    }
+
+    @Test
+    public void sendMobilePushTestNotification() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendMobilePushTestNotification.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(POST, "/mobile_push/test_notification", params, SUCCESS_JSON);
+
+        zulip.server().sendMobilePushTestNotification()
+                .withToken("abc123")
+                .execute();
     }
 }
