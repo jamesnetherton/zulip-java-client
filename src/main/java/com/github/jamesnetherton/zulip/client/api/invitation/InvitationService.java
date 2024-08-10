@@ -10,6 +10,9 @@ import com.github.jamesnetherton.zulip.client.api.invitation.request.SendInvitat
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.List;
 
+/**
+ * Zulip invitation APIs.
+ */
 public class InvitationService implements ZulipService {
 
     private final ZulipHttpClient client;
