@@ -26,8 +26,8 @@ public class EventPoller {
     private final MessageEventListener listener;
     private final ZulipHttpClient client;
     private final Narrow[] narrows;
-    private final ExecutorService eventListenerExecutorService;
-    private final boolean userManagedEventListenerExecutorService;
+    private volatile ExecutorService eventListenerExecutorService;
+    private volatile boolean userManagedEventListenerExecutorService = false;
     private volatile EventQueue queue;
     private volatile ExecutorService executor;
     private volatile Status status = Status.STOPPED;
@@ -44,8 +44,6 @@ public class EventPoller {
         this.client = client;
         this.listener = listener;
         this.narrows = narrows;
-        this.eventListenerExecutorService = Executors.newCachedThreadPool();
-        this.userManagedEventListenerExecutorService = false;
     }
 
     /**
@@ -82,6 +80,10 @@ public class EventPoller {
 
             queue = createQueue.execute();
             executor = Executors.newSingleThreadExecutor();
+
+            if (eventListenerExecutorService == null) {
+                eventListenerExecutorService = Executors.newCachedThreadPool();
+            }
 
             executor.submit(new Runnable() {
                 private long lastEventId = queue.getLastEventId();
@@ -136,6 +138,7 @@ public class EventPoller {
                 executor.shutdown();
                 if (userManagedEventListenerExecutorService) {
                     eventListenerExecutorService.shutdown();
+                    eventListenerExecutorService = null;
                 }
 
                 DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
