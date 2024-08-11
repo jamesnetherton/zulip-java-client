@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -29,6 +30,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
@@ -40,6 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class ZulipUserApiTest extends ZulipApiTestBase {
 
@@ -459,6 +463,29 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void allUserPresence() throws Exception {
+        stubZulipResponse(GET, "/realm/presence", "getAllUserPresence.json");
+
+        Map<String, Map<String, UserPresenceDetail>> presences = zulip.users().getAllUserPresence().execute();
+        Map<String, UserPresenceDetail> userPresenceDetail = presences.get("test@test.com");
+        assertNotNull(userPresenceDetail);
+
+        UserPresenceDetail websiteUserPresence = userPresenceDetail.get("website");
+        assertNotNull(websiteUserPresence);
+        assertEquals(websiteUserPresence.getStatus(), UserPresenceStatus.ACTIVE);
+        assertEquals(websiteUserPresence.getClient(), "website");
+        assertTrue(websiteUserPresence.getTimestamp().toEpochMilli() > 0);
+        assertTrue(websiteUserPresence.isPushable());
+
+        UserPresenceDetail aggregatedUserPresence = userPresenceDetail.get("aggregated");
+        assertNotNull(aggregatedUserPresence);
+        assertEquals(aggregatedUserPresence.getStatus(), UserPresenceStatus.ACTIVE);
+        assertEquals(aggregatedUserPresence.getClient(), "website");
+        assertTrue(aggregatedUserPresence.getTimestamp().toEpochMilli() > 0);
+        assertFalse(aggregatedUserPresence.isPushable());
+    }
+
+    @Test
     public void attachments() throws Exception {
         stubZulipResponse(GET, "/attachments", "getUserAttachments.json");
 
@@ -481,6 +508,32 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         UserAttachmentMessage messageB = messages.get(0);
         assertEquals(1, messageB.getId());
         assertEquals(1603913066000L, messageB.getDateSent().toEpochMilli());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserPresenceStatus.class, names = { "ACTIVE", "IDLE" })
+    public void updateOwnUserPresence(UserPresenceStatus status) throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserPresenceApiRequest.LAST_UPDATE_ID, "-1")
+                .add(UpdateOwnUserPresenceApiRequest.NEW_USER_INPUT, "true")
+                .add(UpdateOwnUserPresenceApiRequest.PING_ONLY, "true")
+                .add(UpdateOwnUserPresenceApiRequest.STATUS, status.name().toLowerCase())
+                .get();
+
+        stubZulipResponse(POST, "/users/me/presence", params, "updateOwnUserPresence.json");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.users().updateOwnUserPresence(UserPresenceStatus.OFFLINE).execute();
+        });
+
+        Map<Integer, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(status)
+                .withNewUserInput(true)
+                .withPingOnly(true)
+                .execute();
+        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(1);
+        assertNotNull(userPresenceDetail);
+        assertTrue(userPresenceDetail.getActiveTimestamp().toEpochMilli() > 0);
+        assertTrue(userPresenceDetail.getIdleTimestamp().toEpochMilli() > 0);
     }
 
     @Test

@@ -714,6 +714,12 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
         return this;
     }
 
+    /**
+     * Executes the Zulip API request for updating own user settings.
+     *
+     * @return                      List of settings that were ignored
+     * @throws ZulipClientException if the request was not successful
+     */
     @Override
     public List<String> execute() throws ZulipClientException {
         UpdateOwnUserSettingsApiResponse result = client().patch(SETTINGS, getParams(), UpdateOwnUserSettingsApiResponse.class);

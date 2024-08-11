@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApi
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
@@ -27,6 +28,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGr
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
@@ -325,6 +327,29 @@ public class UserService implements ZulipService {
      */
     public GetUserPresenceApiRequest getUserPresence(String email) {
         return new GetUserPresenceApiRequest(this.client, email);
+    }
+
+    /**
+     * Gets all user presence details.
+     *
+     * @see    <a href="https://zulip.com/api/get-presence">https://zulip.com/api/get-presence</a>
+     *
+     * @return The {@link GetAllUserPresenceApiRequest} builder object
+     */
+    public GetAllUserPresenceApiRequest getAllUserPresence() {
+        return new GetAllUserPresenceApiRequest(this.client);
+    }
+
+    /**
+     * Fetches presence details for the current client user.
+     *
+     * @see           <a href="https://zulip.com/api/update-presence">https://zulip.com/api/update-presence</a>
+     *
+     * @param  status The status of the user
+     * @return        The {@link UpdateOwnUserPresenceApiRequest} builder object
+     */
+    public UpdateOwnUserPresenceApiRequest updateOwnUserPresence(UserPresenceStatus status) {
+        return new UpdateOwnUserPresenceApiRequest(this.client, status);
     }
 
     /**

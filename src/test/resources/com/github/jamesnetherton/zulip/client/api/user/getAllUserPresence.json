@@ -1,0 +1,20 @@
+{
+  "msg": "",
+  "presences": {
+    "test@test.com": {
+      "aggregated": {
+        "client": "website",
+        "status": "active",
+        "timestamp": 1656958485
+      },
+      "website": {
+        "client": "website",
+        "pushable": true,
+        "status": "active",
+        "timestamp": 1656958485
+      }
+    }
+  },
+  "result": "success",
+  "server_timestamp": 1656958539.6287155
+}

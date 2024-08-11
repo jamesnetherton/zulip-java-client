@@ -23,6 +23,7 @@ import com.github.jamesnetherton.zulip.client.api.user.UserAttachmentMessage;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
+import com.github.jamesnetherton.zulip.client.api.user.UserPresenceStatus;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
 import com.github.jamesnetherton.zulip.client.api.user.UserStatus;
 import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
@@ -283,6 +284,17 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertNotNull(website);
         assertNotNull(website.getStatus());
         assertTrue(website.getTimestamp().toEpochMilli() > 0);
+    }
+
+    @Test
+    public void getAllUserPresence() throws ZulipClientException {
+        Map<String, Map<String, UserPresenceDetail>> presences = zulip.users().getAllUserPresence().execute();
+    }
+
+    @Test
+    public void updateOwnUserPresence() throws ZulipClientException {
+        Map<Integer, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(UserPresenceStatus.ACTIVE)
+                .execute();
     }
 
     @Test
