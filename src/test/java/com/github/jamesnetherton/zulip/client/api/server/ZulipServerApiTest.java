@@ -11,18 +11,26 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.File;
@@ -141,6 +149,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals("https://foo/bar/icon.png", settings.getRealmIcon());
         assertEquals("Test Realm Name", settings.getRealmName());
         assertEquals("http://localhost:8080", settings.getRealmUri());
+        assertEquals("http://localhost:8080", settings.getRealmUrl());
         assertEquals("5.6.7", settings.getZulipMergeBase());
         assertEquals("1.2.3", settings.getZulipVersion());
         assertTrue(settings.isEmailAuthEnabled());
@@ -195,6 +204,11 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
             assertEquals(i, field.getOrder());
             assertEquals(ProfileFieldType.fromInt(field.getType().getId()), field.getType());
             assertEquals(i == 1, field.isDisplayInProfileSummary());
+            if (i == 1) {
+                assertTrue(field.isRequired());
+            } else {
+                assertFalse(field.isRequired());
+            }
 
             if (field.getType().equals(ProfileFieldType.LIST_OF_OPTIONS)) {
                 Map<String, Map<String, String>> data = (Map<String, Map<String, String>>) field.getFieldData();
@@ -248,6 +262,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(CreateProfileFieldApiRequest.HINT, "Test Hint")
                 .add(CreateProfileFieldApiRequest.FIELD_TYPE, "2")
                 .add(CreateProfileFieldApiRequest.DISPLAY_IN_PROFILE_SUMMARY, "true")
+                .add(CreateProfileFieldApiRequest.REQUIRED, "true")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
@@ -255,6 +270,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         long id = zulip.server().createCustomProfileField()
                 .withSimpleFieldType(ProfileFieldType.LONG_TEXT, "Test Name", "Test Hint")
                 .withDisplayInProfileSummary(true)
+                .withRequired(true)
                 .execute();
 
         assertEquals(9, id);
@@ -393,6 +409,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_READ_RECEIPTS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
@@ -400,8 +417,13 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.USER_LIST_STYLE, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_ANIMATE_IMAGE_PREVIEWS, "on_hover")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_CHANNEL_DEFAULT_VIEW, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_FONT_SIZE_PX, "11")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_LINE_HEIGHT_PERCENT, "120")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY, "2")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -446,6 +468,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -453,8 +476,13 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.UNMUTED_STREAMS_TOPICS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
@@ -462,5 +490,75 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals(2, result.size());
         assertEquals("desktop_notifications", result.get(0));
         assertEquals("demote_streams", result.get(1));
+    }
+
+    @Test
+    public void sendMobilePushTestNotification() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendMobilePushTestNotification.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(POST, "/mobile_push/test_notification", params, SUCCESS_JSON);
+
+        zulip.server().sendMobilePushTestNotification()
+                .withToken("abc123")
+                .execute();
+    }
+
+    @Test
+    public void addApnsDeviceToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddApnsDeviceTokenApiRequest.TOKEN, "abc123")
+                .add(AddApnsDeviceTokenApiRequest.APP_ID, "456def")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/apns_device_token", params, SUCCESS_JSON);
+
+        zulip.server().addApnsDeviceToken("abc123", "456def").execute();
+    }
+
+    @Test
+    public void removeApnsDeviceToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveApnsDeviceTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/apns_device_token", params, SUCCESS_JSON);
+
+        zulip.server().removeApnsDeviceToken("abc123").execute();
+    }
+
+    @Test
+    public void addFcmRegistrationToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddFcmRegistrationTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(POST, "/users/me/android_gcm_reg_id", params, SUCCESS_JSON);
+
+        zulip.server().addFcmRegsitrationToken("abc123").execute();
+    }
+
+    @Test
+    public void removeFcmRegistrationToken() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveFcmRegistrationTokenApiRequest.TOKEN, "abc123")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/android_gcm_reg_id", params, SUCCESS_JSON);
+
+        zulip.server().removeFcmRegistrationToken("abc123").execute();
+    }
+
+    @Test
+    public void createBigBlueButtonMeeting() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateBigBlueButtonVideoCallApiRequest.MEETING_NAME, "Test Meeting")
+                .get();
+
+        stubZulipResponse(GET, "/calls/bigbluebutton/create", params, "createBigBlueButtonMeeting.json");
+
+        String url = zulip.server().createBigBlueButtonVideoCall("Test Meeting").execute();
+        assertEquals("https://test.com/test/meeting/url", url);
     }
 }

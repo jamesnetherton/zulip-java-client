@@ -38,8 +38,12 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
     @JsonProperty
     private String realmName;
 
+    @Deprecated(since = "0.7.0", forRemoval = true)
     @JsonProperty
     private String realmUri;
+
+    @JsonProperty
+    private String realmUrl;
 
     @JsonProperty
     private boolean realmWebPublicAccessEnabled;
@@ -85,8 +89,14 @@ public class GetServerSettingsApiResponse extends ZulipApiResponse {
         return realmName;
     }
 
+    @Deprecated(since = "0.7.0", forRemoval = true)
+    @JsonProperty
     public String getRealmUri() {
         return realmUri;
+    }
+
+    public String getRealmUrl() {
+        return realmUrl;
     }
 
     public boolean isRealmWebPublicAccessEnabled() {

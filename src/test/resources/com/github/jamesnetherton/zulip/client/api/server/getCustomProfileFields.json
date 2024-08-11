@@ -7,7 +7,8 @@
       "name": "Field 1",
       "order": 1,
       "type": 1,
-      "display_in_profile_summary": true
+      "display_in_profile_summary": true,
+      "required": true
     },
     {
       "field_data": "Data 2",
@@ -15,7 +16,8 @@
       "id": 2,
       "name": "Field 2",
       "order": 2,
-      "type": 2
+      "type": 2,
+      "required": false
     },
     {
       "field_data": "{\"vim\":{\"text\":\"Vim\",\"order\":\"1\"},\"emacs\":{\"text\":\"Emacs\",\"order\":\"2\"}}",

@@ -35,6 +35,9 @@ public class ProfileField {
     @JsonProperty
     private boolean displayInProfileSummary;
 
+    @JsonProperty
+    private boolean required;
+
     @JsonCreator
     public ProfileField(JsonNode node) {
         this.hint = node.get("hint").asText();
@@ -42,6 +45,9 @@ public class ProfileField {
         this.name = node.get("name").asText();
         this.order = node.get("order").asInt();
         this.type = ProfileFieldType.fromInt(node.get("type").asInt());
+        if (node.has("required")) {
+            this.required = node.get("required").asBoolean();
+        }
         if (node.has("display_in_profile_summary")) {
             this.displayInProfileSummary = node.get("display_in_profile_summary").asBoolean();
         }
@@ -114,5 +120,9 @@ public class ProfileField {
 
     public boolean isDisplayInProfileSummary() {
         return displayInProfileSummary;
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 }

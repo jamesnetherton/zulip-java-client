@@ -27,6 +27,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
     public static final String FIELD_TYPE = "field_type";
     public static final String FIELD_DATA = "field_data";
     public static final String DISPLAY_IN_PROFILE_SUMMARY = "display_in_profile_summary";
+    public static final String REQUIRED = "required";
 
     /**
      * Constructs a {@link CreateProfileFieldApiRequest}.
@@ -106,6 +107,17 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      */
     public CreateProfileFieldApiRequest withDisplayInProfileSummary(boolean isDisplayInProfileSummary) {
         putParam(DISPLAY_IN_PROFILE_SUMMARY, isDisplayInProfileSummary);
+        return this;
+    }
+
+    /**
+     * Sets whether the profile field is required.
+     *
+     * @param  required Whether the profile field is required
+     * @return          This {@link CreateProfileFieldApiRequest} instance
+     */
+    public CreateProfileFieldApiRequest withRequired(boolean required) {
+        putParam(REQUIRED, required);
         return this;
     }
 

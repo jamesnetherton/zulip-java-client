@@ -125,7 +125,7 @@ public class ZulipApiTestBase {
                 .withMultipartRequestBody(
                         aMultipart()
                                 .withName("files")
-                                .withHeader("Content-Type", equalTo("application/octet-stream"))
+                                .withHeader("Content-Type", equalTo("text/plain"))
                                 .withBody(equalTo("test content")))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")

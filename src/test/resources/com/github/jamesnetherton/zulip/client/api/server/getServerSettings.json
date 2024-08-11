@@ -41,6 +41,7 @@
   "realm_icon": "https://foo/bar/icon.png",
   "realm_name": "Test Realm Name",
   "realm_uri": "http://localhost:8080",
+  "realm_url": "http://localhost:8080",
   "realm_web_public_access_enabled": true,
   "require_email_format_usernames": true,
   "result": "success",

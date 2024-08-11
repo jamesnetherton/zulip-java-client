@@ -7,6 +7,8 @@ import java.time.Instant;
  * Defines details about Zulip user presence.
  */
 public class UserPresenceDetail {
+    @JsonProperty
+    private String client;
 
     @JsonProperty
     private UserPresenceStatus status;
@@ -14,11 +16,36 @@ public class UserPresenceDetail {
     @JsonProperty
     private Instant timestamp;
 
+    @JsonProperty
+    private Instant activeTimestamp;
+
+    @JsonProperty
+    private Instant idleTimestamp;
+
+    @JsonProperty
+    private boolean pushable;
+
+    public String getClient() {
+        return client;
+    }
+
     public UserPresenceStatus getStatus() {
         return status;
     }
 
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public Instant getActiveTimestamp() {
+        return activeTimestamp;
+    }
+
+    public Instant getIdleTimestamp() {
+        return idleTimestamp;
+    }
+
+    public boolean isPushable() {
+        return pushable;
     }
 }

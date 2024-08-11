@@ -26,6 +26,8 @@ public class EventPoller {
     private final MessageEventListener listener;
     private final ZulipHttpClient client;
     private final Narrow[] narrows;
+    private volatile ExecutorService eventListenerExecutorService;
+    private volatile boolean userManagedEventListenerExecutorService = false;
     private volatile EventQueue queue;
     private volatile ExecutorService executor;
     private volatile Status status = Status.STOPPED;
@@ -45,6 +47,25 @@ public class EventPoller {
     }
 
     /**
+     * Constructs a {@link EventPoller}.
+     *
+     * @param client                       The Zulip HTTP client
+     * @param listener                     The {@link MessageEventListener} to be invoked on each message event
+     * @param narrows                      optional {@link Narrow} expressions to filter which message events are captured. E.g
+     *                                     messages from a
+     *                                     specific stream
+     * @param eventListenerExecutorService Custom {@link ExecutorService} to use for message event listener execution
+     */
+    public EventPoller(ZulipHttpClient client, MessageEventListener listener, Narrow[] narrows,
+            ExecutorService eventListenerExecutorService) {
+        this.client = client;
+        this.listener = listener;
+        this.narrows = narrows;
+        this.eventListenerExecutorService = eventListenerExecutorService;
+        this.userManagedEventListenerExecutorService = true;
+    }
+
+    /**
      * Starts event message polling.
      *
      * @throws ZulipClientException if the event polling request was not successful
@@ -60,6 +81,10 @@ public class EventPoller {
             queue = createQueue.execute();
             executor = Executors.newSingleThreadExecutor();
 
+            if (eventListenerExecutorService == null) {
+                eventListenerExecutorService = Executors.newCachedThreadPool();
+            }
+
             executor.submit(new Runnable() {
                 private long lastEventId = queue.getLastEventId();
 
@@ -72,7 +97,7 @@ public class EventPoller {
 
                             List<MessageEvent> messageEvents = getEvents.execute();
                             for (MessageEvent event : messageEvents) {
-                                listener.onEvent(event.getMessage());
+                                eventListenerExecutorService.submit(() -> listener.onEvent(event.getMessage()));
                             }
 
                             lastEventId = messageEvents.stream().max(Comparator.comparing(Event::getId))
@@ -111,6 +136,11 @@ public class EventPoller {
                 LOG.info("EventPoller stopping");
                 status = Status.STOPPING;
                 executor.shutdown();
+                if (userManagedEventListenerExecutorService) {
+                    eventListenerExecutorService.shutdown();
+                    eventListenerExecutorService = null;
+                }
+
                 DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
                 deleteQueue.execute();
             } catch (ZulipClientException e) {

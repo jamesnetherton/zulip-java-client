@@ -46,8 +46,13 @@ public class ServerSettings {
         return delegate.getRealmName();
     }
 
+    @Deprecated(since = "0.7.0", forRemoval = true)
     public String getRealmUri() {
         return delegate.getRealmUri();
+    }
+
+    public String getRealmUrl() {
+        return delegate.getRealmUrl();
     }
 
     public boolean isRealmWebPublicAccessEnabled() {

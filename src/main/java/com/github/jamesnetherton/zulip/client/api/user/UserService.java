@@ -7,8 +7,10 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
@@ -18,6 +20,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
@@ -25,6 +28,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGr
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
@@ -326,6 +330,29 @@ public class UserService implements ZulipService {
     }
 
     /**
+     * Gets all user presence details.
+     *
+     * @see    <a href="https://zulip.com/api/get-presence">https://zulip.com/api/get-presence</a>
+     *
+     * @return The {@link GetAllUserPresenceApiRequest} builder object
+     */
+    public GetAllUserPresenceApiRequest getAllUserPresence() {
+        return new GetAllUserPresenceApiRequest(this.client);
+    }
+
+    /**
+     * Fetches presence details for the current client user.
+     *
+     * @see           <a href="https://zulip.com/api/update-presence">https://zulip.com/api/update-presence</a>
+     *
+     * @param  status The status of the user
+     * @return        The {@link UpdateOwnUserPresenceApiRequest} builder object
+     */
+    public UpdateOwnUserPresenceApiRequest updateOwnUserPresence(UserPresenceStatus status) {
+        return new UpdateOwnUserPresenceApiRequest(this.client, status);
+    }
+
+    /**
      * Get user attachments.
      *
      * @see    <a href="https://zulip.com/api/update-user-group-members">https://zulip.com/api/update-user-group-members</a>
@@ -334,6 +361,18 @@ public class UserService implements ZulipService {
      */
     public GetUserAttachmentsApiRequest getUserAttachments() {
         return new GetUserAttachmentsApiRequest(this.client);
+    }
+
+    /**
+     * Deletes an attachment.
+     *
+     * @see                 <a href="https://zulip.com/api/remove-attachment">https://zulip.com/api/remove-attachment</a>
+     *
+     * @param  attachmentId The id of the attachment to delete
+     * @return              The {@link DeleteUserAttachmentApiRequest} builder object
+     */
+    public DeleteUserAttachmentApiRequest deleteAttachment(long attachmentId) {
+        return new DeleteUserAttachmentApiRequest(this.client, attachmentId);
     }
 
     /**
@@ -444,5 +483,17 @@ public class UserService implements ZulipService {
      */
     public RemoveAlertWordsApiRequest removeAlertWords(String... alertWords) {
         return new RemoveAlertWordsApiRequest(this.client, alertWords);
+    }
+
+    /**
+     * Gets a user status.
+     *
+     * @see           <a href="https://zulip.com/api/get-user-status">https://zulip.com/api/get-user-status</a>
+     *
+     * @param  userId The ID of the user to fetch the status for
+     * @return        The {@link GetUserStatusApiRequest} builder object
+     */
+    public GetUserStatusApiRequest getUserStatus(long userId) {
+        return new GetUserStatusApiRequest(this.client, userId);
     }
 }

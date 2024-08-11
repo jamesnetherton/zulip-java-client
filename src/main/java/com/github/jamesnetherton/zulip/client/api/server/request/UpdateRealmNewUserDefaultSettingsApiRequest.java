@@ -16,8 +16,9 @@ import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOptio
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
-import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.List;
@@ -65,6 +66,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String PRESENCE_ENABLED = "presence_enabled";
     public static final String REALM_NAME_IN_NOTIFICATIONS = "realm_name_in_notifications";
     public static final String REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY = "realm_name_in_email_notifications_policy";
+    public static final String RECEIVES_TYPING_NOTIFICATIONS = "receives_typing_notifications";
     public static final String SEND_PRIVATE_TYPING_NOTIFICATIONS = "send_private_typing_notifications";
     public static final String SEND_READ_RECEIPTS = "send_read_receipts";
     public static final String SEND_STREAM_TYPING_NOTIFICATIONS = "send_stream_typing_notifications";
@@ -72,8 +74,13 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String TRANSLATE_EMOTICONS = "translate_emoticons";
     public static final String TWENTY_FOUR_HOUR_TIME = "twenty_four_hour_time";
     public static final String USER_LIST_STYLE = "user_list_style";
+    public static final String WEB_ANIMATE_IMAGE_PREVIEWS = "web_animate_image_previews";
+    public static final String WEB_CHANNEL_DEFAULT_VIEW = "web_channel_default_view";
     public static final String WEB_ESCAPE_NAVIGATES_TO_HOME_VIEW = "web_escape_navigates_to_home_view";
+    public static final String WEB_FONT_SIZE_PX = "web_font_size_px";
+    public static final String WEB_LINE_HEIGHT_PERCENT = "web_line_height_percent";
     public static final String WEB_MARK_READ_ON_SCROLL_POLICY = "web_mark_read_on_scroll_policy";
+    public static final String WEB_NAVIGATE_TO_SENT_MESSAGE = "web_navigate_to_sent_message";
     public static final String WEB_HOME_VIEW = "web_home_view";
     public static final String WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY = "web_stream_unreads_count_display_policy";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
@@ -527,11 +534,23 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      *
      * @param  policy The {@link RealmNameInNotificationsPolicy} to determine whether to include the organization name in the
      *                subject of message notification emails
-     * @return        This {@link UpdateOwnUserSettingsApiRequest} instance
+     * @return        This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest withRealmNameInEmailNotifications(
             RealmNameInNotificationsPolicy policy) {
         putParam(REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets whether the user is configured to receive typing notifications from other users.
+     *
+     * @param  receivesTypingNotifications {@code} true to receive typing notifications from other users. {@code false} to not
+     *                                     receive typing notifications from other users.
+     * @return                             This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withReceivesTypingNotifications(boolean receivesTypingNotifications) {
+        putParam(RECEIVES_TYPING_NOTIFICATIONS, receivesTypingNotifications);
         return this;
     }
 
@@ -634,6 +653,51 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     }
 
     /**
+     * Sets how animated images should be played in the message feed.
+     *
+     * @param  webAnimateImageOption The option determining how animated images should be played
+     * @return                       This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebAnimateImagePreviews(
+            WebAnimateImageOption webAnimateImageOption) {
+        putParam(WEB_ANIMATE_IMAGE_PREVIEWS, webAnimateImageOption.toString());
+        return this;
+    }
+
+    /**
+     * Sets the default navigation behavior when clicking on a channel link.
+     *
+     * @param  webChannelView for the default channel view
+     * @return                This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebChannelDefaultView(WebChannelView webChannelView) {
+        putParam(WEB_CHANNEL_DEFAULT_VIEW, webChannelView.getId());
+        return this;
+    }
+
+    /**
+     * Sets the user primary font size in pixels.
+     *
+     * @param  fontSize The size of the font used on the Zulip web UI
+     * @return          This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebFontPx(int fontSize) {
+        putParam(WEB_FONT_SIZE_PX, fontSize);
+        return this;
+    }
+
+    /**
+     * Sets the user primary line height for the Zulip web UI in percent.
+     *
+     * @param  webLineHeightPercent The line height percentage value
+     * @return                      This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebLineHeightPercent(int webLineHeightPercent) {
+        putParam(WEB_LINE_HEIGHT_PERCENT, webLineHeightPercent);
+        return this;
+    }
+
+    /**
      * Sets whether or not to mark messages as read when the user scrolls through their feed.
      *
      * @param  policy The {@link MarkReadOnScrollPolicy} to determine whether when messages are marked as read
@@ -641,6 +705,18 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy policy) {
         putParam(WEB_MARK_READ_ON_SCROLL_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets whether the user view should automatically go to the conversation where they sent a message.
+     *
+     * @param  webNavigateToSentMessage {@code trye} to automatically go to the conversation where they sent a message.
+     *                                  {@code false} to not automatically go to the conversation where they sent a message.
+     * @return                          This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebNavigateToSentMessage(boolean webNavigateToSentMessage) {
+        putParam(WEB_NAVIGATE_TO_SENT_MESSAGE, webNavigateToSentMessage);
         return this;
     }
 

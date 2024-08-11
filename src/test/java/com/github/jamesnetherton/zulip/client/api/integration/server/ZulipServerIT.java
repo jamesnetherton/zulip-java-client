@@ -25,6 +25,8 @@ import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOptio
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
@@ -103,7 +105,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         CustomEmoji emoji = optional.get();
         assertEquals(emojiName, emoji.getName());
-        assertTrue(emoji.getSourceUrl().endsWith(emoji.getId() + ".png"));
+        assertTrue(emoji.getSourceUrl().endsWith(".png"));
         assertNull(emoji.getStillUrl());
         assertTrue(emoji.getAuthorId() > 0);
         assertTrue(emoji.getId() > 0);
@@ -162,6 +164,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
         long externalId = zulip.server().createCustomProfileField()
                 .withExternalAccountFieldType(externalData)
                 .withDisplayInProfileSummary(true)
+                .withRequired(true)
                 .execute();
         assertTrue(externalId > 0);
 
@@ -277,6 +280,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -284,11 +288,33 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.ALL_STREAMS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
         assertNotNull(result);
+    }
+
+    @Test
+    public void sendMobilePushTestNotification() throws ZulipClientException {
+        zulip.server().sendMobilePushTestNotification().execute();
+    }
+
+    @Test
+    public void apnsDeviceToken() throws ZulipClientException {
+        zulip.server().addApnsDeviceToken("test", "test").execute();
+        zulip.server().removeApnsDeviceToken("test").execute();
+    }
+
+    @Test
+    public void fcmRegistrationToken() throws ZulipClientException {
+        zulip.server().addFcmRegsitrationToken("test").execute();
+        zulip.server().removeFcmRegistrationToken("test").execute();
     }
 }

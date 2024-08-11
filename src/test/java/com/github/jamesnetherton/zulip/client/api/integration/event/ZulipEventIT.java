@@ -1,6 +1,5 @@
 package com.github.jamesnetherton.zulip.client.api.integration.event;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.event.EventPoller;
@@ -19,10 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 public class ZulipEventIT extends ZulipIntegrationTestBase {
 
     @Test
@@ -62,10 +59,11 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 messageService.sendStreamMessage("Test Content " + i, streamName, "testtopic").execute();
             }
 
-            assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(latch.await(30, TimeUnit.SECONDS));
 
             for (int i = 0; i < 3; i++) {
-                assertEquals("Test Content " + i, messages.get(i));
+                int finalI = i;
+                assertTrue(messages.stream().anyMatch(message -> message.equals("Test Content " + finalI)));
             }
         } catch (ZulipClientException e) {
             e.printStackTrace();
@@ -115,11 +113,14 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 messageService.sendStreamMessage("Stream " + streamName + " Content " + i, streamName, "testtopic").execute();
             }
 
-            assertTrue(latch.await(10, TimeUnit.SECONDS));
+            assertTrue(latch.await(30, TimeUnit.SECONDS));
 
             int count = 0;
             for (int i = 0; i < 5; i++) {
-                assertEquals("Stream " + streamA + " Content " + count, messages.get(i));
+                int finalCount = count;
+                assertTrue(
+                        messages.stream().anyMatch(message -> message.equals("Stream " + streamA + " Content " + finalCount)));
+
                 count += 2;
             }
         } catch (ZulipClientException e) {

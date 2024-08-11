@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
@@ -22,7 +23,11 @@ import com.github.jamesnetherton.zulip.client.api.user.UserAttachmentMessage;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
+import com.github.jamesnetherton.zulip.client.api.user.UserPresenceStatus;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
+import com.github.jamesnetherton.zulip.client.api.user.UserStatus;
+import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
+import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -201,8 +206,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<UserAttachment> attachments = zulip.users().getUserAttachments().execute();
         assertFalse(attachments.isEmpty());
 
-        Thread.sleep(10000);
-
+        long attachmentId = 0;
         boolean matched = false;
         for (UserAttachment attachment : attachments) {
             if (!attachment.getMessages().isEmpty()) {
@@ -222,11 +226,30 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                     UserAttachmentMessage message = optional.get();
                     assertEquals(messageId, message.getId());
                     assertTrue(message.getDateSent().toEpochMilli() > 0);
+
+                    attachmentId = attachment.getId();
                 }
             }
         }
 
         assertTrue(matched);
+
+        boolean deletedMessageMatched = false;
+        zulip.users().deleteAttachment(attachmentId).execute();
+        attachments = zulip.users().getUserAttachments().execute();
+        for (UserAttachment attachment : attachments) {
+            if (!attachment.getMessages().isEmpty()) {
+                Optional<UserAttachmentMessage> optional = attachment.getMessages().stream()
+                        .filter(m -> m.getId() == messageId)
+                        .findFirst();
+
+                if (optional.isPresent()) {
+                    deletedMessageMatched = true;
+                }
+            }
+        }
+
+        assertFalse(deletedMessageMatched);
     }
 
     @Test
@@ -264,6 +287,36 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     }
 
     @Test
+    public void getAllUserPresence() throws ZulipClientException {
+        Map<String, Map<String, UserPresenceDetail>> presences = zulip.users().getAllUserPresence().execute();
+        assertNotNull(presences);
+
+        Map<String, UserPresenceDetail> testUserPresence = presences.get("test@test.com");
+        assertNotNull(testUserPresence);
+
+        UserPresenceDetail aggregated = testUserPresence.get("aggregated");
+        assertNotNull(aggregated);
+        assertTrue(aggregated.getTimestamp().toEpochMilli() > 0);
+        assertEquals(UserPresenceStatus.ACTIVE, aggregated.getStatus());
+
+        UserPresenceDetail website = testUserPresence.get("website");
+        assertNotNull(website);
+        assertTrue(website.getTimestamp().toEpochMilli() > 0);
+        assertEquals(UserPresenceStatus.ACTIVE, website.getStatus());
+    }
+
+    @Test
+    public void updateOwnUserPresence() throws ZulipClientException {
+        Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(UserPresenceStatus.ACTIVE)
+                .withNewUserInput(true)
+                .execute();
+
+        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(ownUser.getUserId());
+        assertTrue(userPresenceDetail.getActiveTimestamp().toEpochMilli() > 0);
+        assertTrue(userPresenceDetail.getIdleTimestamp().toEpochMilli() > 0);
+    }
+
+    @Test
     public void updateNotificationSettings() throws ZulipClientException {
         try {
             Map<String, Object> settings = zulip.users().updateNotificationSettings()
@@ -296,8 +349,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void userGroupCrud() throws ZulipClientException {
         // Create group
+        List<UserGroup> execute = zulip.users().getUserGroups().execute();
         zulip.users().createUserGroup("Test Group Name", "Test Group Description", ownUser.getUserId())
-                .withCanMentionGroup(2)
+                .withCanMentionGroup(11)
                 .execute();
 
         // Get group
@@ -310,7 +364,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(group.getId() > 0);
         assertNotNull(group.getDirectSubgroupIds());
         assertFalse(group.isSystemGroup());
-        assertEquals(2, group.getCanMentionGroup());
+        assertEquals(11, group.getCanMentionGroup());
 
         List<Long> members = group.getMembers();
         assertEquals(1, members.size());
@@ -319,7 +373,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         // Update group
         zulip.users().updateUserGroup(group.getId()).withName("Updated Group Name").execute();
         zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId())
-                .withCanMentionGroup(3)
+                .withCanMentionGroup(11, 12)
                 .execute();
 
         groups = zulip.users().getUserGroups().execute();
@@ -328,7 +382,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         group = groups.get(groups.size() - 1);
         assertEquals("Updated Group Name", group.getName());
         assertEquals("Updated Group Description", group.getDescription());
-        assertEquals(3, group.getCanMentionGroup());
+        assertEquals(12, group.getCanMentionGroup());
 
         // Add new user to group
         String id = UUID.randomUUID().toString().split("-")[0];
@@ -386,12 +440,32 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().updateOwnUserStatus()
                 .withAway(true)
                 .withStatusText("test status")
+                .withEmojiCode("1f697")
+                .withEmojiName("car")
+                .withReactionType(ReactionType.UNICODE)
                 .execute();
+
+        UserStatus userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertTrue(userStatus.isAway());
+        assertEquals("test status", userStatus.getStatusText());
+        assertEquals("1f697", userStatus.getEmojiCode());
+        assertEquals("car", userStatus.getEmojiName());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
 
         zulip.users().updateOwnUserStatus()
                 .withAway(false)
                 .withStatusText("")
+                .withEmojiCode("")
+                .withEmojiName("")
                 .execute();
+
+        userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertFalse(userStatus.isAway());
+        assertNull(userStatus.getStatusText());
+        assertNull(userStatus.getEmojiCode());
+        assertNull(userStatus.getEmojiName());
+        assertNull(userStatus.getReactionType());
+
     }
 
     @Test
@@ -429,6 +503,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -437,7 +512,12 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.COMPACT)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

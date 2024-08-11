@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -29,16 +30,20 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class ZulipUserApiTest extends ZulipApiTestBase {
 
@@ -124,13 +129,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserGroupApiRequest.NAME, "New Group Name")
                 .add(UpdateUserGroupApiRequest.DESCRIPTION, "New Group Description")
-                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP, "1")
+                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP,
+                        JsonUtils.getMapper().writeValueAsString(Map.of("old", 1, "new", 2)))
                 .get();
 
         stubZulipResponse(PATCH, "/user_groups/3", params);
 
         zulip.users().updateUserGroup("New Group Name", "New Group Description", 3)
-                .withCanMentionGroup(1)
+                .withCanMentionGroup(1, 2)
                 .execute();
     }
 
@@ -457,6 +463,29 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void allUserPresence() throws Exception {
+        stubZulipResponse(GET, "/realm/presence", "getAllUserPresence.json");
+
+        Map<String, Map<String, UserPresenceDetail>> presences = zulip.users().getAllUserPresence().execute();
+        Map<String, UserPresenceDetail> userPresenceDetail = presences.get("test@test.com");
+        assertNotNull(userPresenceDetail);
+
+        UserPresenceDetail websiteUserPresence = userPresenceDetail.get("website");
+        assertNotNull(websiteUserPresence);
+        assertEquals(websiteUserPresence.getStatus(), UserPresenceStatus.ACTIVE);
+        assertEquals(websiteUserPresence.getClient(), "website");
+        assertTrue(websiteUserPresence.getTimestamp().toEpochMilli() > 0);
+        assertTrue(websiteUserPresence.isPushable());
+
+        UserPresenceDetail aggregatedUserPresence = userPresenceDetail.get("aggregated");
+        assertNotNull(aggregatedUserPresence);
+        assertEquals(aggregatedUserPresence.getStatus(), UserPresenceStatus.ACTIVE);
+        assertEquals(aggregatedUserPresence.getClient(), "website");
+        assertTrue(aggregatedUserPresence.getTimestamp().toEpochMilli() > 0);
+        assertFalse(aggregatedUserPresence.isPushable());
+    }
+
+    @Test
     public void attachments() throws Exception {
         stubZulipResponse(GET, "/attachments", "getUserAttachments.json");
 
@@ -479,6 +508,39 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         UserAttachmentMessage messageB = messages.get(0);
         assertEquals(1, messageB.getId());
         assertEquals(1603913066000L, messageB.getDateSent().toEpochMilli());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserPresenceStatus.class, names = { "ACTIVE", "IDLE" })
+    public void updateOwnUserPresence(UserPresenceStatus status) throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserPresenceApiRequest.LAST_UPDATE_ID, "-1")
+                .add(UpdateOwnUserPresenceApiRequest.NEW_USER_INPUT, "true")
+                .add(UpdateOwnUserPresenceApiRequest.PING_ONLY, "true")
+                .add(UpdateOwnUserPresenceApiRequest.STATUS, status.name().toLowerCase())
+                .get();
+
+        stubZulipResponse(POST, "/users/me/presence", params, "updateOwnUserPresence.json");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.users().updateOwnUserPresence(UserPresenceStatus.OFFLINE).execute();
+        });
+
+        Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(status)
+                .withNewUserInput(true)
+                .withPingOnly(true)
+                .execute();
+        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(1L);
+        assertNotNull(userPresenceDetail);
+        assertTrue(userPresenceDetail.getActiveTimestamp().toEpochMilli() > 0);
+        assertTrue(userPresenceDetail.getIdleTimestamp().toEpochMilli() > 0);
+    }
+
+    @Test
+    public void deleteAttachment() throws Exception {
+        stubZulipResponse(DELETE, "/attachments/1", SUCCESS_JSON);
+
+        zulip.users().deleteAttachment(1).execute();
     }
 
     @Test
@@ -558,6 +620,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
+                .add(UpdateOwnUserSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_READ_RECEIPTS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_STREAM_TYPING_NOTIFICATIONS, "true")
@@ -566,7 +629,12 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.TRANSLATE_EMOTICONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.TWENTY_FOUR_HOUR_TIME, "true")
                 .add(UpdateOwnUserSettingsApiRequest.USER_LIST_STYLE, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_ANIMATE_IMAGE_PREVIEWS, "on_hover")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_CHANNEL_DEFAULT_VIEW, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_FONT_SIZE_PX, "11")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_LINE_HEIGHT_PERCENT, "120")
                 .add(UpdateOwnUserSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -609,6 +677,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withPresenceEnabled(true)
                 .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
+                .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
                 .withSendReadReceipts(true)
                 .withSendStreamTypingNotifications(true)
@@ -617,7 +686,12 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withTranslateEmoticons(true)
                 .withTwentyFourHourTime(true)
                 .withUserListStyle(UserListStyle.WITH_STATUS)
+                .withWebAnimateImagePreviews(WebAnimateImageOption.ON_HOVER)
+                .withWebChannelDefaultView(WebChannelView.CHANNEL_FEED)
+                .withWebFontPx(11)
+                .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
+                .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
@@ -731,5 +805,17 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         List<String> alertWords = zulip.users().removeAlertWords("foo").execute();
         assertEquals(1, alertWords.size());
         assertTrue(alertWords.contains("bar"));
+    }
+
+    @Test
+    public void getUserStatus() throws Exception {
+        stubZulipResponse(GET, "/users/1/status", "getUserStatus.json");
+
+        UserStatus userStatus = zulip.users().getUserStatus(1).execute();
+        assertFalse(userStatus.isAway());
+        assertEquals("on vacation", userStatus.getStatusText());
+        assertEquals("1f697", userStatus.getEmojiCode());
+        assertEquals("car", userStatus.getEmojiName());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
     }
 }

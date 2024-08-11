@@ -1,4 +1,3 @@
-version: '2'
 services:
   database:
     image: 'zulip/zulip-postgresql:14'
@@ -42,7 +41,7 @@ services:
     environment:
       REDIS_PASSWORD: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
   zulip:
-    image: 'zulip/docker-zulip:8.4-0'
+    image: 'zulip/docker-zulip:9.1-0'
     ports:
       - '80:80'
       - '443:443'

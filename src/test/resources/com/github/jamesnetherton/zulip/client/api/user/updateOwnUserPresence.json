@@ -1,0 +1,12 @@
+{
+  "msg": "",
+  "presence_last_update_id": 1000,
+  "presences": {
+    "1": {
+      "active_timestamp": 1656958520,
+      "idle_timestamp": 1656958530
+    }
+  },
+  "result": "success",
+  "server_timestamp": 1656958539.6287155
+}

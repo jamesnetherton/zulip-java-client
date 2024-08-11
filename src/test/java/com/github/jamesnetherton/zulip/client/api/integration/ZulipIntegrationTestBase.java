@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import com.github.jamesnetherton.zulip.client.Zulip;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.draft.Draft;
+import com.github.jamesnetherton.zulip.client.api.invitation.Invitation;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
@@ -99,7 +100,6 @@ public class ZulipIntegrationTestBase {
                     private <T extends ZulipApiResponse> T handleResponse(T response) {
                         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
                         if (ignoredParametersUnsupported != null && !ignoredParametersUnsupported.isEmpty()) {
-                            System.out.println("======> " + ignoredParametersUnsupported);
                             throw new IllegalStateException("Unsupported parameters detected in the request");
                         }
                         return response;
@@ -153,11 +153,11 @@ public class ZulipIntegrationTestBase {
             }
 
             // Clean up streams
-            List<Stream> streams = zulip.streams().getAll().withIncludeDefault(false).execute();
+            List<Stream> streams = zulip.channels().getAll().withIncludeDefault(false).execute();
             if (streams != null) {
                 for (Stream stream : streams) {
                     try {
-                        zulip.streams().delete(stream.getStreamId()).execute();
+                        zulip.channels().delete(stream.getStreamId()).execute();
                     } catch (ZulipClientException e) {
                         // Ignore
                     }
@@ -205,6 +205,20 @@ public class ZulipIntegrationTestBase {
             if (!alertWords.isEmpty()) {
                 zulip.users().removeAlertWords(alertWords.toArray(new String[0]));
             }
+
+            // Clean up invites
+            List<Invitation> invitations = zulip.invitations().getAllInvitations().execute();
+            invitations.forEach(invite -> {
+                try {
+                    if (invite.isMultiuse()) {
+                        zulip.invitations().revokeReusableInvitation(invite.getId()).execute();
+                    } else {
+                        zulip.invitations().revokeEmailInvitation(invite.getId()).execute();
+                    }
+                } catch (ZulipClientException e) {
+                    // ignore
+                }
+            });
         }
     }
 }

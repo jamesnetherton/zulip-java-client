@@ -39,7 +39,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(GET, "/users/me/subscriptions", params, "getSubscriptions.json");
 
-        List<StreamSubscription> subscriptions = zulip.streams().getSubscribedStreams()
+        List<StreamSubscription> subscriptions = zulip.channels().getSubscribedStreams()
                 .withIncludeSubscribers(true)
                 .execute();
 
@@ -48,6 +48,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         StreamSubscription subscriptionA = subscriptions.get(0);
         assertTrue(subscriptionA.isAudibleNotifications());
         assertEquals("#e79ab5", subscriptionA.getColor());
+        assertEquals(1, subscriptionA.getCreatorId());
         assertEquals("A Scandinavian country", subscriptionA.getDescription());
         assertEquals("<p>A Scandinavian country</p>", subscriptionA.getRenderedDescription());
         assertTrue(subscriptionA.isDesktopNotifications());
@@ -71,6 +72,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         StreamSubscription subscriptionB = subscriptions.get(1);
         assertTrue(subscriptionB.isAudibleNotifications());
         assertEquals("#e79ab5", subscriptionB.getColor());
+        assertEquals(2, subscriptionB.getCreatorId());
         assertEquals("<p>Located in the United Kingdom</p>", subscriptionB.getRenderedDescription());
         assertTrue(subscriptionB.isDesktopNotifications());
         assertFalse(subscriptionB.isInviteOnly());
@@ -110,7 +112,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
 
-        StreamSubscriptionResult result = zulip.streams().subscribe(
+        StreamSubscriptionResult result = zulip.channels().subscribe(
                 StreamSubscriptionRequest.of("foo", "bar"),
                 StreamSubscriptionRequest.of("secret", "stream"),
                 StreamSubscriptionRequest.of("old", "stream"),
@@ -169,7 +171,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
 
-        StreamSubscriptionResult result = zulip.streams().subscribe(
+        StreamSubscriptionResult result = zulip.channels().subscribe(
                 StreamSubscriptionRequest.of("foo", "bar"),
                 StreamSubscriptionRequest.of("secret", "stream"),
                 StreamSubscriptionRequest.of("old", "stream"),
@@ -218,7 +220,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(DELETE, "/users/me/subscriptions", params, "unsubscribe.json");
 
-        StreamUnsubscribeResult result = zulip.streams().unsubscribe("foo", "bar")
+        StreamUnsubscribeResult result = zulip.channels().unsubscribe("foo", "bar")
                 .withPrincipals(1, 2, 3)
                 .execute();
 
@@ -242,7 +244,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(DELETE, "/users/me/subscriptions", params, "unsubscribe.json");
 
-        StreamUnsubscribeResult result = zulip.streams().unsubscribe("foo", "bar")
+        StreamUnsubscribeResult result = zulip.channels().unsubscribe("foo", "bar")
                 .withPrincipals("test@test.com", "foo@bar.com")
                 .execute();
 
@@ -261,7 +263,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     public void subscriptionStatus() throws Exception {
         stubZulipResponse(GET, "/users/1/subscriptions/2", "subscriptionStatus.json");
 
-        assertTrue(zulip.streams().isSubscribed(1, 2).execute());
+        assertTrue(zulip.channels().isSubscribed(1, 2).execute());
     }
 
     @Test
@@ -272,7 +274,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(GET, "/get_stream_id", params, "streamId.json");
 
-        Long streamId = zulip.streams().getStreamId("foo").execute();
+        Long streamId = zulip.channels().getStreamId("foo").execute();
 
         assertEquals(15, streamId);
     }
@@ -281,14 +283,14 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     public void delete() throws Exception {
         stubZulipResponse(DELETE, "/streams/1", SUCCESS_JSON);
 
-        zulip.streams().delete(1).execute();
+        zulip.channels().delete(1).execute();
     }
 
     @Test
     public void streamTopics() throws Exception {
         stubZulipResponse(GET, "/users/me/1/topics", "streamTopics.json");
 
-        List<Topic> topics = zulip.streams().getTopics(1).execute();
+        List<Topic> topics = zulip.channels().getTopics(1).execute();
 
         for (int i = 1; i <= topics.size(); i++) {
             Topic topic = topics.get(i - 1);
@@ -313,7 +315,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(PATCH, "/streams/1", params);
 
-        zulip.streams().updateStream(1)
+        zulip.channels().updateStream(1)
                 .withCanRemoveSubscribersGroup(99)
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
@@ -339,7 +341,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(PATCH, "/streams/1", params);
 
-        zulip.streams().updateStream(1)
+        zulip.channels().updateStream(1)
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
@@ -362,7 +364,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(GET, "/streams", params, "streams.json");
 
-        List<Stream> streams = zulip.streams().getAll()
+        List<Stream> streams = zulip.channels().getAll()
                 .withIncludeAllActive(true)
                 .withIncludeDefault(true)
                 .withOwnerSubscribed(true)
@@ -375,6 +377,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             Stream stream = streams.get(i - 1);
             assertEquals("Test Stream Description " + i, stream.getDescription());
             assertEquals("<p>Test Stream Description " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(i, stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertTrue(stream.isInviteOnly());
             assertEquals("Test Stream Name " + i, stream.getName());
@@ -399,9 +402,10 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     public void getStreamById() throws Exception {
         stubZulipResponse(GET, "/streams/1", "getStreamById.json");
 
-        Stream stream = zulip.streams().getStream(1).execute();
+        Stream stream = zulip.channels().getStream(1).execute();
         assertEquals("Test Stream Description", stream.getDescription());
         assertEquals("<p>Test Stream Description</p>", stream.getRenderedDescription());
+        assertEquals(1, stream.getCreatorId());
         assertTrue(stream.getDateCreated().toEpochMilli() > 0);
         assertTrue(stream.isInviteOnly());
         assertEquals("Test Stream Name", stream.getName());
@@ -426,7 +430,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(PATCH, "/users/me/subscriptions/muted_topics", params);
 
-        zulip.streams().muteTopic("Test Topic")
+        zulip.channels().muteTopic("Test Topic")
                 .withStream("Test Stream")
                 .withStreamId(1)
                 .execute();
@@ -443,7 +447,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(PATCH, "/users/me/subscriptions/muted_topics", params);
 
-        zulip.streams().unmuteTopic("Test Topic")
+        zulip.channels().unmuteTopic("Test Topic")
                 .withStream("Test Stream")
                 .withStreamId(1)
                 .execute();
@@ -476,7 +480,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users/me/subscriptions/properties", params, "subscriptionSettings.json");
 
-        List<String> result = zulip.streams().updateSubscriptionSettings()
+        List<String> result = zulip.channels().updateSubscriptionSettings()
                 .withColor(1, "#000000")
                 .withAudibleNotifications(1, true)
                 .withDesktopNotifications(1, true)
@@ -504,7 +508,24 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/user_topics", params);
 
-        zulip.streams().updateUserTopicPreferences(1, "Test Topic", TopicVisibilityPolicy.MUTED).execute();
+        zulip.channels().updateUserTopicPreferences(1, "Test Topic", TopicVisibilityPolicy.MUTED).execute();
+    }
+
+    @Test
+    public void deleteTopicPartiallyCompleted() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
+                .get();
+
+        String scenarioName = "deleteTopicPartiallyCompleted";
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicPartiallyCompleted.json", scenarioName, STARTED,
+                "retry");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicIncomplete.json", scenarioName, "retry",
+                "incomplete");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicComplete.json", scenarioName, "incomplete",
+                "success");
+
+        zulip.channels().deleteTopic(1, "Test Topic").execute();
     }
 
     @Test
@@ -513,19 +534,20 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(DeleteTopicApiRequest.TOPIC_NAME, "Test Topic")
                 .get();
 
-        String scenarioName = "deleteTopicPartiallyCompleted";
-        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicPartiallyCompleted.json", scenarioName, STARTED,
+        String scenarioName = "deleteTopic";
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicIncomplete.json", scenarioName, STARTED,
                 "retry");
-        stubZulipResponse(POST, "/streams/1/delete_topic", params, SUCCESS_JSON, scenarioName, "retry", "success");
+        stubZulipResponse(POST, "/streams/1/delete_topic", params, "deleteTopicComplete.json", scenarioName, "retry",
+                "success");
 
-        zulip.streams().deleteTopic(1, "Test Topic").execute();
+        zulip.channels().deleteTopic(1, "Test Topic").execute();
     }
 
     @Test
     public void archiveStream() throws Exception {
         stubZulipResponse(DELETE, "/streams/1", Collections.emptyMap());
 
-        zulip.streams().archiveStream(1).execute();
+        zulip.channels().archiveStream(1).execute();
     }
 
     @Test
@@ -536,7 +558,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/default_streams", params);
 
-        zulip.streams().addDefaultStream(1).execute();
+        zulip.channels().addDefaultStream(1).execute();
     }
 
     @Test
@@ -547,14 +569,14 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(DELETE, "/default_streams", params);
 
-        zulip.streams().removeDefaultStream(1).execute();
+        zulip.channels().removeDefaultStream(1).execute();
     }
 
     @Test
     public void streamSubscribers() throws Exception {
         stubZulipResponse(GET, "/streams/1/members", Collections.emptyMap(), "streamSubscribers.json");
 
-        List<Long> streamSubscribers = zulip.streams().getStreamSubscribers(1).execute();
+        List<Long> streamSubscribers = zulip.channels().getStreamSubscribers(1).execute();
         assertEquals(2, streamSubscribers.size());
         assertEquals(5, streamSubscribers.get(0));
         assertEquals(6, streamSubscribers.get(1));
@@ -564,7 +586,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
     public void getStreamEmailAddress() throws Exception {
         stubZulipResponse(GET, "/streams/1/email_address", Collections.emptyMap(), "streamEmailAddress.json");
 
-        String email = zulip.streams().getStreamEmailAddress(1).execute();
+        String email = zulip.channels().getStreamEmailAddress(1).execute();
         assertEquals("test@test.com", email);
     }
 }

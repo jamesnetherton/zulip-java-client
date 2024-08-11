@@ -16,6 +16,9 @@ public class StreamSubscription {
     private String color;
 
     @JsonProperty
+    private long creatorId;
+
+    @JsonProperty
     private Instant dateCreated;
 
     @JsonProperty
@@ -78,6 +81,10 @@ public class StreamSubscription {
 
     public String getColor() {
         return color;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
     }
 
     public Instant getDateCreated() {

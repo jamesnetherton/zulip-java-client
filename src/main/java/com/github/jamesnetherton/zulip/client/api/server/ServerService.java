@@ -1,8 +1,11 @@
 package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteProfileFieldApiRequest;
@@ -11,9 +14,12 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiReq
 import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
@@ -245,5 +251,78 @@ public class ServerService implements ZulipService {
      */
     public UpdateRealmNewUserDefaultSettingsApiRequest updateRealmNewUserDefaultSettings() {
         return new UpdateRealmNewUserDefaultSettingsApiRequest(this.client);
+    }
+
+    /**
+     * Sends mobile push test notifications.
+     *
+     * @see    <a href="https://zulip.com/api/test-notify">https://zulip.com/api/test-notify</a>
+     *
+     * @return The {@link SendMobilePushTestNotification} builder object
+     */
+    public SendMobilePushTestNotification sendMobilePushTestNotification() {
+        return new SendMobilePushTestNotification(this.client);
+    }
+
+    /**
+     * Adds an APNs device token to register for iOS push notifications
+     *
+     * @see          <a href="https://zulip.com/api/add-apns-token">https://zulip.com/api/add-apns-token</a>
+     *
+     * @param  token The token provided by the device
+     * @param  appId The ID of the Zulip app that is making the request
+     * @return       The {@link AddApnsDeviceTokenApiRequest} builder object
+     */
+    public AddApnsDeviceTokenApiRequest addApnsDeviceToken(String token, String appId) {
+        return new AddApnsDeviceTokenApiRequest(this.client, token, appId);
+    }
+
+    /**
+     * Removes an APNs device token.
+     *
+     * @see          <a href="https://zulip.com/api/remove-apns-token">https://zulip.com/api/remove-apns-token</a>
+     *
+     * @param  token The token provided by the device
+     * @return       The {@link RemoveApnsDeviceTokenApiRequest} builder object
+     */
+    public RemoveApnsDeviceTokenApiRequest removeApnsDeviceToken(String token) {
+        return new RemoveApnsDeviceTokenApiRequest(this.client, token);
+    }
+
+    /**
+     * Adds an FCM registration token.
+     *
+     * @see          <a href="https://zulip.com/api/add-fcm-token">https://zulip.com/api/add-fcm-token</a>
+     *
+     * @param  token The token provided by the device
+     * @return       The {@link AddFcmRegistrationTokenApiRequest} builder object
+     */
+    public AddFcmRegistrationTokenApiRequest addFcmRegsitrationToken(String token) {
+        return new AddFcmRegistrationTokenApiRequest(this.client, token);
+    }
+
+    /**
+     * Removes an FCM registration token.
+     *
+     * @see          <a href="https://zulip.com/api/remove-fcm-token">https://zulip.com/api/remove-fcm-token</a>
+     *
+     * @param  token The token provided by the device
+     * @return       The {@link RemoveFcmRegistrationTokenApiRequest} builder object
+     */
+    public RemoveFcmRegistrationTokenApiRequest removeFcmRegistrationToken(String token) {
+        return new RemoveFcmRegistrationTokenApiRequest(this.client, token);
+    }
+
+    /**
+     * Creates a BigBlueButton video call.
+     *
+     * @see                <a href=
+     *                     "https://zulip.com/api/create-big-blue-button-video-call">https://zulip.com/api/create-big-blue-button-video-call</a>
+     *
+     * @param  meetingName Meeting name for the BigBlueButton video call
+     * @return             The {@link CreateBigBlueButtonVideoCallApiRequest} builder object
+     */
+    public CreateBigBlueButtonVideoCallApiRequest createBigBlueButtonVideoCall(String meetingName) {
+        return new CreateBigBlueButtonVideoCallApiRequest(this.client, meetingName);
     }
 }
