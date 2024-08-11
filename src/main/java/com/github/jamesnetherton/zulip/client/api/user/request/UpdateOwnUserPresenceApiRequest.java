@@ -17,7 +17,7 @@ import java.util.Map;
  * @see <a href="https://zulip.com/api/update-presence">https://zulip.com/api/update-presence</a>
  */
 public class UpdateOwnUserPresenceApiRequest extends ZulipApiRequest
-        implements ExecutableApiRequest<Map<Integer, UserPresenceDetail>> {
+        implements ExecutableApiRequest<Map<Long, UserPresenceDetail>> {
     public static final String LAST_UPDATE_ID = "last_update_id";
     public static final String NEW_USER_INPUT = "new_user_input";
     public static final String PING_ONLY = "ping_only";
@@ -88,7 +88,7 @@ public class UpdateOwnUserPresenceApiRequest extends ZulipApiRequest
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public Map<Integer, UserPresenceDetail> execute() throws ZulipClientException {
+    public Map<Long, UserPresenceDetail> execute() throws ZulipClientException {
         return client().post(USERS_WITH_ME_PRESENCE, getParams(), UpdateOwnUserPresenceApiResponse.class).getPresences();
     }
 }

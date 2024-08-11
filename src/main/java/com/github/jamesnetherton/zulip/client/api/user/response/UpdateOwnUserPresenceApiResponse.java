@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public class UpdateOwnUserPresenceApiResponse extends ZulipApiResponse {
     @JsonProperty
-    private Map<Integer, UserPresenceDetail> presences;
+    private Map<Long, UserPresenceDetail> presences;
 
-    public Map<Integer, UserPresenceDetail> getPresences() {
+    public Map<Long, UserPresenceDetail> getPresences() {
         return presences;
     }
 }

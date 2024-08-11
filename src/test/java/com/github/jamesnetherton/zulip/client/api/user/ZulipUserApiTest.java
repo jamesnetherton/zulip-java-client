@@ -526,11 +526,11 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             zulip.users().updateOwnUserPresence(UserPresenceStatus.OFFLINE).execute();
         });
 
-        Map<Integer, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(status)
+        Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(status)
                 .withNewUserInput(true)
                 .withPingOnly(true)
                 .execute();
-        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(1);
+        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(1L);
         assertNotNull(userPresenceDetail);
         assertTrue(userPresenceDetail.getActiveTimestamp().toEpochMilli() > 0);
         assertTrue(userPresenceDetail.getIdleTimestamp().toEpochMilli() > 0);

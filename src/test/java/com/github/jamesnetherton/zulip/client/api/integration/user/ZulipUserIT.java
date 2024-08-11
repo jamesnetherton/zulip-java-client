@@ -289,12 +289,31 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void getAllUserPresence() throws ZulipClientException {
         Map<String, Map<String, UserPresenceDetail>> presences = zulip.users().getAllUserPresence().execute();
+        assertNotNull(presences);
+
+        Map<String, UserPresenceDetail> testUserPresence = presences.get("test@test.com");
+        assertNotNull(testUserPresence);
+
+        UserPresenceDetail aggregated = testUserPresence.get("aggregated");
+        assertNotNull(aggregated);
+        assertTrue(aggregated.getTimestamp().toEpochMilli() > 0);
+        assertEquals(UserPresenceStatus.ACTIVE, aggregated.getStatus());
+
+        UserPresenceDetail website = testUserPresence.get("website");
+        assertNotNull(website);
+        assertTrue(website.getTimestamp().toEpochMilli() > 0);
+        assertEquals(UserPresenceStatus.ACTIVE, website.getStatus());
     }
 
     @Test
     public void updateOwnUserPresence() throws ZulipClientException {
-        Map<Integer, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(UserPresenceStatus.ACTIVE)
+        Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(UserPresenceStatus.ACTIVE)
+                .withNewUserInput(true)
                 .execute();
+
+        UserPresenceDetail userPresenceDetail = userPresenceDetails.get(ownUser.getUserId());
+        assertTrue(userPresenceDetail.getActiveTimestamp().toEpochMilli() > 0);
+        assertTrue(userPresenceDetail.getIdleTimestamp().toEpochMilli() > 0);
     }
 
     @Test
