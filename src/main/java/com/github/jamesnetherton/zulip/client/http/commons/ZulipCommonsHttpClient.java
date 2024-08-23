@@ -65,8 +65,8 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     private static final Logger LOG = Logger.getLogger(ZulipCommonsHttpClient.class.getName());
 
     private final ZulipConfiguration configuration;
+    private final ThreadLocal<HttpClientContext> context = new ThreadLocal<>();
     private CloseableHttpClient client;
-    private HttpClientContext context;
 
     /**
      * Constructs a {@link ZulipCommonsHttpClient}.
@@ -119,9 +119,13 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
             }
         }
 
-        context = HttpClientContext.create();
-        context.setCredentialsProvider(provider);
-        context.setAuthCache(authCache);
+        HttpClientContext httpClientContext = context.get();
+        if (httpClientContext == null) {
+            httpClientContext = HttpClientContext.create();
+            httpClientContext.setCredentialsProvider(provider);
+            httpClientContext.setAuthCache(authCache);
+            context.set(httpClientContext);
+        }
 
         if (configuration.isInsecure()) {
             try {
@@ -192,7 +196,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     private <T extends ZulipApiResponse> T doRequest(ClassicHttpRequest request, Class<T> responseAs)
             throws ZulipClientException {
         try {
-            ResponseHolder response = client.execute(request, context, new HttpClientResponseHandler<ResponseHolder>() {
+            ResponseHolder response = client.execute(request, context.get(), new HttpClientResponseHandler<ResponseHolder>() {
                 @Override
                 public ResponseHolder handleResponse(ClassicHttpResponse response) throws IOException {
                     Header header = response.getFirstHeader("x-ratelimit-reset");
