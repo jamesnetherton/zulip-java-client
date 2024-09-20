@@ -17,7 +17,7 @@
         <project.build.reportEncoding>UTF-8</project.build.reportEncoding>
 
         <!-- Project dependency versions -->
-        <httpcomponents.version>5.3.1</httpcomponents.version>
+        <httpcomponents.version>5.4</httpcomponents.version>
         <jackson.version>2.17.2</jackson.version>
         <junit.jupiter.version>5.11.0</junit.jupiter.version>
         <slf4j.version>2.0.16</slf4j.version>
