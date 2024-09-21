@@ -148,7 +148,7 @@ public class EventPoller {
                     executor.shutdown();
                 }
 
-                if (userManagedEventListenerExecutorService) {
+                if (!userManagedEventListenerExecutorService) {
                     eventListenerExecutorService.shutdown();
                     eventListenerExecutorService = null;
                 }
