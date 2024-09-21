@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.event;
 import com.github.jamesnetherton.zulip.client.api.event.request.DeleteEventQueueApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.request.GetMessageEventsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.request.RegisterEventQueueApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -97,7 +98,14 @@ public class EventPoller {
 
                             List<MessageEvent> messageEvents = getEvents.execute();
                             for (MessageEvent event : messageEvents) {
-                                eventListenerExecutorService.submit(() -> listener.onEvent(event.getMessage()));
+                                eventListenerExecutorService.submit(() -> {
+                                    Message message = event.getMessage();
+                                    if (message == null
+                                            || (message.getContent() != null && message.getContent().equals("heartbeat"))) {
+                                        return;
+                                    }
+                                    listener.onEvent(message);
+                                });
                             }
 
                             lastEventId = messageEvents.stream().max(Comparator.comparing(Event::getId))
@@ -135,14 +143,20 @@ public class EventPoller {
             try {
                 LOG.info("EventPoller stopping");
                 status = Status.STOPPING;
-                executor.shutdown();
+
+                if (executor != null) {
+                    executor.shutdown();
+                }
+
                 if (userManagedEventListenerExecutorService) {
                     eventListenerExecutorService.shutdown();
                     eventListenerExecutorService = null;
                 }
 
-                DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
-                deleteQueue.execute();
+                if (queue != null) {
+                    DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
+                    deleteQueue.execute();
+                }
             } catch (ZulipClientException e) {
                 LOG.warning("Error deleting event queue - " + e.getMessage());
             } finally {

@@ -33,7 +33,7 @@ public class RegisterEventQueueApiRequest extends ZulipApiRequest implements Exe
         putParamAsJsonString(EVENT_TYPES, MONITORED_EVENTS);
 
         if (narrows.length > 0) {
-            String[][] stringNarrows = new String[1][narrows.length];
+            String[][] stringNarrows = new String[narrows.length][2];
             for (int i = 0; i < narrows.length; i++) {
                 stringNarrows[i] = new String[] { narrows[i].getOperator(), narrows[i].getOperand() };
             }
