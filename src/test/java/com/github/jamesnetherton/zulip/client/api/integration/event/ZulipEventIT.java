@@ -102,7 +102,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 messages.add(event.getContent());
                 latch.countDown();
             }
-        }, Narrow.of("stream", streamA));
+        }, Narrow.of("stream", streamA), Narrow.of("is", "stream"));
 
         try {
             eventPoller.start();
@@ -123,9 +123,6 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
                 count += 2;
             }
-        } catch (ZulipClientException e) {
-            e.printStackTrace();
-            throw e;
         } finally {
             eventPoller.stop();
         }
