@@ -1,5 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.integration.event;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.event.EventPoller;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -24,52 +27,17 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
     @Test
     public void messageEvents() throws Exception {
-        CountDownLatch latch = new CountDownLatch(3);
-        List<String> messages = new ArrayList<>();
+        assertMessageEvents(null);
+    }
 
-        String streamName = UUID.randomUUID().toString().split("-")[0];
-        StreamSubscriptionRequest subscriptionRequest = StreamSubscriptionRequest.of(streamName, streamName);
-        StreamService streamService = zulip.streams();
-        streamService.subscribe(subscriptionRequest).execute();
-
-        for (int i = 0; i < 10; i++) {
-            List<Stream> streams = streamService.getAll().execute();
-            List<Stream> matches = streams.stream()
-                    .filter(stream -> stream.getName().equals(streamName))
-                    .collect(Collectors.toList());
-            if (matches.size() == 1) {
-                break;
-            }
-            Thread.sleep(500);
-        }
-
-        EventPoller eventPoller = zulip.events().captureMessageEvents(new MessageEventListener() {
-            @Override
-            public void onEvent(Message event) {
-                messages.add(event.getContent());
-                latch.countDown();
-            }
-        });
-
+    @Test
+    public void messageEventsWithCustomExecutor() throws Exception {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
-            eventPoller.start();
-
-            MessageService messageService = zulip.messages();
-            for (int i = 0; i < 3; i++) {
-                messageService.sendStreamMessage("Test Content " + i, streamName, "testtopic").execute();
-            }
-
-            assertTrue(latch.await(30, TimeUnit.SECONDS));
-
-            for (int i = 0; i < 3; i++) {
-                int finalI = i;
-                assertTrue(messages.stream().anyMatch(message -> message.equals("Test Content " + finalI)));
-            }
-        } catch (ZulipClientException e) {
-            e.printStackTrace();
-            throw e;
+            assertMessageEvents(executorService);
         } finally {
-            eventPoller.stop();
+            assertFalse(executorService.isShutdown());
+            executorService.shutdown();
         }
     }
 
@@ -123,6 +91,63 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
                 count += 2;
             }
+        } finally {
+            eventPoller.stop();
+        }
+    }
+
+    private void assertMessageEvents(ExecutorService executorService) throws Exception {
+        CountDownLatch latch = new CountDownLatch(3);
+        List<String> messages = new ArrayList<>();
+
+        String streamName = UUID.randomUUID().toString().split("-")[0];
+        StreamSubscriptionRequest subscriptionRequest = StreamSubscriptionRequest.of(streamName, streamName);
+        StreamService streamService = zulip.streams();
+        streamService.subscribe(subscriptionRequest).execute();
+
+        for (int i = 0; i < 10; i++) {
+            List<Stream> streams = streamService.getAll().execute();
+            List<Stream> matches = streams.stream()
+                    .filter(stream -> stream.getName().equals(streamName))
+                    .collect(Collectors.toList());
+            if (matches.size() == 1) {
+                break;
+            }
+            Thread.sleep(500);
+        }
+
+        MessageEventListener listener = new MessageEventListener() {
+            @Override
+            public void onEvent(Message event) {
+                messages.add(event.getContent());
+                latch.countDown();
+            }
+        };
+
+        EventPoller eventPoller;
+        if (executorService != null) {
+            eventPoller = zulip.events().captureMessageEvents(listener, executorService);
+        } else {
+            eventPoller = zulip.events().captureMessageEvents(listener);
+        }
+
+        try {
+            eventPoller.start();
+
+            MessageService messageService = zulip.messages();
+            for (int i = 0; i < 3; i++) {
+                messageService.sendStreamMessage("Test Content " + i, streamName, "testtopic").execute();
+            }
+
+            assertTrue(latch.await(30, TimeUnit.SECONDS));
+
+            for (int i = 0; i < 3; i++) {
+                int finalI = i;
+                assertTrue(messages.stream().anyMatch(message -> message.equals("Test Content " + finalI)));
+            }
+        } catch (ZulipClientException e) {
+            e.printStackTrace();
+            throw e;
         } finally {
             eventPoller.stop();
         }
