@@ -1,5 +1,16 @@
 = Changelog
 
+== 0.7.1
+
+==== Enhancements
+
+* New `EventService.captureMessageEvents` implementation that can accept a custom `ExecutorService`
+
+==== Bug fixes
+
+* https://github.com/jamesnetherton/zulip-java-client/issues/363[#363] - `HttpContext` is potentially not thread safe
+* https://github.com/jamesnetherton/zulip-java-client/issues/372[#372] - Passing multiple narrows to `captureMessageEvents` causes `ArrayIndexOutOfBoundsException`
+
 == 0.7.0
 
 ==== Enhancements
