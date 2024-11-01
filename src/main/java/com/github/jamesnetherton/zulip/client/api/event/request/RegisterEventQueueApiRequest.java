@@ -35,7 +35,7 @@ public class RegisterEventQueueApiRequest extends ZulipApiRequest implements Exe
         if (narrows.length > 0) {
             String[][] stringNarrows = new String[narrows.length][2];
             for (int i = 0; i < narrows.length; i++) {
-                stringNarrows[i] = new String[] { narrows[i].getOperator(), narrows[i].getOperand() };
+                stringNarrows[i] = new String[] { narrows[i].getOperator(), narrows[i].getOperand().toString() };
             }
 
             putParamAsJsonString(NARROW, stringNarrows);
