@@ -58,6 +58,9 @@ public class Message {
     private String senderRealm;
 
     private String stream;
+    
+    @JsonProperty("stream_id")
+    private Long streamId;
 
     @JsonProperty
     private String subject;
@@ -170,4 +173,12 @@ public class Message {
     public MessageType getType() {
         return type;
     }
+    
+    public Long getStreamId() {
+        return streamId;
+	}
+    
+    public void setStreamId(Long streamId) {
+		this.streamId = streamId;
+	}
 }
