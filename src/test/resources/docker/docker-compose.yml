@@ -41,7 +41,7 @@ services:
     environment:
       REDIS_PASSWORD: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
   zulip:
-    image: 'zulip/docker-zulip:9.2-0'
+    image: 'zulip/docker-zulip:9.3-0'
     ports:
       - '80:80'
       - '443:443'
