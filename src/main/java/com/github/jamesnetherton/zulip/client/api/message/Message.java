@@ -59,7 +59,7 @@ public class Message {
 
     private String stream;
     
-    @JsonProperty("stream_id")
+    @JsonProperty
     private Long streamId;
 
     @JsonProperty
