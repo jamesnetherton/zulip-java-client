@@ -360,6 +360,13 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         assertEquals(2, messages.size());
 
+        List<Long> messageIds = messages.stream().map(Message::getSenderId).collect(Collectors.toList());
+        List<Message> matches = zulip.messages()
+                .getMessages(100, 0, Anchor.NEWEST)
+                .withNarrows(Narrow.of("dm", messageIds))
+                .execute();
+        assertEquals(2, matches.size());
+
         Message message = messages.get(0);
         assertEquals("<p>Test Direct Message 1</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
