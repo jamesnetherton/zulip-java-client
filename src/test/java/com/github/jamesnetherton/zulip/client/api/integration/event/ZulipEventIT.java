@@ -100,17 +100,17 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
         CountDownLatch latch = new CountDownLatch(3);
         List<String> messages = new ArrayList<>();
 
-        String streamName = UUID.randomUUID().toString().split("-")[0];
+        String streamName = "stream" + UUID.randomUUID().toString().split("-")[0];
         StreamSubscriptionRequest subscriptionRequest = StreamSubscriptionRequest.of(streamName, streamName);
         StreamService streamService = zulip.streams();
         streamService.subscribe(subscriptionRequest).execute();
 
-        for (int i = 0; i < 10; i++) {
-            List<Stream> streams = streamService.getAll().execute();
-            List<Stream> matches = streams.stream()
-                    .filter(stream -> stream.getName().equals(streamName))
-                    .collect(Collectors.toList());
-            if (matches.size() == 1) {
+        for (int i = 0; i < 50; i++) {
+            boolean match = streamService.getAll()
+                    .execute()
+                    .stream()
+                    .anyMatch(stream -> stream.getName().equals(streamName));
+            if (match) {
                 break;
             }
             Thread.sleep(500);
