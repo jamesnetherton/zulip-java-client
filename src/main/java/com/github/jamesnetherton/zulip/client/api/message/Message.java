@@ -181,4 +181,10 @@ public class Message {
     public void setStreamId(Long streamId) {
 		this.streamId = streamId;
 	}
-}
+    public Long getStreamId() {
+        return streamId;
+    }
+
+    public void setStreamId(Long streamId) {
+        this.streamId = streamId;
+    }
