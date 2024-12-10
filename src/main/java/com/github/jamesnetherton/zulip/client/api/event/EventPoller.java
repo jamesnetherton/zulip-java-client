@@ -9,6 +9,7 @@ import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -76,6 +77,7 @@ public class EventPoller {
             LOG.info("EventPoller starting");
             status = Status.STARTING;
 
+            CountDownLatch latch = new CountDownLatch(1);
             RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(this.client, narrows);
             GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(this.client);
 
@@ -95,6 +97,7 @@ public class EventPoller {
                         try {
                             getEvents.withQueueId(queue.getQueueId());
                             getEvents.withLastEventId(lastEventId);
+                            latch.countDown();
 
                             List<MessageEvent> messageEvents = getEvents.execute();
                             for (MessageEvent event : messageEvents) {
@@ -129,6 +132,12 @@ public class EventPoller {
                     }
                 }
             });
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
             LOG.info("EventPoller started");
             status = Status.STARTED;
