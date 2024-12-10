@@ -583,6 +583,48 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void matchesNarrowWithId() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(MatchesNarrowApiRequest.NARROW, "[{\"operator\":\"id\",\"operand\":1,\"negated\":false}]")
+                .get();
+
+        stubZulipResponse(GET, "/messages/matches_narrow", params, "matchesNarrow.json");
+
+        Map<Long, MessageMatch> matches = zulip.messages().matchMessages()
+                .withNarrows(Narrow.of("id", 1))
+                .execute();
+
+        assertEquals(2, matches.size());
+
+        for (long i = 1; i <= matches.size(); i++) {
+            MessageMatch match = matches.get(i);
+            assertEquals("test content " + i, match.getContent());
+            assertEquals("test subject " + i, match.getSubject());
+        }
+    }
+
+    @Test
+    public void matchesNarrowWithIdList() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(MatchesNarrowApiRequest.NARROW, "[{\"operator\":\"id\",\"operand\":[1,2],\"negated\":false}]")
+                .get();
+
+        stubZulipResponse(GET, "/messages/matches_narrow", params, "matchesNarrow.json");
+
+        Map<Long, MessageMatch> matches = zulip.messages().matchMessages()
+                .withNarrows(Narrow.of("id", List.of(1, 2)))
+                .execute();
+
+        assertEquals(2, matches.size());
+
+        for (long i = 1; i <= matches.size(); i++) {
+            MessageMatch match = matches.get(i);
+            assertEquals("test content " + i, match.getContent());
+            assertEquals("test subject " + i, match.getSubject());
+        }
+    }
+
+    @Test
     public void renderMessage() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(RenderMessageApiRequest.CONTENT, "test")
