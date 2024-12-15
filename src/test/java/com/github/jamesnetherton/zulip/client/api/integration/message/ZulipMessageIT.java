@@ -284,6 +284,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         assertEquals("Test Topic 2", message.getSubject());
         assertNotNull(message.getTimestamp());
         assertFalse(message.isMeMessage());
+        assertEquals(streamId, message.getStreamId());
     }
 
     @Test
