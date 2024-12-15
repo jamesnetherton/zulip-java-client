@@ -1,5 +1,15 @@
 = Changelog
 
+== 0.7.2
+
+==== Enhancements
+
+* https://github.com/jamesnetherton/zulip-java-client/issues/402[#402] - Handle stream_id field in Message JSON response
+
+==== Bug fixes
+
+* https://github.com/jamesnetherton/zulip-java-client/issues/389[#389] - Narrow operand does not support `List<Integer>` as operand
+
 == 0.7.1
 
 ==== Enhancements
