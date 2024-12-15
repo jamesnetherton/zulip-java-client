@@ -109,7 +109,8 @@
         "Topic 2",
         "Topic 3"
       ],
-      "type": "stream"
+      "type": "stream",
+      "stream_id": 1
     },
     {
       "avatar_url": "https://secure.gravatar.com/avatar/6d8cad0fd00256e7b40691d27ddfd466?d=identicon&version=1",
