@@ -18,6 +18,8 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 public class RegisterEventQueueApiRequest extends ZulipApiRequest implements ExecutableApiRequest<EventQueue> {
 
     public static final String EVENT_TYPES = "event_types";
+    public static final String FETCH_EVENT_TYPES = "fetch_event_types";
+    public static final String[] FETCHED_EVENTS = new String[] { "realm" };
     public static final String NARROW = "narrow";
     public static final String[] MONITORED_EVENTS = new String[] { "message" };
 
@@ -31,6 +33,7 @@ public class RegisterEventQueueApiRequest extends ZulipApiRequest implements Exe
     public RegisterEventQueueApiRequest(ZulipHttpClient client, Narrow... narrows) {
         super(client);
         putParamAsJsonString(EVENT_TYPES, MONITORED_EVENTS);
+        putParamAsJsonString(FETCH_EVENT_TYPES, FETCHED_EVENTS);
 
         if (narrows.length > 0) {
             String[][] stringNarrows = new String[narrows.length][2];

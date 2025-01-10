@@ -20,4 +20,8 @@ public class EventQueue {
     public long getLastEventId() {
         return delegate.getLastEventId();
     }
+
+    public int getTimeout() {
+        return delegate.getEventQueueLongPollTimeoutSeconds();
+    }
 }

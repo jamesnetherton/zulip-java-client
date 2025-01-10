@@ -2,7 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.event.request;
 
 import static com.github.jamesnetherton.zulip.client.api.event.request.EventRequestConstants.EVENTS;
 
-import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
+import com.github.jamesnetherton.zulip.client.api.core.TimeoutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.MessageEvent;
 import com.github.jamesnetherton.zulip.client.api.event.response.GetMessageEventsApiResponse;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @see <a href="https://zulip.com/api/get-events">https://zulip.com/api/get-events</a>
  */
-public class GetMessageEventsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<MessageEvent>> {
+public class GetMessageEventsApiRequest extends ZulipApiRequest implements TimeoutableApiRequest<List<MessageEvent>> {
 
     public static final String QUEUE_ID = "queue_id";
     public static final String LAST_EVENT_ID = "last_event_id";
@@ -58,8 +58,9 @@ public class GetMessageEventsApiRequest extends ZulipApiRequest implements Execu
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public List<MessageEvent> execute() throws ZulipClientException {
-        GetMessageEventsApiResponse response = client().get(EVENTS, getParams(), GetMessageEventsApiResponse.class);
+    public List<MessageEvent> execute(int responseTimeoutSeconds) throws ZulipClientException {
+        GetMessageEventsApiResponse response = client().get(EVENTS, getParams(), responseTimeoutSeconds,
+                GetMessageEventsApiResponse.class);
         return response.getMessageEvents();
     }
 }

@@ -99,7 +99,7 @@ public class EventPoller {
                             getEvents.withLastEventId(lastEventId);
                             latch.countDown();
 
-                            List<MessageEvent> messageEvents = getEvents.execute();
+                            List<MessageEvent> messageEvents = getEvents.execute(queue.getTimeout());
                             for (MessageEvent event : messageEvents) {
                                 eventListenerExecutorService.submit(() -> {
                                     Message message = event.getMessage();
@@ -117,14 +117,20 @@ public class EventPoller {
 
                             Thread.sleep(5000);
                         } catch (ZulipClientException e) {
-                            LOG.warning("Error processing events - " + e.getMessage());
-                            if (e.getCode().equals("BAD_EVENT_QUEUE_ID")) {
+                            LOG.fine("Error processing events - " + e.getMessage());
+                            if (e.getCode() != null && e.getCode().equals("BAD_EVENT_QUEUE_ID")) {
                                 // Queue may have been garbage collected so recreate it
                                 try {
                                     queue = createQueue.execute();
                                 } catch (ZulipClientException zulipClientException) {
                                     LOG.warning("Error recreating message queue - " + e.getMessage());
                                 }
+                            }
+
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
                             }
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();

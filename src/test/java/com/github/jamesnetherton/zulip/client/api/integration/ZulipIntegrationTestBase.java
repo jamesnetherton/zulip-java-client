@@ -69,6 +69,12 @@ public class ZulipIntegrationTestBase {
                     }
 
                     @Override
+                    public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters,
+                            int responseTimeoutSeconds, Class<T> responseAs) throws ZulipClientException {
+                        return handleResponse(delegate.get(path, parameters, 10, responseAs));
+                    }
+
+                    @Override
                     public <T extends ZulipApiResponse> T delete(String path, Map<String, Object> parameters,
                             Class<T> responseAs) throws ZulipClientException {
                         return handleResponse(delegate.delete(path, parameters, responseAs));
