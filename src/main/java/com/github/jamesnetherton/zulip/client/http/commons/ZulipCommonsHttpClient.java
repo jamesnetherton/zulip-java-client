@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.ClientProtocolException;
@@ -30,6 +31,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPatch;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
@@ -151,6 +153,16 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, Class<T> responseAs)
             throws ZulipClientException {
         return doRequest(new HttpGet(getRequestUri(path, parameters)), responseAs);
+    }
+
+    @Override
+    public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, int responseTimeoutSeconds,
+            Class<T> responseAs) throws ZulipClientException {
+        HttpGet request = new HttpGet(getRequestUri(path, parameters));
+        request.setConfig(RequestConfig.copy(RequestConfig.DEFAULT)
+                .setResponseTimeout(responseTimeoutSeconds, TimeUnit.SECONDS)
+                .build());
+        return doRequest(request, responseAs);
     }
 
     @Override

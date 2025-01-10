@@ -16,11 +16,18 @@ public class RegisterEventQueueApiResponse extends ZulipApiResponse {
     @JsonProperty
     private long lastEventId;
 
+    @JsonProperty("event_queue_longpoll_timeout_seconds")
+    private int eventQueueLongPollTimeoutSeconds;
+
     public String getQueueId() {
         return queueId;
     }
 
     public long getLastEventId() {
         return lastEventId;
+    }
+
+    public int getEventQueueLongPollTimeoutSeconds() {
+        return eventQueueLongPollTimeoutSeconds;
     }
 }

@@ -86,6 +86,13 @@ public class CustomZulipHttpClientTest extends ZulipApiTestBase {
         }
 
         @Override
+        public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, int responseTimeoutSeconds,
+                Class<T> responseAs) throws ZulipClientException {
+            // Noop
+            return null;
+        }
+
+        @Override
         public <T extends ZulipApiResponse> T delete(String path, Map<String, Object> parameters, Class<T> responseAs)
                 throws ZulipClientException {
             // Noop
