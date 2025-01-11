@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.7.3
+
+==== Bug fixes
+
+* https://github.com/jamesnetherton/zulip-java-client/issues/404[#404] - Exceptions thrown from within the `EventPoller` thread can result in an NPE
+
 == 0.7.2
 
 ==== Enhancements
