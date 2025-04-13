@@ -16,15 +16,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 public class ZulipDraftIT extends ZulipIntegrationTestBase {
 
     @Test
     public void draftCrudOperations() throws Exception {
+        String streamName = UUID.randomUUID().toString();
+
         // Create stream
         StreamSubscriptionResult result = zulip.streams().subscribe(
-                StreamSubscriptionRequest.of("Test Stream For Draft", "Test Stream For Draft"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
@@ -33,14 +36,14 @@ public class ZulipDraftIT extends ZulipIntegrationTestBase {
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();
-        assertEquals(1, created.get("test@test.com").size());
+        assertEquals(1, created.get(ownUser.getUserId().toString()).size());
 
         List<Stream> streams = zulip.streams().getAll()
                 .withIncludeDefault(true)
                 .execute();
 
         Stream stream = streams.stream()
-                .filter(s -> s.getName().equals("Test Stream For Draft"))
+                .filter(s -> s.getName().equals(streamName))
                 .findFirst()
                 .get();
 

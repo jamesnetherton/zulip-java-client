@@ -32,7 +32,9 @@ public class EventService implements ZulipService {
      * @return          {@link EventPoller} to initiate event polling
      */
     public EventPoller captureMessageEvents(MessageEventListener listener, Narrow... narrows) {
-        return new EventPoller(this.client, listener, narrows);
+        EventPollerConfiguration configuration = new EventPollerConfiguration(this.client, listener);
+        configuration.setNarrows(narrows);
+        return new EventPoller(configuration);
     }
 
     /**
@@ -41,11 +43,13 @@ public class EventService implements ZulipService {
      * @param  listener        The {@link MessageEventListener} to be invoked on each message event
      * @param  executorService Custom {@link ExecutorService} to use for processing message events
      * @param  narrows         optional {@link Narrow} expressions to filter which message events are captured. E.g. messages
-     *                         from a
-     *                         specific stream
+     *                         from a specific stream
      * @return                 {@link EventPoller} to initiate event polling
      */
     public EventPoller captureMessageEvents(MessageEventListener listener, ExecutorService executorService, Narrow... narrows) {
-        return new EventPoller(this.client, listener, narrows, executorService);
+        EventPollerConfiguration configuration = new EventPollerConfiguration(this.client, listener);
+        configuration.setNarrows(narrows);
+        configuration.setEventListenerExecutorService(executorService);
+        return new EventPoller(configuration);
     }
 }

@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 public class RemoveUsersFromGroupApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
     public static final String DELETE = "delete";
+    public static final String DELETE_SUBGROUPS = "delete_subgroups";
 
     private final long groupId;
 
@@ -30,6 +31,17 @@ public class RemoveUsersFromGroupApiRequest extends ZulipApiRequest implements V
         super(client);
         this.groupId = groupId;
         putParamAsJsonString(DELETE, userIds);
+    }
+
+    /**
+     * Sets the list of user group IDs to be removed from the user group.
+     *
+     * @param  userGroupIds The user group IDs to be removed from the user group
+     * @return              This {@link RemoveUsersFromGroupApiRequest} instance
+     */
+    public RemoveUsersFromGroupApiRequest withDeleteSubGroups(long... userGroupIds) {
+        putParamAsJsonString(DELETE_SUBGROUPS, userGroupIds);
+        return this;
     }
 
     /**

@@ -16,12 +16,19 @@ public class FileUploadApiResponse extends ZulipApiResponse {
     @JsonProperty
     private String url;
 
+    @JsonProperty
+    private String fileName;
+
+    @Deprecated(since = "0.7", forRemoval = true)
     public String getUri() {
         return uri;
     }
 
-    @Deprecated(since = "0.7", forRemoval = true)
     public String getUrl() {
         return url;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }

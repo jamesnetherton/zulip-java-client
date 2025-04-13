@@ -5,9 +5,9 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UserReques
 import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
-import java.util.Map;
 
 /**
  * Zulip API request builder for updating a user group.
@@ -18,7 +18,12 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
+    public static final String CAN_ADD_MEMBERS_GROUP = "can_add_members_group";
+    public static final String CAN_JOIN_GROUP = "can_join_group";
+    public static final String CAN_LEAVE_GROUP = "can_leave_group";
+    public static final String CAN_MANAGE_GROUP = "can_manage_group";
     public static final String CAN_MENTION_GROUP = "can_mention_group";
+    public static final String CAN_REMOVE_MEMBERS_GROUP = "can_remove_members_group";
 
     private final long groupId;
 
@@ -73,13 +78,80 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     /**
      * Sets the optional ID of the user group whose members are allowed to mention the new user group.
      *
-     * @param  oldGroupId The current ID of the user group whose members are allowed to mention the new user group
-     * @param  newGroupId The new ID of the user group whose members are allowed to mention the new user group
-     * @return            This {@link UpdateUserGroupApiRequest} instance
+     * @param      userGroupId The new ID of the user group whose members are allowed to mention the new user group
+     * @return                 This {@link UpdateUserGroupApiRequest} instance
+     * @deprecated             Use {@link UpdateUserGroupApiRequest#withCanMentionGroup(UserGroupSetting)}
      */
-    public UpdateUserGroupApiRequest withCanMentionGroup(long oldGroupId, long newGroupId) {
-        Map<String, Long> canMentionGroup = Map.of("old", oldGroupId, "new", newGroupId);
-        putParamAsJsonString(CAN_MENTION_GROUP, canMentionGroup);
+    @Deprecated(forRemoval = true)
+    public UpdateUserGroupApiRequest withCanMentionGroup(long userGroupId) {
+        withCanMentionGroup(UserGroupSetting.of((int) userGroupId));
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to mention this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to mention this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanMentionGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_MENTION_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to add members to this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to add members to this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanAddMembersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_ADD_MEMBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to join this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to join this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+
+    public UpdateUserGroupApiRequest withCanJoinMembersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_JOIN_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to leave this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to leave this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanLeaveGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_LEAVE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to manage this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to manage this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanManageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_MANAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to remove members from this group.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to remove members from this group
+     * @return                  This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withCanRemoveMembersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_REMOVE_MEMBERS_GROUP, userGroupSetting);
         return this;
     }
 

@@ -20,6 +20,7 @@ import java.util.List;
 public class UpdateUserApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
     public static final String FULL_NAME = "full_name";
+    public static final String NEW_EMAIL = "new_email";
     public static final String PROFILE_DATA = "profile_data";
     public static final String ROLE = "role";
 
@@ -72,22 +73,35 @@ public class UpdateUserApiRequest extends ZulipApiRequest implements VoidExecuta
     }
 
     /**
+     * Sets the updated email address for the user.
+     *
+     * @param  newEmail The updated email address
+     * @return          This {@link UpdateUserApiRequest} instance
+     */
+    public UpdateUserApiRequest withNewEmail(String newEmail) {
+        putParam(NEW_EMAIL, newEmail);
+        return this;
+    }
+
+    void addProfileDataToParams() {
+        if (!profileData.isEmpty()) {
+            putParamAsJsonString(PROFILE_DATA, profileData);
+        }
+    }
+
+    /**
      * Executes the Zulip API request for updating a user.
      *
      * @throws ZulipClientException if the request was not successful
      */
     @Override
     public void execute() throws ZulipClientException {
-        if (!profileData.isEmpty()) {
-            putParamAsJsonString(PROFILE_DATA, profileData);
-        }
-
+        addProfileDataToParams();
         String path = String.format(USERS_WITH_ID, userId);
         client().patch(path, getParams(), ZulipApiResponse.class);
     }
 
     private static final class ProfileData {
-
         @JsonProperty
         private int id;
 

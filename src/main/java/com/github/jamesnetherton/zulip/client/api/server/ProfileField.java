@@ -38,6 +38,9 @@ public class ProfileField {
     @JsonProperty
     private boolean required;
 
+    @JsonProperty
+    private boolean editableByUser;
+
     @JsonCreator
     public ProfileField(JsonNode node) {
         this.hint = node.get("hint").asText();
@@ -50,6 +53,9 @@ public class ProfileField {
         }
         if (node.has("display_in_profile_summary")) {
             this.displayInProfileSummary = node.get("display_in_profile_summary").asBoolean();
+        }
+        if (node.has("editable_by_user")) {
+            this.editableByUser = node.get("editable_by_user").asBoolean();
         }
 
         JsonNode fieldDataNode = node.get("field_data");
@@ -124,5 +130,9 @@ public class ProfileField {
 
     public boolean isRequired() {
         return required;
+    }
+
+    public boolean isEditableByUser() {
+        return editableByUser;
     }
 }

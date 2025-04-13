@@ -17,12 +17,14 @@ import java.util.List;
  */
 public class GetStreamsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<Stream>> {
 
-    public static final String INCLUDE_PUBLIC = "include_public";
-    public static final String INCLUDE_WEB_PUBLIC = "include_web_public";
-    public static final String INCLUDE_SUBSCRIBED = "include_subscribed";
-    public static final String INCLUDE_ALL_ACTIVE = "include_all_active";
+    public static final String EXCLUDE_ARCHIVED = "exclude_archived";
+    public static final String INCLUDE_ALL = "include_all";
+    public static final String INCLUDE_CAN_ACCESS_CONTENT = "include_can_access_content";
     public static final String INCLUDE_DEFAULT = "include_default";
     public static final String INCLUDE_OWNER_SUBSCRIBED = "include_owner_subscribed";
+    public static final String INCLUDE_PUBLIC = "include_public";
+    public static final String INCLUDE_SUBSCRIBED = "include_subscribed";
+    public static final String INCLUDE_WEB_PUBLIC = "include_web_public";
 
     /**
      * Constructs a {@link GetStreamsApiRequest}.
@@ -31,6 +33,29 @@ public class GetStreamsApiRequest extends ZulipApiRequest implements ExecutableA
      */
     public GetStreamsApiRequest(ZulipHttpClient client) {
         super(client);
+    }
+
+    /**
+     * Sets whether to exclude archived streams from the results.
+     *
+     * @param  excludeArchived {@code true} to include archived streams. {@code false} to exclude archived streams.
+     * @return                 This {@link GetStreamsApiRequest} instance
+     */
+    public GetStreamsApiRequest withExcludeArchived(boolean excludeArchived) {
+        putParam(EXCLUDE_ARCHIVED, excludeArchived);
+        return this;
+    }
+
+    /**
+     * Sets whether to include all the channels that the user has content access to.
+     *
+     * @param  includeCanAccessContent {code true} to include all the channels that the user has content access to {@code false}
+     *                                 to exclude channels.
+     * @return                         This {@link GetStreamsApiRequest} instance
+     */
+    public GetStreamsApiRequest withIcludeCanAccessContent(boolean includeCanAccessContent) {
+        putParam(INCLUDE_CAN_ACCESS_CONTENT, includeCanAccessContent);
+        return this;
     }
 
     /**
@@ -71,11 +96,23 @@ public class GetStreamsApiRequest extends ZulipApiRequest implements ExecutableA
     /**
      * Sets whether to include active streams.
      *
-     * @param  includeAllActive {@code true} to include active streams. {@code false} to exclude active streams.
-     * @return                  This {@link GetStreamsApiRequest} instance
+     * @param      includeAllActive {@code true} to include active streams. {@code false} to exclude active streams.
+     * @return                      This {@link GetStreamsApiRequest} instance
+     * @deprecated                  Use {@link GetStreamsApiRequest#withIncludeAll(boolean)}
      */
+    @Deprecated(forRemoval = true)
     public GetStreamsApiRequest withIncludeAllActive(boolean includeAllActive) {
-        putParam(INCLUDE_ALL_ACTIVE, includeAllActive);
+        return withIncludeAll(includeAllActive);
+    }
+
+    /**
+     * Sets whether to include all channels that the user has metadata access to.
+     *
+     * @param  includeAll {@code true} to include active streams. {@code false} to exclude streams.
+     * @return            This {@link GetStreamsApiRequest} instance
+     */
+    public GetStreamsApiRequest withIncludeAll(boolean includeAll) {
+        putParam(INCLUDE_ALL, includeAll);
         return this;
     }
 

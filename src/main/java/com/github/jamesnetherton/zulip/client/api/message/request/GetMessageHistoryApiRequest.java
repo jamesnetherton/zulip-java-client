@@ -16,6 +16,7 @@ import java.util.List;
  * @see <a href="https://zulip.com/api/get-message-history">https://zulip.com/api/get-message-history</a>
  */
 public class GetMessageHistoryApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<MessageHistory>> {
+    public static final String ALLOW_EMPTY_TOPIC_NAME = "allow_empty_topic_name";
 
     private final long messageId;
 
@@ -28,6 +29,23 @@ public class GetMessageHistoryApiRequest extends ZulipApiRequest implements Exec
     public GetMessageHistoryApiRequest(ZulipHttpClient client, long messageId) {
         super(client);
         this.messageId = messageId;
+    }
+
+    /**
+     * Sets whether the topic names such as topic and prev_topic fields in the message_history objects returned can be an empty
+     * string.
+     *
+     * @see                        <a href=
+     *                             "https://zulip.com/api/get-message-history#parameter-allow_empty_topic_name">https://zulip.com/api/get-message-history#parameter-allow_empty_topic_name</a>
+     *
+     * @param  allowEmptyTopicName When {@code true} topic names such as topic and prev_topic fields in the message_history
+     *                             objects returned can be an empty string. When {@code} false, empty topic name strings are not
+     *                             allowed
+     * @return                     This {@link GetMessageHistoryApiRequest} instance
+     */
+    public GetMessageHistoryApiRequest withAllowEmptyTopicName(boolean allowEmptyTopicName) {
+        putParam(ALLOW_EMPTY_TOPIC_NAME, allowEmptyTopicName);
+        return this;
     }
 
     /**

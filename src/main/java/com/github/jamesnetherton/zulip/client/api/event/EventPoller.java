@@ -4,9 +4,7 @@ import com.github.jamesnetherton.zulip.client.api.event.request.DeleteEventQueue
 import com.github.jamesnetherton.zulip.client.api.event.request.GetMessageEventsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.request.RegisterEventQueueApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
-import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
-import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -25,11 +23,8 @@ public class EventPoller {
 
     private static final Logger LOG = Logger.getLogger(EventPoller.class.getName());
 
-    private final MessageEventListener listener;
-    private final ZulipHttpClient client;
-    private final Narrow[] narrows;
+    private final EventPollerConfiguration configuration;
     private volatile ExecutorService eventListenerExecutorService;
-    private volatile boolean userManagedEventListenerExecutorService = false;
     private volatile EventQueue queue;
     private volatile ExecutorService executor;
     private volatile Status status = Status.STOPPED;
@@ -37,34 +32,11 @@ public class EventPoller {
     /**
      * Constructs a {@link EventPoller}.
      *
-     * @param client   The Zulip HTTP client
-     * @param listener The {@link MessageEventListener} to be invoked on each message event
-     * @param narrows  optional {@link Narrow} expressions to filter which message events are captured. E.g messages from a
-     *                 specific stream
-     */
-    public EventPoller(ZulipHttpClient client, MessageEventListener listener, Narrow[] narrows) {
-        this.client = client;
-        this.listener = listener;
-        this.narrows = narrows;
-    }
-
-    /**
-     * Constructs a {@link EventPoller}.
+     * @param configuration The {@link EventPollerConfiguration} instance
      *
-     * @param client                       The Zulip HTTP client
-     * @param listener                     The {@link MessageEventListener} to be invoked on each message event
-     * @param narrows                      optional {@link Narrow} expressions to filter which message events are captured. E.g
-     *                                     messages from a
-     *                                     specific stream
-     * @param eventListenerExecutorService Custom {@link ExecutorService} to use for message event listener execution
      */
-    public EventPoller(ZulipHttpClient client, MessageEventListener listener, Narrow[] narrows,
-            ExecutorService eventListenerExecutorService) {
-        this.client = client;
-        this.listener = listener;
-        this.narrows = narrows;
-        this.eventListenerExecutorService = eventListenerExecutorService;
-        this.userManagedEventListenerExecutorService = true;
+    EventPoller(EventPollerConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     /**
@@ -78,8 +50,9 @@ public class EventPoller {
             status = Status.STARTING;
 
             CountDownLatch latch = new CountDownLatch(1);
-            RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(this.client, narrows);
-            GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(this.client);
+            RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(configuration.getClient(),
+                    configuration.getNarrows());
+            GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(configuration.getClient());
 
             queue = createQueue.execute();
             executor = Executors.newSingleThreadExecutor();
@@ -107,7 +80,7 @@ public class EventPoller {
                                             || (message.getContent() != null && message.getContent().equals("heartbeat"))) {
                                         return;
                                     }
-                                    listener.onEvent(message);
+                                    configuration.getListener().onEvent(message);
                                 });
                             }
 
@@ -163,13 +136,14 @@ public class EventPoller {
                     executor.shutdown();
                 }
 
-                if (!userManagedEventListenerExecutorService) {
+                if (configuration.getEventListenerExecutorService() == null) {
                     eventListenerExecutorService.shutdown();
                     eventListenerExecutorService = null;
                 }
 
                 if (queue != null) {
-                    DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(this.client, queue.getQueueId());
+                    DeleteEventQueueApiRequest deleteQueue = new DeleteEventQueueApiRequest(configuration.getClient(),
+                            queue.getQueueId());
                     deleteQueue.execute();
                 }
             } catch (ZulipClientException e) {

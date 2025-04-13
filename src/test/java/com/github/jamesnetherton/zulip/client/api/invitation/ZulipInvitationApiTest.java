@@ -19,6 +19,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
     @Test
     public void createReusableInvitationLink() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateReusableInvitationLinkApiRequest.GROUP_IDS, "[1,2,3]")
                 .add(CreateReusableInvitationLinkApiRequest.INCLUDE_REALM_DEFAULT_SUBSCRIPTIONS, "true")
                 .add(CreateReusableInvitationLinkApiRequest.INVITE_AS, String.valueOf(UserRole.ORGANIZATION_ADMIN.getId()))
                 .add(CreateReusableInvitationLinkApiRequest.INVITE_EXPIRES_IN_MINUTES, "60")
@@ -28,6 +29,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
         stubZulipResponse(POST, "/invites/multiuse", params, "createInvitationLink.json");
 
         String invitationLink = zulip.invitations().createReusableInvitationLink()
+                .withGroupIds(1, 2, 3)
                 .withIncludeRealmDefaultSubscriptions(true)
                 .withInviteAs(UserRole.ORGANIZATION_ADMIN)
                 .inviteExpiresInMinutes(60)
@@ -82,6 +84,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
     @Test
     public void sendInvitations() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendInvitationsApiRequest.GROUP_IDS, "[1,2,3]")
                 .add(SendInvitationsApiRequest.INVITEE_EMAILS, "foo@bar.com, cheese@wine.com")
                 .add(SendInvitationsApiRequest.INCLUDE_REALM_DEFAULT_SUBSCRIPTIONS, "true")
                 .add(SendInvitationsApiRequest.INVITE_AS, String.valueOf(UserRole.MEMBER.getId()))
@@ -93,6 +96,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
         stubZulipResponse(POST, "/invites", params, SUCCESS_JSON);
 
         zulip.invitations().sendInvitations(List.of("foo@bar.com, cheese@wine.com"), List.of(1L, 2L, 3L))
+                .withGroupIds(1L, 2L, 3L)
                 .withInviteAs(UserRole.MEMBER)
                 .inviteExpiresInMinutes(60)
                 .withNotifyReferrerOnJoin(true)

@@ -1,0 +1,24 @@
+{
+  "msg": "",
+  "result": "success",
+  "saved_snippets": [
+    {
+      "content": "Content 1",
+      "date_created": 1681662420,
+      "id": 1,
+      "title": "Title 1"
+    },
+    {
+      "content": "Content 2",
+      "date_created": 1681662420,
+      "id": 2,
+      "title": "Title 2"
+    },
+    {
+      "content": "Content 3",
+      "date_created": 1681662420,
+      "id": 3,
+      "title": "Title 3"
+    }
+  ]
+}

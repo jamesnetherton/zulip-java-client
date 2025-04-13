@@ -36,9 +36,9 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStat
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
-import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -109,34 +109,70 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void setTypingForMessageEdit() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SetTypingStatusApiRequest.OPERATION, TypingOperation.START.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/typing", params);
+
+        zulip.users().setTypingForMessageEdit(1, TypingOperation.START).execute();
+    }
+
+    @Test
     public void createUserGroup() throws Exception {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("direct_members", List.of(1, 2, 3));
+        data.put("direct_subgroups", List.of(4, 5, 6));
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(CreateUserGroupApiRequest.NAME, "Test Group Name")
                 .add(CreateUserGroupApiRequest.DESCRIPTION, "Test Group Description")
                 .add(CreateUserGroupApiRequest.MEMBERS, "[1,2,3]")
                 .add(CreateUserGroupApiRequest.CAN_MENTION_GROUP, "1")
+                .add(CreateUserGroupApiRequest.CAN_ADD_MEMBERS_GROUP, "2")
+                .add(CreateUserGroupApiRequest.CAN_JOIN_GROUP, "3")
+                .add(CreateUserGroupApiRequest.CAN_LEAVE_GROUP, "4")
+                .add(CreateUserGroupApiRequest.CAN_MANAGE_GROUP, "5")
+                .addAsRawJsonString(CreateUserGroupApiRequest.CAN_REMOVE_MEMBERS_GROUP, data)
                 .get();
 
         stubZulipResponse(POST, "/user_groups/create", params);
 
         zulip.users().createUserGroup("Test Group Name", "Test Group Description", 1, 2, 3)
                 .withCanMentionGroup(1)
+                .withCanAddMembersGroup(UserGroupSetting.of(2))
+                .withCanJoinMembersGroup(UserGroupSetting.of(3))
+                .withCanLeaveGroup(UserGroupSetting.of(4))
+                .withCanManageGroup(UserGroupSetting.of(5))
+                .withCanRemoveMembersGroup(UserGroupSetting.of(List.of(1L, 2L, 3L), List.of(4L, 5L, 6L)))
                 .execute();
     }
 
     @Test
     public void updateUserGroup() throws Exception {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("direct_members", List.of(1, 2, 3));
+        data.put("direct_subgroups", List.of(4, 5, 6));
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserGroupApiRequest.NAME, "New Group Name")
                 .add(UpdateUserGroupApiRequest.DESCRIPTION, "New Group Description")
-                .add(UpdateUserGroupApiRequest.CAN_MENTION_GROUP,
-                        JsonUtils.getMapper().writeValueAsString(Map.of("old", 1, "new", 2)))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_MENTION_GROUP, Map.of("new", 1))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_ADD_MEMBERS_GROUP, Map.of("new", 2))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_JOIN_GROUP, Map.of("new", 3))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_LEAVE_GROUP, Map.of("new", 4))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_MANAGE_GROUP, Map.of("new", 5))
+                .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_REMOVE_MEMBERS_GROUP, Map.of("new", data))
                 .get();
 
         stubZulipResponse(PATCH, "/user_groups/3", params);
 
         zulip.users().updateUserGroup("New Group Name", "New Group Description", 3)
-                .withCanMentionGroup(1, 2)
+                .withCanMentionGroup(1)
+                .withCanAddMembersGroup(UserGroupSetting.of(2))
+                .withCanJoinMembersGroup(UserGroupSetting.of(3))
+                .withCanLeaveGroup(UserGroupSetting.of(4))
+                .withCanManageGroup(UserGroupSetting.of(5))
+                .withCanRemoveMembersGroup(UserGroupSetting.of(List.of(1L, 2L, 3L), List.of(4L, 5L, 6L)))
                 .execute();
     }
 
@@ -151,32 +187,38 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void deleteUserGroup() throws Exception {
-        stubZulipResponse(DELETE, "/user_groups/7", Collections.emptyMap());
+    public void deactivateUserGroup() throws Exception {
+        stubZulipResponse(POST, "/user_groups/7/deactivate", Collections.emptyMap());
 
-        zulip.users().deleteUserGroup(7).execute();
+        zulip.users().deactivateUserGroup(7).execute();
     }
 
     @Test
     public void addUsersToGroup() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(AddUsersToGroupApiRequest.ADD, "[1,2,3]")
+                .add(AddUsersToGroupApiRequest.ADD_SUBGROUPS, "[4,5,6]")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/7/members", params);
 
-        zulip.users().addUsersToGroup(7, 1, 2, 3).execute();
+        zulip.users().addUsersToGroup(7, 1, 2, 3)
+                .withAddSubGroups(4, 5, 6)
+                .execute();
     }
 
     @Test
     public void removeUsersFromGroup() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(RemoveUsersFromGroupApiRequest.DELETE, "[1,2,3]")
+                .add(RemoveUsersFromGroupApiRequest.DELETE_SUBGROUPS, "[4,5,6]")
                 .get();
 
         stubZulipResponse(POST, "/user_groups/7/members", params);
 
-        zulip.users().removeUsersFromGroup(7, 1, 2, 3).execute();
+        zulip.users().removeUsersFromGroup(7, 1, 2, 3)
+                .withDeleteSubGroups(4, 5, 6)
+                .execute();
     }
 
     @Test
@@ -190,12 +232,74 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             assertEquals("Test Group Description " + i, group.getDescription());
             assertEquals("Test Group Name " + i, group.getName());
             assertArrayEquals(new Long[] { 1L, 2L, 3L }, group.getMembers().toArray(new Long[3]));
-            assertEquals(i == 1 ? true : false, group.isSystemGroup());
-            assertEquals(i, group.getCanMentionGroup());
 
             List<Long> directGroupSubIds = group.getDirectSubgroupIds();
             assertEquals(1, directGroupSubIds.size());
             assertEquals(i, directGroupSubIds.get(0));
+
+            if (i == 1) {
+                assertTrue(group.isSystemGroup());
+                assertTrue(group.getCanAddMembersGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanAddMembersGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanAddMembersGroup().getUserGroupId());
+
+                assertTrue(group.getCanMentionGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanMentionGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanMentionGroup().getUserGroupId());
+
+                assertTrue(group.getCanJoinGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanJoinGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanJoinGroup().getUserGroupId());
+
+                assertTrue(group.getCanLeaveGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanLeaveGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanLeaveGroup().getUserGroupId());
+
+                assertTrue(group.getCanManageGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanManageGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanManageGroup().getUserGroupId());
+
+                assertTrue(group.getCanRemoveMembersGroup().getDirectMembers().isEmpty());
+                assertTrue(group.getCanRemoveMembersGroup().getDirectSubGroups().isEmpty());
+                assertEquals(i, group.getCanRemoveMembersGroup().getUserGroupId());
+            } else {
+                assertFalse(group.isSystemGroup());
+                assertFalse(group.getCanAddMembersGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanAddMembersGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanAddMembersGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanAddMembersGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanAddMembersGroup().getUserGroupId());
+
+                assertFalse(group.getCanMentionGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanMentionGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanMentionGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanMentionGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanMentionGroup().getUserGroupId());
+
+                assertFalse(group.getCanJoinGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanJoinGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanJoinGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanJoinGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanJoinGroup().getUserGroupId());
+
+                assertFalse(group.getCanLeaveGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanLeaveGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanLeaveGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanLeaveGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanLeaveGroup().getUserGroupId());
+
+                assertFalse(group.getCanManageGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanManageGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanManageGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanManageGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanManageGroup().getUserGroupId());
+
+                assertFalse(group.getCanRemoveMembersGroup().getDirectMembers().isEmpty());
+                assertFalse(group.getCanRemoveMembersGroup().getDirectSubGroups().isEmpty());
+                assertEquals(List.of(1L, 2L, 3L), group.getCanRemoveMembersGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), group.getCanRemoveMembersGroup().getDirectSubGroups());
+                assertEquals(0, group.getCanRemoveMembersGroup().getUserGroupId());
+            }
         }
     }
 
@@ -280,7 +384,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(5, user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
-        assertTrue(user.isBillingAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
         assertFalse(user.isOwner());
@@ -328,7 +431,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
             assertTrue(user.isActive());
             assertTrue(user.isAdmin());
             assertFalse(user.isBot());
-            assertTrue(user.isBillingAdmin());
             assertFalse(user.isGuest());
             assertFalse(user.isOwner());
 
@@ -370,7 +472,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(5, user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
-        assertTrue(user.isBillingAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
         assertFalse(user.isOwner());
@@ -412,7 +513,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(5, user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
-        assertTrue(user.isBillingAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
         assertFalse(user.isOwner());
@@ -433,6 +533,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     public void updateUser() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(UpdateUserApiRequest.FULL_NAME, "Updated User")
+                .add(UpdateUserApiRequest.NEW_EMAIL, "test@test.com")
                 .add(UpdateUserApiRequest.ROLE, "200")
                 .add(UpdateUserApiRequest.PROFILE_DATA, "[{\"id\":1,\"value\":\"bar\"}]")
                 .get();
@@ -441,6 +542,26 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
 
         zulip.users().updateUser(1)
                 .withFullName("Updated User")
+                .withNewEmail("test@test.com")
+                .withRole(UserRole.ORGANIZATION_ADMIN)
+                .withProfileData(1, "bar")
+                .execute();
+    }
+
+    @Test
+    public void updateUserByEmail() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateUserApiRequest.FULL_NAME, "Updated User")
+                .add(UpdateUserApiRequest.NEW_EMAIL, "foo@bar.com")
+                .add(UpdateUserApiRequest.ROLE, "200")
+                .add(UpdateUserApiRequest.PROFILE_DATA, "[{\"id\":1,\"value\":\"bar\"}]")
+                .get();
+
+        stubZulipResponse(PATCH, "/users/test%40test.com", params);
+
+        zulip.users().updateUser("test@test.com")
+                .withFullName("Updated User")
+                .withNewEmail("foo@bar.com")
                 .withRole(UserRole.ORGANIZATION_ADMIN)
                 .withProfileData(1, "bar")
                 .execute();
@@ -514,6 +635,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @EnumSource(value = UserPresenceStatus.class, names = { "ACTIVE", "IDLE" })
     public void updateOwnUserPresence(UserPresenceStatus status) throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserPresenceApiRequest.HISTORY_LIMIT_DAYS, "10")
                 .add(UpdateOwnUserPresenceApiRequest.LAST_UPDATE_ID, "-1")
                 .add(UpdateOwnUserPresenceApiRequest.NEW_USER_INPUT, "true")
                 .add(UpdateOwnUserPresenceApiRequest.PING_ONLY, "true")
@@ -527,6 +649,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         });
 
         Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(status)
+                .withHistoryLimitDays(10)
                 .withNewUserInput(true)
                 .withPingOnly(true)
                 .execute();
@@ -581,6 +704,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
     @Test
     public void updateOwnUserSettings() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnUserSettingsApiRequest.ALLOW_PRIVATE_DATA_EXPORT, "true")
                 .add(UpdateOwnUserSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
                 .add(UpdateOwnUserSettingsApiRequest.DEFAULT_LANGUAGE, "de")
                 .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, WebHomeView.RECENT_TOPICS.toString())
@@ -609,6 +733,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.ESCAPE_NAVIGATES_TO_DEFAULT_VIEW, "true")
                 .add(UpdateOwnUserSettingsApiRequest.FLUID_LAYOUT_WIDTH, "true")
                 .add(UpdateOwnUserSettingsApiRequest.FULL_NAME, "tester")
+                .add(UpdateOwnUserSettingsApiRequest.HIDE_AI_FEATURES, "true")
                 .add(UpdateOwnUserSettingsApiRequest.HIGH_CONTRAST_MODE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.LEFT_SIDE_USERLIST, "true")
                 .add(UpdateOwnUserSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
@@ -635,12 +760,14 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.WEB_LINE_HEIGHT_PERCENT, "120")
                 .add(UpdateOwnUserSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
                 .add(UpdateOwnUserSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_SUGGEST_UPDATE_TIMEZONE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
         stubZulipResponse(PATCH, "/settings", params, "updateOwnUserSettings.json");
 
         List<String> result = zulip.users().updateOwnUserSettings()
+                .withAllowPrivateDataExport(true)
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("de")
                 .withDefaultView(WebHomeView.RECENT_TOPICS)
@@ -667,6 +794,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withEscapeNavigatesToDefaultView(true)
                 .withFluidLayoutWidth(true)
                 .withFullName("tester")
+                .withHideAiFeatures(true)
                 .withHighContrastMode(true)
                 .withLeftSideUserList(true)
                 .withMessageContentInEmailNotifications(true)
@@ -692,6 +820,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebNavigateToSentMessage(true)
+                .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 

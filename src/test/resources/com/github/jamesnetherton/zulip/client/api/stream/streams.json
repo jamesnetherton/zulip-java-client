@@ -17,8 +17,14 @@
       "message_retention_days": 1,
       "is_default": true,
       "is_announcement_only": false,
+      "can_add_subscribers_group": 1,
+      "can_administer_channel_group": 1,
+      "can_send_message_group": 1,
+      "can_subscribe_group": 1,
       "can_remove_subscribers_group": 1,
-      "stream_weekly_traffic": 1
+      "stream_weekly_traffic": 1,
+      "is_archived": false,
+      "is_recently_active": false
     },
     {
       "creator_id": 2,
@@ -35,8 +41,14 @@
       "message_retention_days": 2,
       "is_default": true,
       "is_announcement_only": false,
+      "can_add_subscribers_group": 2,
+      "can_administer_channel_group": 2,
+      "can_send_message_group": 2,
+      "can_subscribe_group": 2,
       "can_remove_subscribers_group": 2,
-      "stream_weekly_traffic": 2
+      "stream_weekly_traffic": 2,
+      "is_archived": false,
+      "is_recently_active": false
     },
     {
       "creator_id": 3,
@@ -53,8 +65,21 @@
       "message_retention_days": 3,
       "is_default": true,
       "is_announcement_only": false,
+      "can_add_subscribers_group": 3,
+      "can_administer_channel_group": 3,
+      "can_send_message_group": 3,
+      "can_subscribe_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
       "can_remove_subscribers_group": 3,
-      "stream_weekly_traffic": 3
+      "stream_weekly_traffic": 3,
+      "is_archived": true,
+      "is_recently_active": true
     }
   ]
 }

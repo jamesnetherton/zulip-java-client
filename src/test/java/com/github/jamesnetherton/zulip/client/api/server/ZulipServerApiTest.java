@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygrou
 import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
@@ -206,8 +207,10 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
             assertEquals(i == 1, field.isDisplayInProfileSummary());
             if (i == 1) {
                 assertTrue(field.isRequired());
+                assertTrue(field.isEditableByUser());
             } else {
                 assertFalse(field.isRequired());
+                assertFalse(field.isEditableByUser());
             }
 
             if (field.getType().equals(ProfileFieldType.LIST_OF_OPTIONS)) {
@@ -263,11 +266,13 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(CreateProfileFieldApiRequest.FIELD_TYPE, "2")
                 .add(CreateProfileFieldApiRequest.DISPLAY_IN_PROFILE_SUMMARY, "true")
                 .add(CreateProfileFieldApiRequest.REQUIRED, "true")
+                .add(CreateProfileFieldApiRequest.EDITABLE_BY_USER, "true")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
 
         long id = zulip.server().createCustomProfileField()
+                .withEditableByUser(true)
                 .withSimpleFieldType(ProfileFieldType.LONG_TEXT, "Test Name", "Test Hint")
                 .withDisplayInProfileSummary(true)
                 .withRequired(true)
@@ -424,6 +429,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_MARK_READ_ON_SCROLL_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_SUGGEST_UPDATE_TIMEZONE, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
                 .get();
 
@@ -483,6 +489,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.UNMUTED_STREAMS_TOPICS)
                 .withWebNavigateToSentMessage(true)
+                .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
@@ -536,7 +543,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/users/me/android_gcm_reg_id", params, SUCCESS_JSON);
 
-        zulip.server().addFcmRegsitrationToken("abc123").execute();
+        zulip.server().addFcmRegistrationToken("abc123").execute();
     }
 
     @Test
@@ -560,5 +567,74 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         String url = zulip.server().createBigBlueButtonVideoCall("Test Meeting").execute();
         assertEquals("https://test.com/test/meeting/url", url);
+    }
+
+    @Test
+    public void getAllDataExports() throws Exception {
+        stubZulipResponse(GET, "/export/realm", Collections.emptyMap(), "getDataExports.json");
+
+        List<DataExport> dataExports = zulip.server().getAllDataExports().execute();
+        assertEquals(2, dataExports.size());
+
+        DataExport dataExport = dataExports.get(0);
+        assertTrue(dataExport.getExportTime().toEpochMilli() > 0);
+        assertNull(dataExport.getDeletedTimestamp());
+        assertNull(dataExport.getFailedTimestamp());
+        assertEquals("https://test.com/export-1.tar.gz", dataExport.getExportUrl());
+        assertEquals(1, dataExport.getActingUserId());
+        assertEquals(1, dataExport.getId());
+        assertEquals(DataExportType.PUBLIC, dataExport.getExportType());
+        assertFalse(dataExport.isPending());
+
+        dataExport = dataExports.get(1);
+        assertTrue(dataExport.getExportTime().toEpochMilli() > 0);
+        assertTrue(dataExport.getDeletedTimestamp().toEpochMilli() > 0);
+        assertTrue(dataExport.getFailedTimestamp().toEpochMilli() > 0);
+        assertEquals("https://test.com/export-2.tar.gz", dataExport.getExportUrl());
+        assertEquals(2, dataExport.getActingUserId());
+        assertEquals(2, dataExport.getId());
+        assertEquals(DataExportType.STANDARD, dataExport.getExportType());
+        assertTrue(dataExport.isPending());
+    }
+
+    @Test
+    public void createDataExport() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateDataExportApiRequest.EXPORT_TYPE, "1")
+                .get();
+
+        stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
+
+        Integer id = zulip.server().createDataExport().execute();
+
+        assertEquals(1, id);
+    }
+
+    @Test
+    public void createDataExportWithExplicitType() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateDataExportApiRequest.EXPORT_TYPE, "2")
+                .get();
+
+        stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
+
+        Integer id = zulip.server().createDataExport().withExportType(DataExportType.STANDARD).execute();
+
+        assertEquals(1, id);
+    }
+
+    @Test
+    public void getDataExportConsentState() throws Exception {
+        stubZulipResponse(GET, "/export/realm/consents", Collections.emptyMap(), "getDataExportConsents.json");
+
+        List<DataExportConsent> dataExportConsents = zulip.server().getDataExportConsentState().execute();
+        assertEquals(2, dataExportConsents.size());
+        DataExportConsent dataExportConsent = dataExportConsents.get(0);
+        assertEquals(1, dataExportConsent.getUserId());
+        assertTrue(dataExportConsent.isConsented());
+
+        dataExportConsent = dataExportConsents.get(1);
+        assertEquals(2, dataExportConsent.getUserId());
+        assertFalse(dataExportConsent.isConsented());
     }
 }

@@ -83,6 +83,7 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public static final String WEB_NAVIGATE_TO_SENT_MESSAGE = "web_navigate_to_sent_message";
     public static final String WEB_HOME_VIEW = "web_home_view";
     public static final String WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY = "web_stream_unreads_count_display_policy";
+    public static final String WEB_SUGGEST_UPDATE_TIMEZONE = "web_suggest_update_timezone";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
 
     /**
@@ -729,6 +730,19 @@ public class UpdateRealmNewUserDefaultSettingsApiRequest extends ZulipApiRequest
     public UpdateRealmNewUserDefaultSettingsApiRequest withWebStreamUnreadsCountDisplayPolicy(
             WebStreamUnreadsCountDisplayPolicy policy) {
         putParam(WEB_STREAM_UNREADS_COUNT_DISPLAY_POLICY, policy.getId());
+        return this;
+    }
+
+    /**
+     * Sets whether the user should be shown an alert, offering to update their profile time zone, when the time displayed for
+     * the profile time zone differs from the current time displayed by the time zone configured on their device.
+     *
+     * @param  webSuggestUpdateTimezone {@code true} to show a user alert offering to update their profile time zone.
+     *                                  {@code} false to not show an alert.
+     * @return                          This {@link UpdateRealmNewUserDefaultSettingsApiRequest} instance
+     */
+    public UpdateRealmNewUserDefaultSettingsApiRequest withWebSuggestUpdateTimezone(boolean webSuggestUpdateTimezone) {
+        putParam(WEB_SUGGEST_UPDATE_TIMEZONE, webSuggestUpdateTimezone);
         return this;
     }
 

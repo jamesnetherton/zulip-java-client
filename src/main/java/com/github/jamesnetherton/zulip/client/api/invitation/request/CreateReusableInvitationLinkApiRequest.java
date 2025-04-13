@@ -15,6 +15,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  * @see <a href="https://zulip.com/api/create-invite-link">https://zulip.com/api/create-invite-link</a>
  */
 public class CreateReusableInvitationLinkApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String> {
+    public static final String GROUP_IDS = "group_ids";
     public static final String INCLUDE_REALM_DEFAULT_SUBSCRIPTIONS = "include_realm_default_subscriptions";
     public static final String INVITE_AS = "invite_as";
     public static final String INVITE_EXPIRES_IN_MINUTES = "invite_expires_in_minutes";
@@ -27,6 +28,20 @@ public class CreateReusableInvitationLinkApiRequest extends ZulipApiRequest impl
      */
     public CreateReusableInvitationLinkApiRequest(ZulipHttpClient client) {
         super(client);
+    }
+
+    /**
+     * Sets the ids of groups that the user should be added to upon accepting the invitation.
+     *
+     * @see             <a href=
+     *                  "https://zulip.com/api/create-invite-link#parameter-group_ids">https://zulip.com/api/create-invite-link#parameter-group_ids</a>
+     *
+     * @param  groupIds The ids of the invited user should be added to
+     * @return          This {@link CreateReusableInvitationLinkApiRequest} instance
+     */
+    public CreateReusableInvitationLinkApiRequest withGroupIds(long... groupIds) {
+        putParamAsJsonString(GROUP_IDS, groupIds);
+        return this;
     }
 
     /**

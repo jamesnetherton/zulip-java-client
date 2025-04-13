@@ -2,19 +2,21 @@ package com.github.jamesnetherton.zulip.client.api.message.request;
 
 import static com.github.jamesnetherton.zulip.client.api.message.request.MessageRequestConstants.MESSAGES_ID_API_PATH;
 
-import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
+import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
-import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
+import com.github.jamesnetherton.zulip.client.api.message.DetachedUpload;
 import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
+import com.github.jamesnetherton.zulip.client.api.message.response.EditMessageApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import java.util.List;
 
 /**
  * Zulip API request builder for editing a message.
  *
  * @see <a href="https://zulip.com/api/update-message">https://zulip.com/api/update-message</a>
  */
-public class EditMessageApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
+public class EditMessageApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<DetachedUpload>> {
 
     public static final String CONTENT = "content";
     public static final String PROPAGATE_MODE = "propagate_mode";
@@ -128,8 +130,8 @@ public class EditMessageApiRequest extends ZulipApiRequest implements VoidExecut
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public void execute() throws ZulipClientException {
+    public List<DetachedUpload> execute() throws ZulipClientException {
         String path = String.format(MESSAGES_ID_API_PATH, messageId);
-        client().patch(path, getParams(), ZulipApiResponse.class);
+        return client().patch(path, getParams(), EditMessageApiResponse.class).getDetachedUploads();
     }
 }

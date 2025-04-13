@@ -14,9 +14,6 @@ public class MessageEdit {
     @JsonProperty("prev_rendered_content")
     private String previousRenderedContent;
 
-    @JsonProperty("prev_rendered_content_version")
-    private long previousRenderedContentVersion;
-
     @JsonProperty("prev_stream")
     private long previousStream;
 
@@ -41,10 +38,6 @@ public class MessageEdit {
 
     public String getPreviousRenderedContent() {
         return previousRenderedContent;
-    }
-
-    public long getPreviousRenderedContentVersion() {
-        return previousRenderedContentVersion;
     }
 
     public long getPreviousStream() {

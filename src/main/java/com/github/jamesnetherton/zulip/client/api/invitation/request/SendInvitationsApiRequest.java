@@ -16,6 +16,7 @@ import java.util.List;
  * @see <a href="https://zulip.com/api/send-invites">https://zulip.com/api/send-invites</a>
  */
 public class SendInvitationsApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
+    public static final String GROUP_IDS = "group_ids";
     public static final String INCLUDE_REALM_DEFAULT_SUBSCRIPTIONS = "include_realm_default_subscriptions";
     public static final String INVITEE_EMAILS = "invitee_emails";
     public static final String INVITE_AS = "invite_as";
@@ -34,6 +35,17 @@ public class SendInvitationsApiRequest extends ZulipApiRequest implements VoidEx
         super(client);
         putParam(INVITEE_EMAILS, String.join(",", inviteeEmails));
         putParamAsJsonString(STREAM_IDS, streamIds.toArray(new Long[0]));
+    }
+
+    /**
+     * Sets the ids of groups that the user should be added to upon accepting the invitation.
+     *
+     * @param  groupIds The ids of the invited user should be added to
+     * @return          This {@link SendInvitationsApiRequest} instance
+     */
+    public SendInvitationsApiRequest withGroupIds(long... groupIds) {
+        putParamAsJsonString(GROUP_IDS, groupIds);
+        return this;
     }
 
     /**

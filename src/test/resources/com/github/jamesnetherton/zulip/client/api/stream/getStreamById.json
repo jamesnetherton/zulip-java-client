@@ -16,6 +16,19 @@
     "stream_id": 1,
     "stream_post_policy": 1,
     "date_created": 1603913066,
-    "stream_weekly_traffic": 1
+    "stream_weekly_traffic": 1,
+    "can_add_subscribers_group": 1,
+    "can_administer_channel_group": 1,
+    "can_send_message_group": 1 ,
+    "can_subscribe_group": {
+      "direct_members": [
+        1, 2, 3
+      ],
+      "direct_subgroups": [
+        4, 5, 6
+      ]
+    },
+    "is_archived": true,
+    "is_recently_active": true
   }
 }

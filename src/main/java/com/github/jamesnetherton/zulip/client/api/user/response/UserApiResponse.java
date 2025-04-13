@@ -35,9 +35,6 @@ public class UserApiResponse extends ZulipApiResponse {
     private boolean isGuest;
 
     @JsonProperty
-    private boolean isBillingAdmin;
-
-    @JsonProperty
     private boolean isBot;
 
     @JsonProperty
@@ -84,10 +81,6 @@ public class UserApiResponse extends ZulipApiResponse {
 
     public boolean isGuest() {
         return isGuest;
-    }
-
-    public boolean isBillingAdmin() {
-        return isBillingAdmin;
     }
 
     public boolean isBot() {
