@@ -6,6 +6,7 @@ import com.github.jamesnetherton.zulip.client.api.event.EventService;
 import com.github.jamesnetherton.zulip.client.api.invitation.InvitationService;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
 import com.github.jamesnetherton.zulip.client.api.server.ServerService;
+import com.github.jamesnetherton.zulip.client.api.snippet.SnippetService;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
 import com.github.jamesnetherton.zulip.client.api.user.UserService;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -127,6 +128,15 @@ public final class Zulip implements Closeable {
      */
     public ServerService server() {
         return (ServerService) services.computeIfAbsent(ServerService.class, key -> new ServerService(this.client));
+    }
+
+    /**
+     * Access the collection of saved snippet Zulip APIs.
+     *
+     * @return The {@link SnippetService} Zulip saved snippet APIs
+     */
+    public SnippetService snippets() {
+        return (SnippetService) services.computeIfAbsent(SnippetService.class, key -> new SnippetService(this.client));
     }
 
     /**

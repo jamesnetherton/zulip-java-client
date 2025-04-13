@@ -74,4 +74,15 @@ public class ZulipApiRequest {
             throw new IllegalStateException(e);
         }
     }
+
+    /**
+     * Adds a value to query params wrapped within an object with the specified key.
+     *
+     * @param wrappedObjectKey The field name to use for the wrapped object
+     * @param key              The name of the query parameter
+     * @param value            The value of the query parameter
+     */
+    protected void putParamAsWrappedObject(String wrappedObjectKey, String key, Object value) {
+        putParamAsJsonString(key, Map.of(wrappedObjectKey, value));
+    }
 }

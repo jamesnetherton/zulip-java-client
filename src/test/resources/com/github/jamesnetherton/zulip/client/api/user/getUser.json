@@ -10,7 +10,6 @@
     "full_name": "Foo Bar",
     "is_active": true,
     "is_admin": true,
-    "is_billing_admin": true,
     "is_bot": false,
     "is_guest": false,
     "is_owner": false,

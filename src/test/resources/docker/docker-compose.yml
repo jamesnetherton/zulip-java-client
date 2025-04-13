@@ -24,7 +24,7 @@ services:
       MEMCACHED_PASSWORD: 'REPLACE_WITH_SECURE_MEMCACHED_PASSWORD'
     restart: always
   rabbitmq:
-    image: 'rabbitmq:3.7.7'
+    image: 'rabbitmq:4.0.7'
     hostname: zulip-rabbit
     restart: always
     environment:
@@ -41,7 +41,7 @@ services:
     environment:
       REDIS_PASSWORD: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
   zulip:
-    image: 'zulip/docker-zulip:9.4-0'
+    image: 'zulip/docker-zulip:10.1-0'
     ports:
       - '80:80'
       - '443:443'

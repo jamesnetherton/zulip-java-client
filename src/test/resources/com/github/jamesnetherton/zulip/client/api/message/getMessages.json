@@ -32,7 +32,6 @@
         {
           "prev_content": "Old Content 1",
           "prev_rendered_content": "Old Rendered Content 1",
-          "prev_rendered_content_version": 1,
           "prev_stream": 1,
           "prev_topic": "Old Topic 1",
           "stream": 1,
@@ -43,7 +42,6 @@
         {
           "prev_content": "Old Content 2",
           "prev_rendered_content": "Old Rendered Content 2",
-          "prev_rendered_content_version": 2,
           "prev_stream": 2,
           "prev_topic": "Old Topic 2",
           "stream": 2,
@@ -54,7 +52,6 @@
         {
           "prev_content": "Old Content 3",
           "prev_rendered_content": "Old Rendered Content 3",
-          "prev_rendered_content_version": 3,
           "prev_stream": 3,
           "prev_topic": "Old Topic 3",
           "stream": 3,
@@ -104,6 +101,8 @@
       "subject": "Test message subject",
       "submessages": [],
       "timestamp": 1603913066,
+      "last_edit_timestamp": 1603913066,
+      "last_moved_timestamp": 1603913066,
       "topic_links": [
         "Topic 1",
         "Topic 2",
@@ -133,6 +132,8 @@
       "subject": "Verona3",
       "submessages": [],
       "timestamp": 1603913066,
+      "last_edit_timestamp": 1603913066,
+      "last_moved_timestamp": 1603913066,
       "topic_links": [],
       "type": "private"
     }

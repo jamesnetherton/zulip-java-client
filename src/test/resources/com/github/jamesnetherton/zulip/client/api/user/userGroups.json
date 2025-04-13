@@ -15,7 +15,12 @@
         1
       ],
       "is_system_group": true,
-      "can_mention_group": 1
+      "can_mention_group": 1,
+      "can_add_members_group": 1,
+      "can_join_group": 1,
+      "can_leave_group": 1,
+      "can_manage_group": 1,
+      "can_remove_members_group": 1
     },
     {
       "description": "Test Group Description 2",
@@ -30,7 +35,54 @@
         2
       ],
       "is_system_group": false,
-      "can_mention_group": 2
+      "can_mention_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
+      "can_add_members_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
+      "can_join_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
+      "can_leave_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
+      "can_manage_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      },
+      "can_remove_members_group": {
+        "direct_members": [
+          1, 2, 3
+        ],
+        "direct_subgroups": [
+          4, 5, 6
+        ]
+      }
     }
   ]
 }

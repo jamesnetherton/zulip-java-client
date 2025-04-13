@@ -21,6 +21,7 @@ import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachmentMessage;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceStatus;
@@ -77,7 +78,6 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertEquals(createdUser.getUserId(), user.getUserId());
             assertTrue(user.isActive());
             assertFalse(user.isAdmin());
-            assertFalse(user.isBillingAdmin());
             assertFalse(user.isBot());
             assertFalse(user.isGuest());
             assertFalse(user.isOwner());
@@ -96,13 +96,12 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertEquals(createdUser.getUserId(), userByEmail.getUserId());
             assertTrue(userByEmail.isActive());
             assertFalse(userByEmail.isAdmin());
-            assertFalse(userByEmail.isBillingAdmin());
             assertFalse(userByEmail.isBot());
             assertFalse(userByEmail.isGuest());
             assertFalse(userByEmail.isOwner());
             assertTrue(userByEmail.getProfileData().isEmpty());
 
-            // Update user
+            // Update user by id
             zulip.users().updateUser(createdUser.getUserId())
                     .withRole(UserRole.ORGANIZATION_ADMIN)
                     .withFullName("Edited Name " + id)
@@ -111,6 +110,16 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             user = zulip.users().getUser(createdUser.getUserId()).execute();
             assertEquals("Edited Name " + id, user.getFullName());
             assertTrue(user.isAdmin());
+
+            // Update user by email
+            zulip.users().updateUser(createdUser.getEmail())
+                    .withRole(UserRole.GUEST)
+                    .withFullName("Edited Name 2" + id)
+                    .execute();
+
+            user = zulip.users().getUser(createdUser.getUserId()).execute();
+            assertEquals("Edited Name 2" + id, user.getFullName());
+            assertFalse(user.isAdmin());
 
             zulip.users().deactivate(createdUser.getUserId()).execute();
         } catch (Throwable t) {
@@ -136,7 +145,6 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertEquals(ownUser.getUserId(), user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
-        assertFalse(user.isBillingAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
         assertTrue(user.isOwner());
@@ -185,8 +193,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void userAttachments() throws Exception {
+        String streamName = UUID.randomUUID().toString().split("-")[0];
         zulip.streams().subscribe(
-                StreamSubscriptionRequest.of("File Stream", "File Stream"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
@@ -200,7 +209,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         String url = zulip.messages().fileUpload(file).execute();
 
         long messageId = zulip.messages()
-                .sendStreamMessage("File " + configuration.getZulipUrl() + url, "File Stream", "File Topic")
+                .sendStreamMessage("File " + configuration.getZulipUrl() + url, streamName, "File Topic")
                 .execute();
 
         List<UserAttachment> attachments = zulip.users().getUserAttachments().execute();
@@ -260,14 +269,30 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void setTypingForStream() throws ZulipClientException {
+        String streamAndTopic = UUID.randomUUID().toString();
         zulip.streams()
-                .subscribe(StreamSubscriptionRequest.of("Test Stream For Typing", "Test Stream For Typing"))
+                .subscribe(StreamSubscriptionRequest.of(streamAndTopic, streamAndTopic))
                 .execute();
 
-        Long streamId = zulip.streams().getStreamId("Test Stream For Typing").execute();
+        Long streamId = zulip.streams().getStreamId(streamAndTopic).execute();
 
-        zulip.users().setTyping(TypingOperation.START, streamId, "Test Stream For Typing").execute();
-        zulip.users().setTyping(TypingOperation.STOP, streamId, "Test Stream For Typing").execute();
+        zulip.users().setTyping(TypingOperation.START, streamId, streamAndTopic).execute();
+        zulip.users().setTyping(TypingOperation.STOP, streamId, streamAndTopic).execute();
+    }
+
+    @Test
+    public void setTypingForMessageEdit() throws ZulipClientException {
+        String streamAndTopic = UUID.randomUUID().toString();
+        zulip.streams()
+                .subscribe(StreamSubscriptionRequest.of(streamAndTopic,
+                        streamAndTopic))
+                .execute();
+
+        Long streamId = zulip.streams().getStreamId(streamAndTopic).execute();
+        Long messageId = zulip.messages().sendChannelMessage("test", streamId, streamAndTopic).execute();
+
+        zulip.users().setTypingForMessageEdit(messageId, TypingOperation.START).execute();
+        zulip.users().setTypingForMessageEdit(messageId, TypingOperation.STOP).execute();
     }
 
     @Test
@@ -308,6 +333,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void updateOwnUserPresence() throws ZulipClientException {
         Map<Long, UserPresenceDetail> userPresenceDetails = zulip.users().updateOwnUserPresence(UserPresenceStatus.ACTIVE)
+                .withHistoryLimitDays(10)
                 .withNewUserInput(true)
                 .execute();
 
@@ -348,10 +374,17 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void userGroupCrud() throws ZulipClientException {
+        String groupName = UUID.randomUUID().toString();
+        String groupDescription = UUID.randomUUID().toString();
+
         // Create group
-        List<UserGroup> execute = zulip.users().getUserGroups().execute();
-        zulip.users().createUserGroup("Test Group Name", "Test Group Description", ownUser.getUserId())
-                .withCanMentionGroup(11)
+        zulip.users().createUserGroup(groupName, groupDescription, ownUser.getUserId())
+                .withCanMentionGroup(UserGroupSetting.of(11))
+                .withCanManageGroup(UserGroupSetting.of(11))
+                .withCanLeaveGroup(UserGroupSetting.of(11))
+                .withCanJoinMembersGroup(UserGroupSetting.of(11))
+                .withCanRemoveMembersGroup(UserGroupSetting.of(11))
+                .withCanAddMembersGroup(UserGroupSetting.of(11))
                 .execute();
 
         // Get group
@@ -359,30 +392,37 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertFalse(groups.isEmpty());
 
         UserGroup group = groups.get(groups.size() - 1);
-        assertEquals("Test Group Name", group.getName());
-        assertEquals("Test Group Description", group.getDescription());
+        assertEquals(groupName, group.getName());
+        assertEquals(groupDescription, group.getDescription());
         assertTrue(group.getId() > 0);
         assertNotNull(group.getDirectSubgroupIds());
         assertFalse(group.isSystemGroup());
-        assertEquals(11, group.getCanMentionGroup());
+        assertEquals(11, group.getCanMentionGroup().getUserGroupId());
 
         List<Long> members = group.getMembers();
         assertEquals(1, members.size());
         assertTrue(members.contains(ownUser.getUserId()));
 
         // Update group
-        zulip.users().updateUserGroup(group.getId()).withName("Updated Group Name").execute();
-        zulip.users().updateUserGroup("Updated Group Name", "Updated Group Description", group.getId())
-                .withCanMentionGroup(11, 12)
+        String updatedGroupName = groupName + " Updated";
+        String updatedGroupDescription = groupDescription + " Updated";
+        zulip.users().updateUserGroup(group.getId()).withName(updatedGroupName).execute();
+        zulip.users().updateUserGroup(updatedGroupName, updatedGroupDescription, group.getId())
+                .withCanMentionGroup(11)
+                .withCanAddMembersGroup(UserGroupSetting.of(11))
+                .withCanJoinMembersGroup(UserGroupSetting.of(11))
+                .withCanLeaveGroup(UserGroupSetting.of(11))
+                .withCanManageGroup(UserGroupSetting.of(11))
+                .withCanRemoveMembersGroup(UserGroupSetting.of(List.of(ownUser.getUserId()), List.of(11L)))
                 .execute();
 
         groups = zulip.users().getUserGroups().execute();
         assertFalse(groups.isEmpty());
 
         group = groups.get(groups.size() - 1);
-        assertEquals("Updated Group Name", group.getName());
-        assertEquals("Updated Group Description", group.getDescription());
-        assertEquals(12, group.getCanMentionGroup());
+        assertEquals(updatedGroupName, group.getName());
+        assertEquals(updatedGroupDescription, group.getDescription());
+        assertEquals(11, group.getCanMentionGroup().getUserGroupId());
 
         // Add new user to group
         String id = UUID.randomUUID().toString().split("-")[0];
@@ -427,8 +467,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         isMember = zulip.users().getUserGroupMembershipStatus(group.getId(), createdUser.getUserId()).execute();
         assertFalse(isMember);
 
-        // Delete group
-        zulip.users().deleteUserGroup(group.getId()).execute();
+        zulip.users().deactivateUserGroup(group.getId()).execute();
         groups = zulip.users().getUserGroups().execute();
         UserGroup matchGroup = group;
         Optional<UserGroup> match = groups.stream().filter(userGroup -> userGroup.getId() == matchGroup.getId()).findFirst();
@@ -471,6 +510,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     @Test
     public void updateOwnUserSettings() throws ZulipClientException {
         List<String> result = zulip.users().updateOwnUserSettings()
+                .withAllowPrivateDataExport(true)
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("en")
                 .withDefaultView(WebHomeView.RECENT_TOPICS)
@@ -495,6 +535,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withEscapeNavigatesToDefaultView(true)
                 .withFluidLayoutWidth(true)
                 .withFullName("tester")
+                .withHideAiFeatures(true)
                 .withHighContrastMode(true)
                 .withLeftSideUserList(true)
                 .withMessageContentInEmailNotifications(true)
@@ -518,6 +559,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withWebLineHeightPercent(120)
                 .withWebMarkReadOnScrollPolicy(MarkReadOnScrollPolicy.CONSERVATION_VIEWS)
                 .withWebNavigateToSentMessage(true)
+                .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
                 .execute();
 
@@ -526,9 +568,12 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
 
     @Test
     public void subGroupManagement() throws Exception {
+        String groupName1 = UUID.randomUUID().toString();
+        String groupName2 = UUID.randomUUID().toString();
+
         // Create groups
-        zulip.users().createUserGroup("Test Group Name 1", "Test Group Description 1", ownUser.getUserId()).execute();
-        zulip.users().createUserGroup("Test Group Name 2", "Test Group Description 2", ownUser.getUserId()).execute();
+        zulip.users().createUserGroup(groupName1, groupName1, ownUser.getUserId()).execute();
+        zulip.users().createUserGroup(groupName2, groupName2, ownUser.getUserId()).execute();
 
         // Get groups
         List<UserGroup> groups = zulip.users().getUserGroups().execute();
@@ -553,8 +598,8 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         subGroups = zulip.users().getSubGroupsOfUserGroup(groupA.getId()).execute();
         assertTrue(subGroups.isEmpty());
 
-        zulip.users().deleteUserGroup(groupA.getId()).execute();
-        zulip.users().deleteUserGroup(groupB.getId()).execute();
+        zulip.users().deactivateUserGroup(groupA.getId()).execute();
+        zulip.users().deactivateUserGroup(groupB.getId()).execute();
     }
 
     @Test

@@ -6,11 +6,14 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygrou
 import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteProfileFieldApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.GetAllDataExportsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetAllEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.GetDataExportConsentStateApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
@@ -297,7 +300,7 @@ public class ServerService implements ZulipService {
      * @param  token The token provided by the device
      * @return       The {@link AddFcmRegistrationTokenApiRequest} builder object
      */
-    public AddFcmRegistrationTokenApiRequest addFcmRegsitrationToken(String token) {
+    public AddFcmRegistrationTokenApiRequest addFcmRegistrationToken(String token) {
         return new AddFcmRegistrationTokenApiRequest(this.client, token);
     }
 
@@ -324,5 +327,38 @@ public class ServerService implements ZulipService {
      */
     public CreateBigBlueButtonVideoCallApiRequest createBigBlueButtonVideoCall(String meetingName) {
         return new CreateBigBlueButtonVideoCallApiRequest(this.client, meetingName);
+    }
+
+    /**
+     * Gets all data exports.
+     *
+     * @see    <a href="https://zulip.com/api/get-realm-exports">https://zulip.com/api/get-realm-exports</a>
+     *
+     * @return The {@link GetAllDataExportsApiRequest} builder object
+     */
+    public GetAllDataExportsApiRequest getAllDataExports() {
+        return new GetAllDataExportsApiRequest(this.client);
+    }
+
+    /**
+     * Creates a data export.
+     *
+     * @see    <a href="https://zulip.com/api/export-realm">https://zulip.com/api/export-realm</a>
+     *
+     * @return The {@link CreateDataExportApiRequest} builder object
+     */
+    public CreateDataExportApiRequest createDataExport() {
+        return new CreateDataExportApiRequest(this.client);
+    }
+
+    /**
+     * Gets users that have consented to their private data being exported.
+     *
+     * @see    <a href="https://zulip.com/api/get-realm-export-consents">https://zulip.com/api/get-realm-export-consents</a>
+     *
+     * @return The {@link GetDataExportConsentStateApiRequest} builder object
+     */
+    public GetDataExportConsentStateApiRequest getDataExportConsentState() {
+        return new GetDataExportConsentStateApiRequest(this.client);
     }
 }

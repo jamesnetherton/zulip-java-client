@@ -21,10 +21,12 @@ import java.util.List;
 public class GetMessagesApiRequest extends ZulipApiRequest
         implements NarrowableApiRequest<GetMessagesApiRequest>, ExecutableApiRequest<List<Message>> {
 
+    public static final String ALLOW_EMPTY_TOPIC_NAME = "allow_empty_topic_name";
     public static final String ANCHOR = "anchor";
-    public static final String INCLUDE_ANCHOR = "include_anchor";
     public static final String GRAVATAR = "gravatar";
+    public static final String INCLUDE_ANCHOR = "include_anchor";
     public static final String MARKDOWN = "apply_markdown";
+    public static final String MESSAGE_IDS = "message_ids";
     public static final String NARROW = "narrow";
     public static final String NUM_AFTER = "num_after";
     public static final String NUM_BEFORE = "num_before";
@@ -36,6 +38,20 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      */
     public GetMessagesApiRequest(ZulipHttpClient client) {
         super(client);
+    }
+
+    /**
+     * Sets whether to allow empty topic names to be returned.
+     *
+     * @see                        <a href=
+     *                             "https://zulip.com/api/get-messages#parameter-allow_empty_topic_name">https://zulip.com/api/get-messages#parameter-allow_empty_topic_name</a>
+     *
+     * @param  allowEmptyTopicName {@code true} to allow empty topic names. {@code false} to disallow empty topic names
+     * @return                     This {@link GetMessagesApiRequest} instance
+     */
+    public GetMessagesApiRequest withAllowEmptyTopicName(boolean allowEmptyTopicName) {
+        putParam(ALLOW_EMPTY_TOPIC_NAME, allowEmptyTopicName);
+        return this;
     }
 
     /**
@@ -78,6 +94,22 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      */
     public GetMessagesApiRequest withIncludeAnchor(boolean includeAnchor) {
         putParam(INCLUDE_ANCHOR, includeAnchor);
+        return this;
+    }
+
+    /**
+     * Sets the list of message IDs to fetch.
+     *
+     * @param  messageIds The message IDs to fetch and match against
+     * @return            This {@link GetMessagesApiRequest} instance
+     * @see               <a href=
+     *                    "https://zulip.com/api/get-messages#parameter-message_ids">https://zulip.com/api/get-messages#parameter-message_ids</a>
+     */
+    public GetMessagesApiRequest withMessageIds(List<Long> messageIds) {
+        if (messageIds == null || messageIds.isEmpty()) {
+            throw new IllegalArgumentException("messageIds cannot be empty");
+        }
+        putParamAsJsonString(MESSAGE_IDS, messageIds);
         return this;
     }
 

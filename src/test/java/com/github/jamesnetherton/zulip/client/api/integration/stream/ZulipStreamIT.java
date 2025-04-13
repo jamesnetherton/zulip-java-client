@@ -15,6 +15,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResul
 import com.github.jamesnetherton.zulip.client.api.stream.Topic;
 import com.github.jamesnetherton.zulip.client.api.stream.TopicVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +32,18 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         long groupIdA = groups.get(3).getId();
         long groupIdB = groups.get(4).getId();
 
+        List<String> streamNames = java.util.stream.Stream.of(
+                "Test Stream " + UUID.randomUUID(),
+                "Test Stream " + UUID.randomUUID(),
+                "Test Stream " + UUID.randomUUID())
+                .sorted()
+                .collect(Collectors.toList());
+
         // Create
         StreamSubscriptionResult result = zulip.channels().subscribe(
-                StreamSubscriptionRequest.of("Test Stream 1", "Test Stream 1"),
-                StreamSubscriptionRequest.of("Test Stream 2", "Test Stream 2"),
-                StreamSubscriptionRequest.of("Test Stream 3", "Test Stream 3"))
+                StreamSubscriptionRequest.of(streamNames.get(0), streamNames.get(0)),
+                StreamSubscriptionRequest.of(streamNames.get(1), streamNames.get(1)),
+                StreamSubscriptionRequest.of(streamNames.get(2), streamNames.get(2)))
                 .withAuthorizationErrorsFatal(false)
                 .withCanRemoveSubscribersGroup(groupIdA)
                 .withHistoryPublicToSubscribers(true)
@@ -47,8 +55,8 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();
-        assertTrue(created.containsKey("test@test.com"));
-        assertEquals(3, created.get("test@test.com").size());
+        assertTrue(created.containsKey(ownUser.getUserId().toString()));
+        assertEquals(3, created.get(ownUser.getUserId().toString()).size());
 
         // Read
         List<Stream> streams = zulip.channels().getAll()
@@ -61,12 +69,12 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
         for (int i = 1; i < createdStreams.size(); i++) {
             Stream stream = createdStreams.get(i - 1);
-            assertEquals("Test Stream " + i, stream.getDescription());
-            assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(streamNames.get(i - 1), stream.getDescription());
+            assertEquals("<p>" + streamNames.get(i - 1) + "</p>", stream.getRenderedDescription());
             assertEquals(ownUser.getUserId(), stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertFalse(stream.isInviteOnly());
-            assertEquals("Test Stream " + i, stream.getName());
+            assertEquals(streamNames.get(i - 1), stream.getName());
             assertTrue(stream.getStreamId() > 0);
             assertFalse(stream.isWebPublic());
             assertEquals(StreamPostPolicy.ANY, stream.getStreamPostPolicy());
@@ -74,19 +82,19 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(groupIdA, stream.canRemoveSubscribersGroup());
+            assertEquals(groupIdA, stream.canRemoveSubscribersGroup().getUserGroupId());
             assertEquals(0, stream.getStreamWeeklyTraffic());
         }
 
         // Get stream by ID
         for (int i = 1; i < createdStreams.size(); i++) {
             Stream stream = zulip.channels().getStream(createdStreams.get(i - 1).getStreamId()).execute();
-            assertEquals("Test Stream " + i, stream.getDescription());
-            assertEquals("<p>Test Stream " + i + "</p>", stream.getRenderedDescription());
+            assertEquals(streamNames.get(i - 1), stream.getDescription());
+            assertEquals("<p>" + streamNames.get(i - 1) + "</p>", stream.getRenderedDescription());
             assertEquals(ownUser.getUserId(), stream.getCreatorId());
             assertTrue(stream.getDateCreated().toEpochMilli() > 0);
             assertFalse(stream.isInviteOnly());
-            assertEquals("Test Stream " + i, stream.getName());
+            assertEquals(streamNames.get(i - 1), stream.getName());
             assertTrue(stream.getStreamId() > 0);
             assertFalse(stream.isWebPublic());
             assertEquals(StreamPostPolicy.ANY, stream.getStreamPostPolicy());
@@ -94,22 +102,24 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(groupIdA, stream.canRemoveSubscribersGroup());
+            assertEquals(groupIdA, stream.canRemoveSubscribersGroup().getUserGroupId());
         }
 
         long firstStreamId = createdStreams.get(0).getStreamId();
 
         // Update
+        String updatedDescription = "Updated Description " + UUID.randomUUID();
+        String updatedName = "Updated Name " + UUID.randomUUID();
         zulip.channels().updateStream(firstStreamId)
-                .withCanRemoveSubscribersGroup(groupIdB)
-                .withDescription("Updated Description")
-                .withName("Updated Name")
+                .withCanRemoveSubscribersGroup(UserGroupSetting.of((int) groupIdB))
+                .withDescription(updatedDescription)
+                .withName(updatedName)
                 .withMessageRetention(30)
                 .withHistoryPublicToSubscribers(true)
                 .withIsPrivate(false)
                 .withDefaultStream(false)
                 .withWebPublic(false)
-                .withStreamPostPolicy(StreamPostPolicy.ADMIN_ONLY)
+                .withCanSendMessageGroup(UserGroupSetting.of((int) groupIdA))
                 .execute();
 
         Optional<Stream> updatedStreamOptional = zulip.channels().getAll()
@@ -118,21 +128,22 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .findFirst();
 
         Stream updatedStream = updatedStreamOptional.get();
-        assertEquals("Updated Description", updatedStream.getDescription());
-        assertEquals("<p>Updated Description</p>", updatedStream.getRenderedDescription());
+        assertEquals(updatedDescription, updatedStream.getDescription());
+        assertEquals("<p>" + updatedDescription + "</p>", updatedStream.getRenderedDescription());
         if (updatedStream.getDateCreated() != null) {
             assertTrue(updatedStream.getDateCreated().toEpochMilli() > 0);
         }
         assertFalse(updatedStream.isInviteOnly());
-        assertEquals("Updated Name", updatedStream.getName());
+        assertEquals(updatedName, updatedStream.getName());
         assertEquals(firstStreamId, updatedStream.getStreamId());
         assertFalse(updatedStream.isWebPublic());
-        assertEquals(StreamPostPolicy.ADMIN_ONLY, updatedStream.getStreamPostPolicy());
+        assertEquals(StreamPostPolicy.UNKNOWN, updatedStream.getStreamPostPolicy());
+        assertEquals(groupIdA, updatedStream.getCanSendMessageGroup().getUserGroupId());
         assertTrue(updatedStream.isHistoryPublicToSubscribers());
         assertEquals(30, updatedStream.getMessageRetentionDays());
         assertFalse(updatedStream.isDefault());
-        assertTrue(updatedStream.isAnnouncementOnly());
-        assertEquals(groupIdB, updatedStream.canRemoveSubscribersGroup());
+        assertFalse(updatedStream.isAnnouncementOnly());
+        assertEquals(groupIdB, updatedStream.canRemoveSubscribersGroup().getUserGroupId());
 
         List<String> subscriptionSettings = zulip.channels().updateSubscriptionSettings()
                 .withColor(updatedStream.getStreamId(), "#000000")
@@ -159,9 +170,11 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void streamTopics() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         // Create
         zulip.channels().subscribe(
-                StreamSubscriptionRequest.of("Test Stream For Topic", "Test Stream For Topic"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
@@ -170,9 +183,9 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .execute();
 
         // Get ID
-        Long streamId = zulip.channels().getStreamId("Test Stream For Topic").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
-        List<Topic> topics = zulip.channels().getTopics(streamId).execute();
+        List<Topic> topics = zulip.channels().getTopics(streamId).allowEmptyTopicName(true).execute();
         assertEquals(1, topics.size());
 
         Topic topic = topics.get(0);
@@ -182,9 +195,11 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void streamSubscribeUnsubscribe() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         // Create
         zulip.channels().subscribe(
-                StreamSubscriptionRequest.of("Test Subscribed", "Test Subscribed"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .execute();
 
         // Check subscriptions
@@ -206,11 +221,11 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertNotNull(streamSubscription.getColor());
         assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
         assertEquals(ownUser.getUserId(), streamSubscription.getCreatorId());
-        assertEquals("Test Subscribed", streamSubscription.getDescription());
+        assertEquals(streamName, streamSubscription.getDescription());
         assertTrue(streamSubscription.getFirstMessageId() > 0);
         assertEquals(0, streamSubscription.getMessageRetentionDays());
-        assertEquals("Test Subscribed", streamSubscription.getName());
-        assertEquals("<p>Test Subscribed</p>", streamSubscription.getRenderedDescription());
+        assertEquals(streamName, streamSubscription.getName());
+        assertEquals("<p>" + streamName + "</p>", streamSubscription.getRenderedDescription());
         assertTrue(streamSubscription.getStreamId() > 0);
         assertEquals(0, streamSubscription.getStreamWeeklyTraffic());
         assertEquals(11, streamSubscription.getCanRemoveSubscribersGroup());
@@ -222,21 +237,23 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals("8", subscriberId);
 
         // Get ID
-        Long streamId = zulip.channels().getStreamId("Test Subscribed").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
         // Verify subscribed
         assertTrue(zulip.channels().isSubscribed(ownUser.getUserId(), streamId).execute());
 
         // Unsubscribe
-        zulip.channels().unsubscribe("Test Subscribed").execute();
+        zulip.channels().unsubscribe(streamName).execute();
         assertFalse(zulip.channels().isSubscribed(ownUser.getUserId(), streamId).execute());
     }
 
     @Test
     public void deleteStreamTopic() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         // Create stream & topic
         zulip.channels().subscribe(
-                StreamSubscriptionRequest.of("Test Stream For Topic", "Test Stream For Topic"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
@@ -244,7 +261,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
-        Long streamId = zulip.channels().getStreamId("Test Stream For Topic").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
         List<Topic> topics = zulip.channels().getTopics(streamId).execute();
         assertEquals(1, topics.size());
@@ -263,9 +280,11 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void archiveStream() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         // Create stream & topic
         zulip.channels().subscribe(
-                StreamSubscriptionRequest.of("Test Stream For Topic", "Test Stream For Topic"))
+                StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
@@ -273,7 +292,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
-        Long streamId = zulip.channels().getStreamId("Test Stream For Topic").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
         // Archive stream
         zulip.channels().archiveStream(streamId).execute();
@@ -285,35 +304,39 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void updateUserTopicPreferences() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         StreamSubscriptionResult result = zulip.channels()
-                .subscribe(StreamSubscriptionRequest.of("Test Stream For Muting", "Test Stream For Muting")).execute();
+                .subscribe(StreamSubscriptionRequest.of(streamName, streamName)).execute();
         Map<String, List<String>> subscribed = result.getSubscribed();
         assertEquals(1, subscribed.size());
 
-        Long streamId = zulip.channels().getStreamId("Test Stream For Muting").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
-        zulip.channels().muteTopic("Test Stream For Muting")
+        zulip.channels().muteTopic(streamName)
                 .withStreamId(streamId)
                 .execute();
-        zulip.channels().unmuteTopic("Test Stream For Muting")
+        zulip.channels().unmuteTopic(streamName)
                 .withStreamId(streamId)
                 .execute();
 
         for (TopicVisibilityPolicy topicVisibilityPolicy : TopicVisibilityPolicy.values()) {
-            zulip.channels().updateUserTopicPreferences(streamId, "Test Stream For Muting", topicVisibilityPolicy).execute();
+            zulip.channels().updateUserTopicPreferences(streamId, streamName, topicVisibilityPolicy).execute();
         }
     }
 
     @Test
     public void defaultStreams() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         StreamSubscriptionResult result = zulip.channels()
-                .subscribe(StreamSubscriptionRequest.of("Test Stream For Defaulting", "Test Stream For Defaulting"))
+                .subscribe(StreamSubscriptionRequest.of(streamName, streamName))
                 .execute();
 
         Map<String, List<String>> subscribed = result.getSubscribed();
         assertEquals(1, subscribed.size());
 
-        Long streamId = zulip.channels().getStreamId("Test Stream For Defaulting").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
 
         zulip.channels().addDefaultStream(streamId).execute();
 
@@ -334,14 +357,16 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
     @Test
     public void streamEmailAddress() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+
         StreamSubscriptionResult result = zulip.channels()
-                .subscribe(StreamSubscriptionRequest.of("Test Stream For Email", "Test Stream For Email"))
+                .subscribe(StreamSubscriptionRequest.of(streamName, streamName))
                 .execute();
 
         Map<String, List<String>> subscribed = result.getSubscribed();
         assertEquals(1, subscribed.size());
 
-        Long streamId = zulip.channels().getStreamId("Test Stream For Email").execute();
+        Long streamId = zulip.channels().getStreamId(streamName).execute();
         String email = zulip.channels().getStreamEmailAddress(streamId).execute();
         assertNotNull(email);
     }

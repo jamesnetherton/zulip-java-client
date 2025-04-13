@@ -6,7 +6,7 @@ import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
@@ -22,10 +22,13 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     public static final String PRIVATE = "is_private";
     public static final String IS_DEFAULT_STREAM = "is_default_stream";
     public static final String IS_WEB_PUBLIC = "is_web_public";
-    public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
+    public static final String CAN_ADD_SUBSCRIBERS_GROUP = "can_add_subscribers_group";
+    public static final String CAN_ADMINISTER_CHANNEL_GROUP = "can_administer_channel_group";
+    public static final String CAN_SEND_MESSAGE_GROUP = "can_send_message_group";
+    public static final String CAN_SUBSCRIBE_GROUP = "can_subscribe_group";
 
     private final long streamId;
 
@@ -47,7 +50,6 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @return             This {@link UpdateStreamApiRequest} instance
      */
     public UpdateStreamApiRequest withDescription(String description) {
-        // TODO: Consider adding back support for Zulip 3 requiring the description to be JSON encoded
         putParam(DESCRIPTION, description);
         return this;
     }
@@ -59,13 +61,12 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @return      This {@link UpdateStreamApiRequest} instance
      */
     public UpdateStreamApiRequest withName(String name) {
-        // TODO: Consider adding back support for Zulip 3 requiring the name to be JSON encoded
         putParam(NEW_NAME, name);
         return this;
     }
 
     /**
-     * Sets the whether the stream is private.
+     * Sets whether the stream is private.
      *
      * @param  isPrivate {@code true} if the stream should be private. {@code false} if the stream should be public
      * @return           This {@link UpdateStreamApiRequest} instance
@@ -97,17 +98,6 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withWebPublic(boolean webPublic) {
         putParam(IS_WEB_PUBLIC, webPublic);
-        return this;
-    }
-
-    /**
-     * Sets the updated policy for which users can post messages to the stream.
-     *
-     * @param  policy The {@link StreamPostPolicy} that should apply to the stream
-     * @return        This {@link UpdateStreamApiRequest} instance
-     */
-    public UpdateStreamApiRequest withStreamPostPolicy(StreamPostPolicy policy) {
-        putParam(STREAM_POST_POLICY, policy.getId());
         return this;
     }
 
@@ -146,13 +136,62 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     }
 
     /**
-     * Sets the updated user group id whose members are allowed to unsubscribe others from the stream.
+     * Sets the users who have permission to unsubscribe others from this stream.
      *
-     * @param  userGroupID The user group id whose members are allowed to unsubscribe others from the stream
-     * @return             This {@link UpdateStreamApiRequest} instance
+     * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to unsubscribe others from
+     *                          the stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
      */
-    public UpdateStreamApiRequest withCanRemoveSubscribersGroup(long userGroupID) {
-        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupID);
+    public UpdateStreamApiRequest withCanRemoveSubscribersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to add others to this stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
+     *                          stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanAddSubscribersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_ADD_SUBSCRIBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to administer this stream
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
+     *                          stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanAdministerChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_ADMINISTER_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to post in this stream
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
+     *                          stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanSendMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_SEND_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the users who have permission to subscribe themselves to this stream
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
+     *                          stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanSubscribeGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_SUBSCRIBE_GROUP, userGroupSetting);
         return this;
     }
 

@@ -17,6 +17,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  */
 public class RegisterEventQueueApiRequest extends ZulipApiRequest implements ExecutableApiRequest<EventQueue> {
 
+    public static final String ALL_PUBLIC_STREAMS = "all_public_streams";
     public static final String EVENT_TYPES = "event_types";
     public static final String FETCH_EVENT_TYPES = "fetch_event_types";
     public static final String[] FETCHED_EVENTS = new String[] { "realm" };
@@ -43,6 +44,18 @@ public class RegisterEventQueueApiRequest extends ZulipApiRequest implements Exe
 
             putParamAsJsonString(NARROW, stringNarrows);
         }
+    }
+
+    /**
+     * Whether to request message events from all public channels.
+     *
+     * @param  allPublicStreams {@code true} to request message events from all public channels. {@code false} to not include
+     *                          message events from all public channels
+     * @return                  This {@link RegisterEventQueueApiRequest} instance
+     */
+    public RegisterEventQueueApiRequest withAllPublicStreams(boolean allPublicStreams) {
+        putParamAsJsonString(ALL_PUBLIC_STREAMS, allPublicStreams);
+        return this;
     }
 
     /**

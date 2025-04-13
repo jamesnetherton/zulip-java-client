@@ -42,10 +42,6 @@ public class User {
         return delegate.isGuest();
     }
 
-    public boolean isBillingAdmin() {
-        return delegate.isBillingAdmin();
-    }
-
     public boolean isBot() {
         return delegate.isBot();
     }

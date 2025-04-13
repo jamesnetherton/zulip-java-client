@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 public class AddUsersToGroupApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
     public static final String ADD = "add";
+    public static final String ADD_SUBGROUPS = "add_subgroups";
 
     private final long groupId;
 
@@ -30,6 +31,17 @@ public class AddUsersToGroupApiRequest extends ZulipApiRequest implements VoidEx
         super(client);
         this.groupId = groupId;
         putParamAsJsonString(ADD, userIds);
+    }
+
+    /**
+     * Sets the list of user group IDs to be added to the user group.
+     *
+     * @param  userGroupIds The user group IDs to be added to the user group
+     * @return              This {@link AddUsersToGroupApiRequest} instance
+     */
+    public AddUsersToGroupApiRequest withAddSubGroups(long... userGroupIds) {
+        putParamAsJsonString(ADD_SUBGROUPS, userGroupIds);
+        return this;
     }
 
     /**

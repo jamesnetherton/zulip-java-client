@@ -27,7 +27,25 @@ public class UserGroup {
     private boolean isSystemGroup;
 
     @JsonProperty
-    private long canMentionGroup;
+    private boolean deactivated;
+
+    @JsonProperty
+    private UserGroupSetting canAddMembersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canJoinGroup;
+
+    @JsonProperty
+    private UserGroupSetting canLeaveGroup;
+
+    @JsonProperty
+    private UserGroupSetting canManageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMentionGroup;
+
+    @JsonProperty
+    private UserGroupSetting canRemoveMembersGroup;
 
     public long getId() {
         return id;
@@ -53,7 +71,31 @@ public class UserGroup {
         return isSystemGroup;
     }
 
-    public long getCanMentionGroup() {
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public UserGroupSetting getCanAddMembersGroup() {
+        return canAddMembersGroup;
+    }
+
+    public UserGroupSetting getCanJoinGroup() {
+        return canJoinGroup;
+    }
+
+    public UserGroupSetting getCanLeaveGroup() {
+        return canLeaveGroup;
+    }
+
+    public UserGroupSetting getCanManageGroup() {
+        return canManageGroup;
+    }
+
+    public UserGroupSetting getCanMentionGroup() {
         return canMentionGroup;
+    }
+
+    public UserGroupSetting getCanRemoveMembersGroup() {
+        return canRemoveMembersGroup;
     }
 }

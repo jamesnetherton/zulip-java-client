@@ -16,6 +16,7 @@ import java.util.List;
  * @see <a href="https://zulip.com/api/get-stream-topics">https://zulip.com/api/get-stream-topics</a>
  */
 public class GetStreamTopicsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<Topic>> {
+    public static final String ALLOW_EMPTY_TOPIC_NAME = "allow_empty_topic_name";
 
     private final long streamId;
 
@@ -28,6 +29,17 @@ public class GetStreamTopicsApiRequest extends ZulipApiRequest implements Execut
     public GetStreamTopicsApiRequest(ZulipHttpClient client, long streamId) {
         super(client);
         this.streamId = streamId;
+    }
+
+    /**
+     * Sets whether an empty string as a topic name is allowed in the response.
+     *
+     * @param  allowEmptyTopicName {@code true} to allow empty topic names. {@code false} to disallow empty topic names;
+     * @return
+     */
+    public GetStreamTopicsApiRequest allowEmptyTopicName(boolean allowEmptyTopicName) {
+        putParam(ALLOW_EMPTY_TOPIC_NAME, allowEmptyTopicName);
+        return this;
     }
 
     /**

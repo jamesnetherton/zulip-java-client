@@ -6,9 +6,11 @@ final class UserRequestConstants {
     public static final String SETTINGS = "settings";
     public static final String SETTINGS_NOTIFICATIONS = SETTINGS + "/notifications";
     public static final String TYPING = "typing";
+    public static final String TYPING_FOR_MESSAGE_EDIT = "messages/%d/" + TYPING;
     public static final String USER_GROUPS = "user_groups";
     public static final String USER_GROUPS_CREATE = USER_GROUPS + "/create";
     public static final String USER_GROUPS_WITH_ID = USER_GROUPS + "/%d";
+    public static final String USER_GROUPS_DEACTIVATE = USER_GROUPS_WITH_ID + "/deactivate";
     public static final String USER_GROUPS_MEMBERS = USER_GROUPS_WITH_ID + "/members";
     public static final String USER_GROUPS_MEMBERS_WITH_ID = USER_GROUPS_MEMBERS + "/%d";
     public static final String USER_GROUPS_SUBGROUPS = USER_GROUPS_WITH_ID + "/subgroups";

@@ -7,8 +7,8 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
-import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
@@ -26,12 +26,14 @@ import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApi
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusForMessageEditApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserByEmailApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -129,6 +131,20 @@ public class UserService implements ZulipService {
     }
 
     /**
+     * Notifies other users whether the current user is editing a message
+     *
+     * @see              <a href=
+     *                   "https://zulip.com/api/set-typing-status-for-message-edit">https://zulip.com/api/set-typing-status-for-message-edit</a>
+     *
+     * @param  messageId The id of the message being edited
+     * @param  operation The typing operation to apply
+     * @return           The {@link SetTypingStatusForMessageEditApiRequest} builder object
+     */
+    public SetTypingStatusForMessageEditApiRequest setTypingForMessageEdit(long messageId, TypingOperation operation) {
+        return new SetTypingStatusForMessageEditApiRequest(this.client, messageId, operation);
+    }
+
+    /**
      * Create a new user group.
      *
      * @see                <a href="https://zulip.com/api/create-user-group">https://zulip.com/api/create-user-group</a>
@@ -140,6 +156,18 @@ public class UserService implements ZulipService {
      */
     public CreateUserGroupApiRequest createUserGroup(String name, String description, long... userIds) {
         return new CreateUserGroupApiRequest(this.client, name, description, userIds);
+    }
+
+    /**
+     * Deactivates a user group.
+     *
+     * @see            <a href="https://zulip.com/api/deactivate-user-group">https://zulip.com/api/deactivate-user-group</a>
+     *
+     * @param  groupId The id of the user group to deactivate
+     * @return         The {@link DeactivateUserGroupApiRequest} builder object
+     */
+    public DeactivateUserGroupApiRequest deactivateUserGroup(long groupId) {
+        return new DeactivateUserGroupApiRequest(this.client, groupId);
     }
 
     /**
@@ -166,18 +194,6 @@ public class UserService implements ZulipService {
      */
     public UpdateUserGroupApiRequest updateUserGroup(String name, String description, long groupId) {
         return new UpdateUserGroupApiRequest(this.client, name, description, groupId);
-    }
-
-    /**
-     * Deletes a user group.
-     *
-     * @see            <a href="https://zulip.com/api/remove-user-group">https://zulip.com/api/remove-user-group</a>
-     *
-     * @param  groupId The id of the group to delete
-     * @return         The {@link DeleteUserGroupApiRequest} builder object
-     */
-    public DeleteUserGroupApiRequest deleteUserGroup(long groupId) {
-        return new DeleteUserGroupApiRequest(this.client, groupId);
     }
 
     /**
@@ -315,6 +331,18 @@ public class UserService implements ZulipService {
      */
     public UpdateUserApiRequest updateUser(long userId) {
         return new UpdateUserApiRequest(this.client, userId);
+    }
+
+    /**
+     * Update a user by their email address.
+     *
+     * @see          <a href="https://zulip.com/api/update-user-by-email">https://zulip.com/api/update-user-by-email</a>
+     *
+     * @param  email The email address of the user to update
+     * @return       The {@link UpdateUserByEmailApiRequest} builder object
+     */
+    public UpdateUserByEmailApiRequest updateUser(String email) {
+        return new UpdateUserByEmailApiRequest(this.client, email);
     }
 
     /**

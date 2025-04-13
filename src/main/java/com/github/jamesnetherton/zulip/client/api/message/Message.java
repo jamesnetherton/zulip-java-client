@@ -73,6 +73,12 @@ public class Message {
     @JsonProperty
     private MessageType type;
 
+    @JsonProperty
+    private Instant lastEditTimestamp;
+
+    @JsonProperty
+    private Instant lastMovedTimestamp;
+
     @JsonSetter("display_recipient")
     void displayRecipient(JsonNode node) {
         if (node.isTextual()) {
@@ -175,5 +181,13 @@ public class Message {
 
     public Long getStreamId() {
         return streamId;
+    }
+
+    public Instant getLastEditTimestamp() {
+        return lastEditTimestamp;
+    }
+
+    public Instant getLastMovedTimestamp() {
+        return lastMovedTimestamp;
     }
 }

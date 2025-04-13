@@ -1,0 +1,19 @@
+{
+  "detached_uploads": [
+    {
+      "create_time": 1687984706000,
+      "id": 1,
+      "messages": [
+        {
+        "id": 1,
+        "date_sent": 1687984706000
+        }
+      ],
+      "name": "image.gif",
+      "path_id": "/test",
+      "size": 12345
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

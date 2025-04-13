@@ -14,6 +14,8 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  * @see <a href="https://zulip.com/api/get-subscribers">https://zulip.com/api/get-subscribers</a>
  */
 public class GetStreamEmailAddressApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String> {
+    public static final String SENDER_ID = "sender_id";
+
     private final long streamId;
 
     /**
@@ -25,6 +27,18 @@ public class GetStreamEmailAddressApiRequest extends ZulipApiRequest implements 
     public GetStreamEmailAddressApiRequest(ZulipHttpClient client, long streamId) {
         super(client);
         this.streamId = streamId;
+    }
+
+    /**
+     * Sets the ID of a user or bot which should appear as the sender when messages are sent to the channel using the returned
+     * channel email address.
+     *
+     * @param  senderId The ID of the user
+     * @return          This {@link GetStreamEmailAddressApiRequest} instance
+     */
+    public GetStreamEmailAddressApiRequest withSenderId(long senderId) {
+        putParam(SENDER_ID, senderId);
+        return this;
     }
 
     @Override

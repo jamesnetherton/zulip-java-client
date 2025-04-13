@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import java.time.Instant;
 
 /**
@@ -54,7 +55,25 @@ public class Stream {
     private boolean isWebPublic;
 
     @JsonProperty
-    private int canRemoveSubscribersGroup;
+    private UserGroupSetting canRemoveSubscribersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canSendMessageGroup;
+
+    @JsonProperty
+    private boolean isArchived;
+
+    @JsonProperty
+    private boolean isRecentlyActive;
+
+    @JsonProperty
+    private UserGroupSetting canAddSubscribersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canAdministerChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canSubscribeGroup;
 
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
@@ -104,6 +123,7 @@ public class Stream {
         return streamId;
     }
 
+    @Deprecated
     public StreamPostPolicy getStreamPostPolicy() {
         return streamPostPolicy;
     }
@@ -116,7 +136,35 @@ public class Stream {
         return isWebPublic;
     }
 
-    public int canRemoveSubscribersGroup() {
+    public UserGroupSetting canRemoveSubscribersGroup() {
         return canRemoveSubscribersGroup;
+    }
+
+    public UserGroupSetting getCanSendMessageGroup() {
+        return canSendMessageGroup;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public UserGroupSetting getCanRemoveSubscribersGroup() {
+        return canRemoveSubscribersGroup;
+    }
+
+    public boolean isRecentlyActive() {
+        return isRecentlyActive;
+    }
+
+    public UserGroupSetting getCanAddSubscribersGroup() {
+        return canAddSubscribersGroup;
+    }
+
+    public UserGroupSetting getCanAdministerChannelGroup() {
+        return canAdministerChannelGroup;
+    }
+
+    public UserGroupSetting getCanSubscribeGroup() {
+        return canSubscribeGroup;
     }
 }

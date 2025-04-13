@@ -3,6 +3,8 @@ package com.github.jamesnetherton.zulip.client.api.server.request;
 final class ServerRequestConstants {
     public static final String CALLS_BIG_BLUE_BUTTON = "calls/bigbluebutton/create";
     public static final String DEV_FETCH_API_KEY = "dev_fetch_api_key";
+    public static final String EXPORT_REALM = "export/realm";
+    public static final String EXPORT_REALM_CONSENTS = "export/realm/consents";
     public static final String FETCH_API_KEY = "fetch_api_key";
     public static final String MOBILE_PUSH_TEST = "mobile_push/test_notification";
     public static final String REALM = "realm";

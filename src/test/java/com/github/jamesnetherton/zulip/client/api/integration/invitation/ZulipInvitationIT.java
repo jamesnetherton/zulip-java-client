@@ -8,22 +8,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.invitation.Invitation;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserRole;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 public class ZulipInvitationIT extends ZulipIntegrationTestBase {
 
     @Test
     public void reusableInvitationCrudOperations() throws Exception {
+        String channelName = UUID.randomUUID().toString();
+
         zulip.streams()
-                .subscribe(StreamSubscriptionRequest.of("Test for invitations", "Test for invitations"))
+                .subscribe(StreamSubscriptionRequest.of(channelName, channelName))
                 .execute();
 
-        Long streamId = zulip.streams().getStreamId("Test for invitations").execute();
+        Long streamId = zulip.streams().getStreamId(channelName).execute();
+
+        String groupName = UUID.randomUUID().toString();
+        zulip.users().createUserGroup(groupName, groupName).execute();
+        List<UserGroup> groups = zulip.users().getUserGroups().execute();
+        assertFalse(groups.isEmpty());
 
         String invitationLink = zulip.invitations().createReusableInvitationLink()
+                .withGroupIds(groups.get(groups.size() - 1).getId())
                 .withIncludeRealmDefaultSubscriptions(true)
                 .withInviteAs(UserRole.MEMBER)
                 .inviteExpiresInMinutes(60)
@@ -54,13 +64,20 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
 
     @Test
     public void emailInvitationCrudOperations() throws Exception {
+        String channelName = UUID.randomUUID().toString();
         zulip.streams()
-                .subscribe(StreamSubscriptionRequest.of("Test for invitations", "Test for invitations"))
+                .subscribe(StreamSubscriptionRequest.of(channelName, channelName))
                 .execute();
 
-        Long streamId = zulip.streams().getStreamId("Test for invitations").execute();
+        Long streamId = zulip.streams().getStreamId(channelName).execute();
+
+        String groupName = UUID.randomUUID().toString();
+        zulip.users().createUserGroup(groupName, groupName).execute();
+        List<UserGroup> groups = zulip.users().getUserGroups().execute();
+        assertFalse(groups.isEmpty());
 
         zulip.invitations().sendInvitations(List.of("foo@bar.com, cheese@wine.com"), List.of(streamId))
+                .withGroupIds(groups.get(groups.size() - 1).getId())
                 .withInviteAs(UserRole.MEMBER)
                 .inviteExpiresInMinutes(60)
                 .withNotifyReferrerOnJoin(true)

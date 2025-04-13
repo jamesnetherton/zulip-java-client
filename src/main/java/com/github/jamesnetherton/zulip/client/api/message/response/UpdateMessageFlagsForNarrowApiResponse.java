@@ -3,6 +3,8 @@ package com.github.jamesnetherton.zulip.client.api.message.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.message.MessageFlagsUpdateResult;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Zulip API response class for updating message flags with a narrow.
@@ -24,6 +26,8 @@ public class UpdateMessageFlagsForNarrowApiResponse extends ZulipApiResponse {
     private boolean foundNewest;
     @JsonProperty
     private boolean foundOldest;
+    @JsonProperty
+    private List<Integer> ignoredBecauseNotSubscribedChannels = new ArrayList<>();
 
     public int getFirstProcessedId() {
         return firstProcessedId;
@@ -47,6 +51,10 @@ public class UpdateMessageFlagsForNarrowApiResponse extends ZulipApiResponse {
 
     public int getUpdatedCount() {
         return updatedCount;
+    }
+
+    public List<Integer> getIgnoredBecauseNotSubscribedChannels() {
+        return ignoredBecauseNotSubscribedChannels;
     }
 
     public MessageFlagsUpdateResult getMessageFlagsUpdateResult() {

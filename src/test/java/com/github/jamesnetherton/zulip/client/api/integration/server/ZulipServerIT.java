@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.server.AuthenticationSettings;
 import com.github.jamesnetherton.zulip.client.api.server.CustomEmoji;
+import com.github.jamesnetherton.zulip.client.api.server.DataExport;
+import com.github.jamesnetherton.zulip.client.api.server.DataExportConsent;
+import com.github.jamesnetherton.zulip.client.api.server.DataExportType;
 import com.github.jamesnetherton.zulip.client.api.server.EmailAddressVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.Linkifier;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
@@ -144,6 +147,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     public void customProfileFieldsCrud() throws ZulipClientException {
         long simpleId = zulip.server().createCustomProfileField()
                 .withSimpleFieldType(ProfileFieldType.LONG_TEXT, "Test Long Name", "Test Long Hint")
+                .withEditableByUser(true)
                 .execute();
         assertTrue(simpleId > 0);
 
@@ -180,6 +184,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 assertTrue(field.getOrder() > 0);
                 assertEquals(ProfileFieldType.LONG_TEXT, field.getType());
                 assertEquals("", field.getFieldData());
+                assertTrue(field.isEditableByUser());
                 order.add(field.getOrder());
             } else if (field.getId() == listId) {
                 assertEquals("Test List Hint", field.getHint());
@@ -223,7 +228,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     @Test
     public void getApiKey() throws ZulipClientException {
         try {
-            String key = zulip.server().getApiKey("test@test.com", "testing123").execute();
+            String key = zulip.server().getApiKey("test@test.com", "testing123!").execute();
             assertFalse(key.isEmpty());
         } catch (ZulipClientException e) {
             // Ignore if dev not enabled
@@ -296,6 +301,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withWebStreamUnreadsCountDisplayPolicy(WebStreamUnreadsCountDisplayPolicy.ALL_STREAMS)
                 .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
+                .withWebSuggestUpdateTimezone(true)
                 .execute();
 
         assertNotNull(result);
@@ -314,7 +320,25 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
     @Test
     public void fcmRegistrationToken() throws ZulipClientException {
-        zulip.server().addFcmRegsitrationToken("test").execute();
+        zulip.server().addFcmRegistrationToken("test").execute();
         zulip.server().removeFcmRegistrationToken("test").execute();
+    }
+
+    @Test
+    public void dataExport() throws ZulipClientException {
+        Integer id = zulip.server().createDataExport().execute();
+        List<DataExport> dataExports = zulip.server().getAllDataExports().execute();
+        assertFalse(dataExports.isEmpty());
+        Optional<DataExport> export = dataExports.stream().filter(dataExport -> id.equals(dataExport.getId())).findFirst();
+        assertTrue(export.isPresent());
+        DataExport dataExport = export.get();
+        assertEquals(id, dataExport.getId());
+        assertEquals(ownUser.getUserId(), dataExport.getActingUserId());
+        assertTrue(dataExport.getExportTime().toEpochMilli() > 0);
+        assertEquals(DataExportType.PUBLIC, dataExport.getExportType());
+        assertTrue(dataExport.isPending());
+
+        List<DataExportConsent> dataExportConsents = zulip.server().getDataExportConsentState().execute();
+        assertFalse(dataExportConsents.isEmpty());
     }
 }

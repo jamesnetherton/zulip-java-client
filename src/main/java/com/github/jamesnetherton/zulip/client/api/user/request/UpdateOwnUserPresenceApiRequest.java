@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public class UpdateOwnUserPresenceApiRequest extends ZulipApiRequest
         implements ExecutableApiRequest<Map<Long, UserPresenceDetail>> {
+    public static final String HISTORY_LIMIT_DAYS = "history_limit_days";
     public static final String LAST_UPDATE_ID = "last_update_id";
     public static final String NEW_USER_INPUT = "new_user_input";
     public static final String PING_ONLY = "ping_only";
@@ -37,6 +38,20 @@ public class UpdateOwnUserPresenceApiRequest extends ZulipApiRequest
 
         putParam(STATUS, status.name().toLowerCase());
         putParam(LAST_UPDATE_ID, -1);
+    }
+
+    /**
+     * Sets how far back in time to fetch user presence data.
+     *
+     * @see                     <a href=
+     *                          "https://zulip.com/api/update-presence#parameter-history_limit_days">https://zulip.com/api/update-presence#parameter-history_limit_days</a>
+     *
+     * @param  historyLimitDays how far back in time to fetch user presence data
+     * @return                  This {@link UpdateOwnUserPresenceApiRequest} instance
+     */
+    public UpdateOwnUserPresenceApiRequest withHistoryLimitDays(int historyLimitDays) {
+        putParam(HISTORY_LIMIT_DAYS, historyLimitDays);
+        return this;
     }
 
     /**

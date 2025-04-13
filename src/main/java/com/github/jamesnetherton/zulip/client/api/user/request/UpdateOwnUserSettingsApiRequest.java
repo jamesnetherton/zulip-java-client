@@ -25,6 +25,7 @@ import java.util.List;
  * @see <a href="https://zulip.com/api/update-settings">https://zulip.com/api/update-settings</a>
  */
 public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<String>> {
+    public static final String ALLOW_PRIVATE_DATA_EXPORT = "allow_private_data_export";
     public static final String COLOR_SCHEME = "color_scheme";
     public static final String DEFAULT_LANGUAGE = "default_language";
     public static final String DEFAULT_VIEW = "default_view";
@@ -51,6 +52,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String ESCAPE_NAVIGATES_TO_DEFAULT_VIEW = "escape_navigates_to_default_view";
     public static final String FLUID_LAYOUT_WIDTH = "fluid_layout_width";
     public static final String FULL_NAME = "full_name";
+    public static final String HIDE_AI_FEATURES = "hide_ai_features";
     public static final String HIGH_CONTRAST_MODE = "high_contrast_mode";
     public static final String LEFT_SIDE_USERLIST = "left_side_userlist";
     public static final String MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS = "message_content_in_email_notifications";
@@ -76,6 +78,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String WEB_LINE_HEIGHT_PERCENT = "web_line_height_percent";
     public static final String WEB_MARK_READ_ON_SCROLL_POLICY = "web_mark_read_on_scroll_policy";
     public static final String WEB_NAVIGATE_TO_SENT_MESSAGE = "web_navigate_to_sent_message";
+    public static final String WEB_SUGGEST_UPDATE_TIMEZONE = "web_suggest_update_timezone";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
 
     /**
@@ -85,6 +88,18 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest(ZulipHttpClient client) {
         super(client);
+    }
+
+    /**
+     * Sets whether organization administrators are allowed to export private data.
+     *
+     * @param  allowPrivateDataExport {@code true} to allow organization administrators to export private data. {@code false} to
+     *                                disallow organization administrators from exporting private data
+     * @return                        This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withAllowPrivateDataExport(boolean allowPrivateDataExport) {
+        putParam(ALLOW_PRIVATE_DATA_EXPORT, allowPrivateDataExport);
+        return this;
     }
 
     /**
@@ -386,6 +401,17 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest withFullName(String fullName) {
         putParam(FULL_NAME, fullName);
+        return this;
+    }
+
+    /**
+     * Sets whether AI features like topic summarization should be hidden.
+     *
+     * @param  hideAiFeatures {@code true} to hide AI features. {@code false} to not hide AI features.
+     * @return                This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withHideAiFeatures(boolean hideAiFeatures) {
+        putParam(HIDE_AI_FEATURES, hideAiFeatures);
         return this;
     }
 
@@ -693,12 +719,25 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     /**
      * Sets whether the user view should automatically go to the conversation where they sent a message.
      *
-     * @param  webNavigateToSentMessage {@code trye} to automatically go to the conversation where they sent a message.
+     * @param  webNavigateToSentMessage {@code true} to automatically go to the conversation where they sent a message.
      *                                  {@code false} to not automatically go to the conversation where they sent a message.
      * @return                          This {@link UpdateOwnUserSettingsApiRequest} instance
      */
     public UpdateOwnUserSettingsApiRequest withWebNavigateToSentMessage(boolean webNavigateToSentMessage) {
         putParam(WEB_NAVIGATE_TO_SENT_MESSAGE, webNavigateToSentMessage);
+        return this;
+    }
+
+    /**
+     * Sets whether the user should be shown an alert, offering to update their profile time zone, when the time displayed for
+     * the profile time zone differs from the current time displayed by the time zone configured on their device.
+     *
+     * @param  webSuggestUpdateTimezone {@code true} to show a user alert offering to update their profile time zone.
+     *                                  {@code} false to not show an alert.
+     * @return                          This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withWebSuggestUpdateTimezone(boolean webSuggestUpdateTimezone) {
+        putParam(WEB_SUGGEST_UPDATE_TIMEZONE, webSuggestUpdateTimezone);
         return this;
     }
 

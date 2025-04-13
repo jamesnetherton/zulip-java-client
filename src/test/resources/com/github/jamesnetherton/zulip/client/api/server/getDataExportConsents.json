@@ -1,0 +1,14 @@
+{
+  "export_consents": [
+    {
+      "consented": true,
+      "user_id": 1
+    },
+    {
+      "consented": false,
+      "user_id": 2
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

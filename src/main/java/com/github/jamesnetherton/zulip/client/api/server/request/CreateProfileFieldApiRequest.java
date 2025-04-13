@@ -28,6 +28,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
     public static final String FIELD_DATA = "field_data";
     public static final String DISPLAY_IN_PROFILE_SUMMARY = "display_in_profile_summary";
     public static final String REQUIRED = "required";
+    public static final String EDITABLE_BY_USER = "editable_by_user";
 
     /**
      * Constructs a {@link CreateProfileFieldApiRequest}.
@@ -118,6 +119,17 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      */
     public CreateProfileFieldApiRequest withRequired(boolean required) {
         putParam(REQUIRED, required);
+        return this;
+    }
+
+    /**
+     * Sets whether regular users can edit the profile field on their own account.
+     *
+     * @param  editableByUser Whether regular users can edit the profile field on their own account
+     * @return                This {@link CreateProfileFieldApiRequest} instance
+     */
+    public CreateProfileFieldApiRequest withEditableByUser(boolean editableByUser) {
+        putParam(EDITABLE_BY_USER, editableByUser);
         return this;
     }
 

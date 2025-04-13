@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
@@ -96,9 +97,9 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(EditMessageApiRequest.TOPIC, "test topic")
                 .get();
 
-        stubZulipResponse(PATCH, "/messages/1", params);
+        stubZulipResponse(PATCH, "/messages/1", params, "editMessage.json");
 
-        zulip.messages().editMessage(1)
+        List<DetachedUpload> detachedUploads = zulip.messages().editMessage(1)
                 .withContent("edited content")
                 .withPropagateMode(PropagateMode.CHANGE_ONE)
                 .withSendNotificationToNewThread(true)
@@ -106,6 +107,20 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .withStreamId(1)
                 .withTopic("test topic")
                 .execute();
+
+        assertEquals(1, detachedUploads.size());
+        DetachedUpload detachedUpload = detachedUploads.get(0);
+        assertEquals(1, detachedUpload.getId());
+        assertEquals("image.gif", detachedUpload.getName());
+        assertEquals("/test", detachedUpload.getPathId());
+        assertEquals(12345, detachedUpload.getSize());
+        assertTrue(detachedUpload.getCreateTime().toEpochMilli() > 0);
+
+        List<DetachedUpload.DetachedUploadMessage> messages = detachedUpload.getMessages();
+        assertEquals(1, messages.size());
+        DetachedUpload.DetachedUploadMessage detachedUploadMessage = messages.get(0);
+        assertEquals(1, detachedUploadMessage.getId());
+        assertTrue(detachedUploadMessage.getDateSent().toEpochMilli() > 0);
     }
 
     @Test
@@ -181,9 +196,16 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
     @Test
     public void getMessageHistory() throws Exception {
-        stubZulipResponse(GET, "/messages/1/history", "messageHistory.json");
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetMessageHistoryApiRequest.ALLOW_EMPTY_TOPIC_NAME, "true")
+                .get();
 
-        List<MessageHistory> messageHistories = zulip.messages().getMessageHistory(1).execute();
+        stubZulipResponse(GET, "/messages/1/history", params, "messageHistory.json");
+
+        List<MessageHistory> messageHistories = zulip.messages()
+                .getMessageHistory(1)
+                .withAllowEmptyTopicName(true)
+                .execute();
         assertEquals(2, messageHistories.size());
 
         MessageHistory messageHistory = messageHistories.get(0);
@@ -287,7 +309,6 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
             MessageEdit edit = editHistory.get(i - 1);
             assertEquals("Old Content " + i, edit.getPreviousContent());
             assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
-            assertEquals(i, edit.getPreviousRenderedContentVersion());
             assertEquals(i, edit.getPreviousStream());
             assertEquals("Old Topic " + i, edit.getPreviousTopic());
             assertEquals(i, edit.getStream());
@@ -295,6 +316,24 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
             assertEquals(1603913066000L, edit.getTimestamp().toEpochMilli());
             assertEquals(i, edit.getUserId());
         }
+    }
+
+    @Test
+    public void getMessagesWithIds() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .addAsRawJsonString(GetMessagesApiRequest.MESSAGE_IDS, new Long[] { 1L, 2L, 3L })
+                .get();
+
+        stubZulipResponse(GET, "/messages", params, "getMessagesWithIds.json");
+
+        assertThrows(IllegalArgumentException.class, () -> zulip.messages().getMessages(null).execute());
+        assertThrows(IllegalArgumentException.class, () -> zulip.messages().getMessages(Collections.emptyList()).execute());
+
+        List<Message> messages = zulip.messages().getMessages(List.of(1L, 2L, 3L)).execute();
+        assertEquals(3, messages.size());
+        assertEquals(1L, messages.get(0).getId());
+        assertEquals(2L, messages.get(1).getId());
+        assertEquals(3L, messages.get(2).getId());
     }
 
     @Test
@@ -373,7 +412,6 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
             MessageEdit edit = editHistory.get(i - 1);
             assertEquals("Old Content " + i, edit.getPreviousContent());
             assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
-            assertEquals(i, edit.getPreviousRenderedContentVersion());
             assertEquals(i, edit.getPreviousStream());
             assertEquals("Old Topic " + i, edit.getPreviousTopic());
             assertEquals(i, edit.getStream());
@@ -387,6 +425,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(GetMessagesApiRequest.ANCHOR, anchor.toString())
                 .add(GetMessagesApiRequest.INCLUDE_ANCHOR, "true")
+                .add(GetMessagesApiRequest.ALLOW_EMPTY_TOPIC_NAME, "true")
                 .add(GetMessagesApiRequest.NUM_BEFORE, "3")
                 .add(GetMessagesApiRequest.NUM_AFTER, "1")
                 .add(GetMessagesApiRequest.MARKDOWN, "true")
@@ -401,6 +440,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         if (anchor instanceof Integer) {
             messages = zulip.messages().getMessages(3, 1, (Integer) anchor)
                     .withIncludeAnchor(true)
+                    .withAllowEmptyTopicName(true)
                     .withMarkdown(true)
                     .withGravatar(true)
                     .withNarrows(Narrow.of("foo", "bar"), Narrow.ofNegated("cheese", "wine"))
@@ -408,6 +448,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         } else {
             messages = zulip.messages().getMessages(3, 1, (Anchor) anchor)
                     .withIncludeAnchor(true)
+                    .withAllowEmptyTopicName(true)
                     .withMarkdown(true)
                     .withGravatar(true)
                     .withNarrows(Narrow.of("foo", "bar"), Narrow.ofNegated("cheese", "wine"))
@@ -430,6 +471,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals("zulip", streamMessage.getSenderRealm());
         assertEquals("Test message subject", streamMessage.getSubject());
         assertEquals(1603913066000L, streamMessage.getTimestamp().toEpochMilli());
+        assertEquals(1603913066000L, streamMessage.getLastEditTimestamp().toEpochMilli());
+        assertEquals(1603913066000L, streamMessage.getLastMovedTimestamp().toEpochMilli());
         assertEquals(MessageType.STREAM, streamMessage.getType());
 
         List<MessageFlag> flags = streamMessage.getFlags();
@@ -484,7 +527,6 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
             MessageEdit edit = editHistory.get(i - 1);
             assertEquals("Old Content " + i, edit.getPreviousContent());
             assertEquals("Old Rendered Content " + i, edit.getPreviousRenderedContent());
-            assertEquals(i, edit.getPreviousRenderedContentVersion());
             assertEquals(i, edit.getPreviousStream());
             assertEquals("Old Topic " + i, edit.getPreviousTopic());
             assertEquals(i, edit.getStream());
@@ -863,6 +905,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals(4, result.getUpdatedCount());
         assertTrue(result.isFoundNewest());
         assertTrue(result.isFoundOldest());
+        assertEquals(List.of(1, 2, 3), result.getIgnoredBecauseNotSubscribedChannels());
     }
 
     @Test
@@ -891,6 +934,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals(4, result.getUpdatedCount());
         assertTrue(result.isFoundNewest());
         assertTrue(result.isFoundOldest());
+        assertEquals(List.of(1, 2, 3), result.getIgnoredBecauseNotSubscribedChannels());
     }
 
     @Test

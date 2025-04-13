@@ -27,6 +27,7 @@ import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.io.File;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Zulip message APIs.
@@ -154,6 +155,17 @@ public class MessageService implements ZulipService {
      */
     public GetMessageApiRequest getMessage(long messageId) {
         return new GetMessageApiRequest(this.client, messageId);
+    }
+
+    /**
+     * Gets a messages matching the given message IDs.
+     *
+     * @param  messageIds The IDs of the messages to fetch
+     * @return            The {@link GetMessagesApiRequest} builder object
+     */
+    public GetMessagesApiRequest getMessages(List<Long> messageIds) {
+        return new GetMessagesApiRequest(this.client)
+                .withMessageIds(messageIds);
     }
 
     /**

@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamEmailAddressApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamIdApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamTopicsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetSubscribedStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.MuteTopicApiRequest;
@@ -22,9 +24,11 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.SubscribeStream
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamSubscriptionSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateUserTopicPreferencesApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -288,9 +292,15 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
     @Test
     public void streamTopics() throws Exception {
-        stubZulipResponse(GET, "/users/me/1/topics", "streamTopics.json");
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetStreamTopicsApiRequest.ALLOW_EMPTY_TOPIC_NAME, "true")
+                .get();
 
-        List<Topic> topics = zulip.channels().getTopics(1).execute();
+        stubZulipResponse(GET, "/users/me/1/topics", params, "streamTopics.json");
+
+        List<Topic> topics = zulip.channels().getTopics(1)
+                .allowEmptyTopicName(true)
+                .execute();
 
         for (int i = 1; i <= topics.size(); i++) {
             Topic topic = topics.get(i - 1);
@@ -301,8 +311,15 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
     @Test
     public void updateStream() throws Exception {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("direct_members", List.of(1, 2, 3));
+        data.put("direct_subgroups", List.of(4, 5, 6));
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(UpdateStreamApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "99")
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, Map.of("new", 1))
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_ADD_SUBSCRIBERS_GROUP, Map.of("new", 2))
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_ADMINISTER_CHANNEL_GROUP, Map.of("new", 3))
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_SUBSCRIBE_GROUP, Map.of("new", 4))
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_SEND_MESSAGE_GROUP, Map.of("new", data))
                 .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
@@ -310,13 +327,16 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
                 .add(UpdateStreamApiRequest.IS_DEFAULT_STREAM, "true")
                 .add(UpdateStreamApiRequest.IS_WEB_PUBLIC, "true")
-                .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(PATCH, "/streams/1", params);
 
         zulip.channels().updateStream(1)
-                .withCanRemoveSubscribersGroup(99)
+                .withCanRemoveSubscribersGroup(UserGroupSetting.of(1))
+                .withCanAddSubscribersGroup(UserGroupSetting.of(2))
+                .withCanAdministerChannelGroup(UserGroupSetting.of(3))
+                .withCanSubscribeGroup(UserGroupSetting.of(4))
+                .withCanSendMessageGroup(UserGroupSetting.of(List.of(1L, 2L, 3L), List.of(4L, 5L, 6L)))
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetention(30)
@@ -324,7 +344,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withIsPrivate(true)
                 .withDefaultStream(true)
                 .withWebPublic(true)
-                .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
     }
 
@@ -336,7 +355,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "\"unlimited\"")
                 .add(UpdateStreamApiRequest.NEW_NAME, "New name")
                 .add(UpdateStreamApiRequest.PRIVATE, "true")
-                .add(UpdateStreamApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(PATCH, "/streams/1", params);
@@ -347,14 +365,13 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withName("New name")
                 .withIsPrivate(true)
-                .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
     }
 
     @Test
     public void getAll() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(GetStreamsApiRequest.INCLUDE_ALL_ACTIVE, "true")
+                .add(GetStreamsApiRequest.INCLUDE_ALL, "true")
                 .add(GetStreamsApiRequest.INCLUDE_DEFAULT, "true")
                 .add(GetStreamsApiRequest.INCLUDE_OWNER_SUBSCRIBED, "true")
                 .add(GetStreamsApiRequest.INCLUDE_SUBSCRIBED, "true")
@@ -365,7 +382,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         stubZulipResponse(GET, "/streams", params, "streams.json");
 
         List<Stream> streams = zulip.channels().getAll()
-                .withIncludeAllActive(true)
+                .withIncludeAll(true)
                 .withIncludeDefault(true)
                 .withOwnerSubscribed(true)
                 .withIncludeSubscribed(true)
@@ -387,13 +404,21 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(i, stream.canRemoveSubscribersGroup());
+            assertEquals(i, stream.canRemoveSubscribersGroup().getUserGroupId());
+            assertEquals(i, stream.getCanSendMessageGroup().getUserGroupId());
+            assertEquals(i, stream.getCanAddSubscribersGroup().getUserGroupId());
+            assertEquals(i, stream.getCanAdministerChannelGroup().getUserGroupId());
             assertEquals(i, stream.getStreamWeeklyTraffic());
 
             if (i < 3) {
                 assertEquals(StreamPostPolicy.fromInt(i), stream.getStreamPostPolicy());
+                assertEquals(i, stream.getCanSubscribeGroup().getUserGroupId());
             } else {
                 assertEquals(StreamPostPolicy.UNKNOWN, stream.getStreamPostPolicy());
+                assertTrue(stream.isArchived());
+                assertTrue(stream.isRecentlyActive());
+                assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
+                assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
             }
         }
     }
@@ -415,7 +440,15 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(10, stream.getMessageRetentionDays());
         assertFalse(stream.isDefault());
         assertTrue(stream.isAnnouncementOnly());
-        assertEquals(1, stream.canRemoveSubscribersGroup());
+        assertEquals(1, stream.getStreamWeeklyTraffic());
+        assertTrue(stream.isArchived());
+        assertTrue(stream.isRecentlyActive());
+        assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
+        assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
+        assertEquals(1, stream.canRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(1, stream.getCanSendMessageGroup().getUserGroupId());
+        assertEquals(1, stream.getCanAddSubscribersGroup().getUserGroupId());
+        assertEquals(1, stream.getCanAdministerChannelGroup().getUserGroupId());
         assertEquals(1, stream.getStreamWeeklyTraffic());
     }
 
@@ -584,9 +617,15 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
     @Test
     public void getStreamEmailAddress() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetStreamEmailAddressApiRequest.SENDER_ID, "1")
+                .get();
+
         stubZulipResponse(GET, "/streams/1/email_address", Collections.emptyMap(), "streamEmailAddress.json");
 
-        String email = zulip.channels().getStreamEmailAddress(1).execute();
+        String email = zulip.channels().getStreamEmailAddress(1)
+                .withSenderId(1)
+                .execute();
         assertEquals("test@test.com", email);
     }
 }

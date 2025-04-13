@@ -11,7 +11,9 @@ import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
+import com.github.jamesnetherton.zulip.client.api.snippet.SavedSnippet;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
+import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscription;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -158,6 +160,16 @@ public class ZulipIntegrationTestBase {
                 }
             }
 
+            // Unsubscribe from streams
+            List<StreamSubscription> streamSubscriptions = zulip.channels().getSubscribedStreams().execute();
+            if (streamSubscriptions != null) {
+                String[] streams = streamSubscriptions.stream()
+                        .map(StreamSubscription::getName)
+                        .distinct()
+                        .toArray(String[]::new);
+                zulip.channels().unsubscribe(streams);
+            }
+
             // Clean up streams
             List<Stream> streams = zulip.channels().getAll().withIncludeDefault(false).execute();
             if (streams != null) {
@@ -175,7 +187,9 @@ public class ZulipIntegrationTestBase {
             if (groups != null) {
                 for (UserGroup group : groups) {
                     try {
-                        zulip.users().deleteUserGroup(group.getId()).execute();
+                        if (!group.isSystemGroup() && !group.isDeactivated()) {
+                            zulip.users().deactivateUserGroup(group.getId()).execute();
+                        }
                     } catch (ZulipClientException e) {
                         // Ignore
                     }
@@ -221,6 +235,16 @@ public class ZulipIntegrationTestBase {
                     } else {
                         zulip.invitations().revokeEmailInvitation(invite.getId()).execute();
                     }
+                } catch (ZulipClientException e) {
+                    // ignore
+                }
+            });
+
+            // Clean up saved snippets
+            List<SavedSnippet> savedSnippets = zulip.snippets().getSavedSnippets().execute();
+            savedSnippets.forEach(snippet -> {
+                try {
+                    zulip.snippets().deleteSavedSnippet(snippet.getId()).execute();
                 } catch (ZulipClientException e) {
                     // ignore
                 }
