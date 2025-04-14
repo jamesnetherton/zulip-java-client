@@ -152,7 +152,7 @@
                     <tagNameFormat>@{project.version}</tagNameFormat>
                     <releaseProfiles>release</releaseProfiles>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <preparationGoals>clean install</preparationGoals>
+                    <preparationGoals>clean</preparationGoals>
                     <arguments>-DskipTests -Dformatter.skip -Dimpsort.skip</arguments>
                 </configuration>
             </plugin>
