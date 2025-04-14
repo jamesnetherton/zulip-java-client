@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.8.0
+
+==== Enhancements
+
+Zulip 10 support
+
 == 0.7.3
 
 ==== Bug fixes
