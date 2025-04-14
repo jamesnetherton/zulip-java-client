@@ -24,10 +24,10 @@
         <wiremock.version>3.12.1</wiremock.version>
 
         <!-- Plugin versions -->
+        <central.publishing.maven.plugin.version>0.7.0</central.publishing.maven.plugin.version>
         <formatter.plugin.version>2.18.0</formatter.plugin.version>
         <impsort.plugin.version>1.9.0</impsort.plugin.version>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
-        <maven.failsafe.plugin.version>3.5.2</maven.failsafe.plugin.version>
         <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
         <maven.release.plugin.version>3.1.1</maven.release.plugin.version>
@@ -64,15 +64,10 @@
     </licenses>
 
     <distributionManagement>
-        <repository>
-            <id>oss-sonatype-staging</id>
-            <name>Sonatype Staging Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
         <snapshotRepository>
             <id>oss-sonatype-snapshots</id>
             <name>OSS Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -137,7 +132,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven.failsafe.plugin.version}</version>
+                <version>${maven.surefire.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -245,6 +240,15 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
