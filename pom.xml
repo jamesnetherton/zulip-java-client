@@ -247,6 +247,7 @@
                         <version>${central.publishing.maven.plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
+                            <deploymentName>${project.name} ${project.version}</deploymentName>
                             <publishingServerId>central</publishingServerId>
                         </configuration>
                     </plugin>
