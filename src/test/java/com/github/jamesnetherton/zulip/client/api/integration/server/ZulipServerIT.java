@@ -314,8 +314,9 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
     @Test
     public void apnsDeviceToken() throws ZulipClientException {
-        zulip.server().addApnsDeviceToken("test", "test").execute();
-        zulip.server().removeApnsDeviceToken("test").execute();
+        String token = "d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5";
+        zulip.server().addApnsDeviceToken(token, "test").execute();
+        zulip.server().removeApnsDeviceToken(token).execute();
     }
 
     @Test
