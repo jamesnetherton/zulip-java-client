@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.jamesnetherton.zulip.client.ZulipTestUtils;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
@@ -147,6 +148,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         List<DetachedUpload> detachedUploads = zulip.messages().editMessage(message.getId())
                 .withStreamId(stream3Id)
+                .withPrevContentSha256(ZulipTestUtils.stringToSha256("Test Content"))
                 .withPropagateMode(PropagateMode.CHANGE_ONE)
                 .withSendNotificationToNewThread(true)
                 .withSendNotificationToOldThread(false)

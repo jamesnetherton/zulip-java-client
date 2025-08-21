@@ -90,6 +90,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     public void editMessage() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(EditMessageApiRequest.CONTENT, "edited content")
+                .add(EditMessageApiRequest.PREV_CONTENT_SHA256,
+                        "8f4d3c7a1b25e6d9c4f8a2b3d7e0f159c1a6b8d4e2f73a9c5d1e8b0f3c6a7d92")
                 .add(EditMessageApiRequest.PROPAGATE_MODE, PropagateMode.CHANGE_ONE.toString())
                 .add(EditMessageApiRequest.SEND_NOTIFICATION_TO_NEW_THREAD, "true")
                 .add(EditMessageApiRequest.SEND_NOTIFICATION_TO_OLD_THREAD, "true")
@@ -101,6 +103,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         List<DetachedUpload> detachedUploads = zulip.messages().editMessage(1)
                 .withContent("edited content")
+                .withPrevContentSha256("8f4d3c7a1b25e6d9c4f8a2b3d7e0f159c1a6b8d4e2f73a9c5d1e8b0f3c6a7d92")
                 .withPropagateMode(PropagateMode.CHANGE_ONE)
                 .withSendNotificationToNewThread(true)
                 .withSendNotificationToOldThread(true)
