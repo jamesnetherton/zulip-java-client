@@ -52,6 +52,17 @@ public class ZulipApiRequest {
     }
 
     /**
+     * Gets a parameter using the specified key.
+     *
+     * @param  key   The key to look up the parameter value
+     * @param  clazz The type to return the parameter as
+     * @return       The parameter value. Null if not present
+     */
+    protected <T> T getParam(String key, Class<T> clazz) {
+        return clazz.cast(getParam(key));
+    }
+
+    /**
      * Adds a value to the query parameters map.
      *
      * @param key   The name of the query parameter

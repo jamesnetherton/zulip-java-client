@@ -13,6 +13,7 @@ final class MessageRequestConstants {
     final static String MATCHES_NARROW_API_PATH = MESSAGES_API_PATH + "/matches_narrow";
     final static String REACTIONS_API_PATH = MESSAGES_ID_API_PATH + "/reactions";
     final static String READ_RECEIPTS_API_PATH = MESSAGES_ID_API_PATH + "/read_receipts";
+    final static String REPORT_MESSAGE_API_PATH = MESSAGES_ID_API_PATH + "/report";
     final static String RENDER_MESSAGE_API_PATH = MESSAGES_API_PATH + "/render";
     final static String SCHEDULED_MESSAGES_API_PATH = "scheduled_messages";
     final static String SCHEDULED_MESSAGES_ID_API_PATH = SCHEDULED_MESSAGES_API_PATH + "/%d";

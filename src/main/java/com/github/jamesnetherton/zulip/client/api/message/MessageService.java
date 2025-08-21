@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsRe
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.ReportMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
@@ -297,6 +298,19 @@ public class MessageService implements ZulipService {
      */
     public RenderMessageApiRequest renderMessage(String content) {
         return new RenderMessageApiRequest(this.client, content);
+    }
+
+    /**
+     * Reports a message for moderation.
+     *
+     * @see                 <a href="https://zulip.com/api/report-message">https://zulip.com/api/report-message</a>
+     *
+     * @param  messageId    The id of the message to report
+     * @param  reportReason The reason for the message report
+     * @return              The {@link ReportMessageApiRequest} builder object
+     */
+    public ReportMessageApiRequest reportMessage(long messageId, MessageReportReason reportReason) {
+        return new ReportMessageApiRequest(this.client, messageId, reportReason);
     }
 
     /**

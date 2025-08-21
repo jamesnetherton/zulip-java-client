@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipTestUtils;
@@ -17,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.api.message.MessageEdit;
 import com.github.jamesnetherton.zulip.client.api.message.MessageFlag;
 import com.github.jamesnetherton.zulip.client.api.message.MessageHistory;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReaction;
+import com.github.jamesnetherton.zulip.client.api.message.MessageReportReason;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
@@ -616,5 +618,31 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         scheduledMessages = zulip.messages().getScheduledMessages().execute();
         assertTrue(scheduledMessages.isEmpty());
+    }
+
+    @Test
+    public void reportMessage() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of(streamName, streamName))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        zulip.messages()
+                .sendStreamMessage("content", streamName, "Test Topic")
+                .execute();
+
+        Long messageId = zulip.messages().sendStreamMessage("Some bad content", streamName, "Test Topic").execute();
+
+        // TODO: Remove assertThrows when realm settings APIs are enhanced with moderation settings
+        assertThrows(ZulipClientException.class, () -> {
+            zulip.messages().reportMessage(messageId, MessageReportReason.INAPPROPRIATE)
+                    .withDescription("This message has some inappropriate content")
+                    .execute();
+        });
     }
 }

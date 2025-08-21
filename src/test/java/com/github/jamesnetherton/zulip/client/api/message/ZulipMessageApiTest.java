@@ -22,6 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsRe
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.ReportMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
@@ -680,6 +681,54 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         String rendered = zulip.messages().renderMessage("test").execute();
 
         assertEquals("<p><strong>test</strong></p>", rendered);
+    }
+
+    @Test
+    public void reportMessage() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.DESCRIPTION, "Test description")
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.INAPPROPRIATE.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        zulip.messages().reportMessage(1, MessageReportReason.INAPPROPRIATE)
+                .withDescription("Test description")
+                .execute();
+    }
+
+    @Test
+    public void reportMessageDescriptionTooLong() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.OTHER.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER)
+                    .withDescription("1".repeat(101))
+                    .execute();
+        });
+    }
+
+    @Test
+    public void reportMessageNoDescriptionForReportTypeOther() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.OTHER.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER).execute();
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER)
+                    .withDescription("")
+                    .execute();
+        });
     }
 
     @Test
