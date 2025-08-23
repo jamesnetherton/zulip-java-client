@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.CreateMessageReminderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
@@ -58,6 +59,25 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void createMessageReminder() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateMessageReminderApiRequest.MESSAGE_ID, "1")
+                .add(CreateMessageReminderApiRequest.NOTE, "Test note")
+                .add(CreateMessageReminderApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .get();
+
+        stubZulipResponse(POST, "/reminders", params, "createMessageReminder.json");
+
+        int messageReminderId = zulip.messages().createMessageReminder(1, now)
+                .withNote("Test note")
+                .execute();
+
+        assertEquals(42, messageReminderId);
+    }
+
+    @Test
     public void deleteEmojiReaction() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(AddEmojiReactionApiRequest.EMOJI_CODE, "test")
@@ -78,6 +98,13 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         stubZulipResponse(DELETE, "/messages/1", Collections.emptyMap());
 
         zulip.messages().deleteMessage(1).execute();
+    }
+
+    @Test
+    public void deleteMessageReminder() throws Exception {
+        stubZulipResponse(DELETE, "/reminders/1", Collections.emptyMap());
+
+        zulip.messages().deleteMessageReminder(1).execute();
     }
 
     @Test
@@ -543,6 +570,30 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals("Verona", privateMessage.getStream());
         assertTrue(privateMessage.isMeMessage());
         assertEquals(MessageType.PRIVATE, privateMessage.getType());
+    }
+
+    @Test
+    public void getMessageReminders() throws Exception {
+        stubZulipResponse(GET, "/reminders", "getMessageReminders.json");
+
+        List<MessageReminder> messageReminders = zulip.messages().getMessageReminders().execute();
+
+        assertEquals(2, messageReminders.size());
+
+        for (int i = 1; i <= messageReminders.size(); i++) {
+            MessageReminder messageReminder = messageReminders.get(i - 1);
+            assertEquals(i, messageReminder.getReminderId());
+            assertEquals(i, messageReminder.getReminderTargetMessageId());
+            assertEquals("Test reminder " + i, messageReminder.getContent());
+            assertEquals(String.format("<p>Test reminder %d</p>", i), messageReminder.getRenderedContent());
+            assertTrue(messageReminder.getScheduledDeliveryTimestamp().toEpochMilli() > 0);
+            assertEquals(List.of(1, 2, 3), messageReminder.getTo());
+            if (i == 1) {
+                assertFalse(messageReminder.isFailed());
+            } else {
+                assertTrue(messageReminder.isFailed());
+            }
+        }
     }
 
     @Test

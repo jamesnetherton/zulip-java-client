@@ -18,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.api.message.MessageEdit;
 import com.github.jamesnetherton.zulip.client.api.message.MessageFlag;
 import com.github.jamesnetherton.zulip.client.api.message.MessageHistory;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReaction;
+import com.github.jamesnetherton.zulip.client.api.message.MessageReminder;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReportReason;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
@@ -644,5 +645,53 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                     .withDescription("This message has some inappropriate content")
                     .execute();
         });
+    }
+
+    @Test
+    public void messageReminderCrudOperations() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+        zulip.streams().subscribe(
+                StreamSubscriptionRequest.of(streamName, streamName))
+                .withAuthorizationErrorsFatal(false)
+                .withHistoryPublicToSubscribers(true)
+                .withInviteOnly(false)
+                .withMessageRetention(RetentionPolicy.UNLIMITED)
+                .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .execute();
+
+        zulip.messages()
+                .sendStreamMessage("content", streamName, "Test Topic")
+                .execute();
+
+        Long messageId = zulip.messages().sendStreamMessage("Remind me about this", streamName, "Test Topic").execute();
+
+        // Create
+        Instant nowPlusOneSecond = Instant.now().plusSeconds(1);
+        Integer messageReminderId = zulip.messages().createMessageReminder(messageId, nowPlusOneSecond)
+                .withNote("Remind me about this")
+                .execute();
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Read
+        List<MessageReminder> messageReminders = zulip.messages().getMessageReminders().execute();
+        assertEquals(1, messageReminders.size());
+
+        MessageReminder messageReminder = messageReminders.get(0);
+        assertEquals(messageId, messageReminder.getReminderTargetMessageId());
+        assertTrue(messageReminder.getContent().contains("Remind me about this"));
+        assertNotNull(messageReminder.getRenderedContent());
+        assertNotNull(messageReminder.getScheduledDeliveryTimestamp());
+        assertFalse(messageReminder.isFailed());
+
+        // Delete
+        zulip.messages().deleteMessageReminder(messageReminderId).execute();
+
+        messageReminders = zulip.messages().getMessageReminders().execute();
+        assertTrue(messageReminders.isEmpty());
     }
 }

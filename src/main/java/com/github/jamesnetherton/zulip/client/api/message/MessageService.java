@@ -3,8 +3,10 @@ package com.github.jamesnetherton.zulip.client.api.message;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.CreateMessageReminderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.DeleteMessageReminderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditScheduledMessageApiRequest;
@@ -12,6 +14,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiR
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageReadReceiptsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageRemindersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetScheduledMessagesApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkAllAsReadApiRequest;
@@ -60,6 +63,20 @@ public class MessageService implements ZulipService {
     }
 
     /**
+     * Creates a message reminder.
+     *
+     * @see                               <a href=
+     *                                    "https://zulip.com/api/create-message-reminder">https://zulip.com/api/create-message-reminder</a>
+     *
+     * @param  messageId                  The id of the previously sent message to reference in the message reminder
+     * @param  scheduledDeliveryTimestamp The timestamp for when the message reminder will be sent
+     * @return                            The {@link CreateMessageReminderApiRequest} builder object
+     */
+    public CreateMessageReminderApiRequest createMessageReminder(long messageId, Instant scheduledDeliveryTimestamp) {
+        return new CreateMessageReminderApiRequest(this.client, messageId, scheduledDeliveryTimestamp);
+    }
+
+    /**
      * Removes a emoji reaction.
      *
      * @see              <a href="https://zulip.com/api/remove-reaction">https://zulip.com/api/remove-reaction</a>
@@ -82,6 +99,18 @@ public class MessageService implements ZulipService {
      */
     public DeleteMessageApiRequest deleteMessage(long messageId) {
         return new DeleteMessageApiRequest(this.client, messageId);
+    }
+
+    /**
+     * Deletes and cancels a previously scheduled message reminder.
+     *
+     * @see                      <a href="https://zulip.com/api/delete-reminder">https://zulip.com/api/delete-reminder</a>
+     *
+     * @param  messageReminderId The id of the message reminder to delete
+     * @return                   The {@link DeleteMessageReminderApiRequest} builder object
+     */
+    public DeleteMessageReminderApiRequest deleteMessageReminder(int messageReminderId) {
+        return new DeleteMessageReminderApiRequest(this.client, messageReminderId);
     }
 
     /**
@@ -223,6 +252,29 @@ public class MessageService implements ZulipService {
                 .withNumBefore(numBefore)
                 .withNumAfter(numAfter)
                 .withAnchor(anchor);
+    }
+
+    /**
+     * Gets a list containing of IDs for all users who have marked the given message as read.
+     *
+     * @see              <a href="https://zulip.com/api/get-read-receipts">https://zulip.com/api/get-read-receipts</a>
+     *
+     * @param  messageId The id of the message to get read recipients for
+     * @return           The {@link GetMessageReadReceiptsApiRequest} builder object
+     */
+    public GetMessageReadReceiptsApiRequest getMessageReadReceipts(long messageId) {
+        return new GetMessageReadReceiptsApiRequest(this.client, messageId);
+    }
+
+    /**
+     * Gets all message reminders for the current user.
+     *
+     * @see    <a href="https://zulip.com/api/get-reminders">https://zulip.com/api/get-reminders</a>
+     *
+     * @return The {@link GetMessageReadReceiptsApiRequest} builder object
+     */
+    public GetMessageRemindersApiRequest getMessageReminders() {
+        return new GetMessageRemindersApiRequest(this.client);
     }
 
     /**
@@ -473,15 +525,4 @@ public class MessageService implements ZulipService {
         return new UpdateMessageFlagsForNarrowApiRequest(this.client, anchor, numBefore, numAfter, operation, flag, narrows);
     }
 
-    /**
-     * Gets a list containing of IDs for all users who have marked the given message as read.
-     *
-     * @see              <a href="https://zulip.com/api/get-read-receipts">https://zulip.com/api/get-read-receipts</a>
-     *
-     * @param  messageId The id of the message to get read recipients for
-     * @return           The {@link GetMessageReadReceiptsApiRequest} builder object
-     */
-    public GetMessageReadReceiptsApiRequest getMessageReadReceipts(long messageId) {
-        return new GetMessageReadReceiptsApiRequest(this.client, messageId);
-    }
 }

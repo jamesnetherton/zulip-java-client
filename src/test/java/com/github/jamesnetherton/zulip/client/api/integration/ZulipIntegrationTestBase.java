@@ -8,6 +8,7 @@ import com.github.jamesnetherton.zulip.client.api.draft.Draft;
 import com.github.jamesnetherton.zulip.client.api.invitation.Invitation;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
+import com.github.jamesnetherton.zulip.client.api.message.MessageReminder;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
@@ -247,6 +248,16 @@ public class ZulipIntegrationTestBase {
                     zulip.snippets().deleteSavedSnippet(snippet.getId()).execute();
                 } catch (ZulipClientException e) {
                     // ignore
+                }
+            });
+
+            // Clean up message reminders
+            List<MessageReminder> messageReminders = zulip.messages().getMessageReminders().execute();
+            messageReminders.forEach(messageReminder -> {
+                try {
+                    zulip.messages().deleteMessageReminder(messageReminder.getReminderId()).execute();
+                } catch (ZulipClientException e) {
+                    // Ignore
                 }
             });
         }

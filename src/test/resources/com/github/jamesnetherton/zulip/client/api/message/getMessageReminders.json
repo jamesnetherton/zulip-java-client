@@ -1,0 +1,30 @@
+{
+  "msg": "",
+  "reminders": [
+    {
+      "content": "Test reminder 1",
+      "failed": false,
+      "reminder_id": 1,
+      "reminder_target_message_id": 1,
+      "rendered_content": "<p>Test reminder 1</p>",
+      "scheduled_delivery_timestamp": 1681662420,
+      "to": [
+        1,2,3
+      ],
+      "type": "private"
+    },
+    {
+      "content": "Test reminder 2",
+      "failed": true,
+      "reminder_id": 2,
+      "reminder_target_message_id": 2,
+      "rendered_content": "<p>Test reminder 2</p>",
+      "scheduled_delivery_timestamp": 1681662420,
+      "to": [
+        1,2,3
+      ],
+      "type": "private"
+    }
+  ],
+  "result": "success"
+}
