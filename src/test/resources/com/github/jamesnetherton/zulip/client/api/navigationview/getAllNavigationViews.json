@@ -1,0 +1,16 @@
+{
+  "msg": "",
+  "navigation_views": [
+    {
+      "fragment": "fragment/1",
+      "is_pinned": false,
+      "name": "Test 1"
+    },
+    {
+      "fragment": "fragment/2",
+      "is_pinned": true,
+      "name": "Test 2"
+    }
+  ],
+  "result": "success"
+}

@@ -28,6 +28,7 @@ public class GetMessageRemindersApiRequest extends ZulipApiRequest implements Ex
     /**
      * Executes the Zulip API request for getting all message reminders for the current user.
      *
+     * @return                      List of {@link MessageReminder}
      * @throws ZulipClientException if the request was not successful
      */
     @Override

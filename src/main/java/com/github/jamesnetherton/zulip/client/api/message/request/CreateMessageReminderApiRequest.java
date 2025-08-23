@@ -49,6 +49,7 @@ public class CreateMessageReminderApiRequest extends ZulipApiRequest implements 
     /**
      * Executes the Zulip API request for creating a message reminder.
      *
+     * @return                      The id of the created message reminder
      * @throws ZulipClientException if the request was not successful
      */
     @Override

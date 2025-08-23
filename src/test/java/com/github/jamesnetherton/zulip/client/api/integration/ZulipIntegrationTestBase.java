@@ -11,6 +11,7 @@ import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.message.MessageReminder;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
+import com.github.jamesnetherton.zulip.client.api.navigationview.NavigationView;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.snippet.SavedSnippet;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
@@ -256,6 +257,16 @@ public class ZulipIntegrationTestBase {
             messageReminders.forEach(messageReminder -> {
                 try {
                     zulip.messages().deleteMessageReminder(messageReminder.getReminderId()).execute();
+                } catch (ZulipClientException e) {
+                    // Ignore
+                }
+            });
+
+            // Clean up navigation views
+            List<NavigationView> navigationViews = zulip.navigationView().getAllNavigationViews().execute();
+            navigationViews.forEach(navigationView -> {
+                try {
+                    zulip.navigationView().deleteNavigationView(navigationView.getFragment()).execute();
                 } catch (ZulipClientException e) {
                     // Ignore
                 }
