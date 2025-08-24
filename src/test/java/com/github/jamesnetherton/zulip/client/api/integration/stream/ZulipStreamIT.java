@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
@@ -52,11 +53,14 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withWebPublic(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .withTopicPolicy(TopicPolicy.INHERIT)
+                .withSendNewSubscriptionMessages(true)
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();
         assertTrue(created.containsKey(ownUser.getUserId().toString()));
         assertEquals(3, created.get(ownUser.getUserId().toString()).size());
+        assertTrue(result.isNewSubscriptionMessagesSent());
 
         // Read
         List<Stream> streams = zulip.channels().getAll()
@@ -219,6 +223,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertFalse(streamSubscription.isPushNotifications());
         assertFalse(streamSubscription.isWebPublic());
         assertFalse(streamSubscription.isWildcardMentionsNotify());
+        assertEquals(TopicPolicy.INHERIT, streamSubscription.getTopicPolicy());
         assertNotNull(streamSubscription.getColor());
         assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
         assertEquals(ownUser.getUserId(), streamSubscription.getCreatorId());

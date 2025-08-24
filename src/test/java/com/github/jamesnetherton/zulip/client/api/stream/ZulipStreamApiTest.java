@@ -121,7 +121,19 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SubscribeStreamsApiRequest.ANNOUNCE, "true")
                 .add(SubscribeStreamsApiRequest.AUTHORIZATION_ERRORS_FATAL, "false")
-                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "1")
+                .add(SubscribeStreamsApiRequest.CAN_ADD_SUBSCRIBERS_GROUP, "1")
+                .add(SubscribeStreamsApiRequest.CAN_ADMINISTER_CHANNEL_GROUP, "2")
+                .add(SubscribeStreamsApiRequest.CAN_DELETE_ANY_MESSAGE_GROUP, "3")
+                .add(SubscribeStreamsApiRequest.CAN_DELETE_OWN_MESSAGE_GROUP, "4")
+                .add(SubscribeStreamsApiRequest.CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP, "5")
+                .add(SubscribeStreamsApiRequest.CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP, "6")
+                .add(SubscribeStreamsApiRequest.CAN_SEND_MESSAGE_GROUP, "7")
+                .add(SubscribeStreamsApiRequest.CAN_SUBSCRIBE_GROUP, "8")
+                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "9")
+                .add(SubscribeStreamsApiRequest.CAN_RESOLVE_TOPICS_GROUP, "10")
+                .add(SubscribeStreamsApiRequest.TOPICS_POLICY, "\"inherit\"")
+                .add(SubscribeStreamsApiRequest.FOLDER_ID, "1")
+                .add(SubscribeStreamsApiRequest.SEND_NEW_SUBSCRIPTION_MESSAGES, "true")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_DEFAULT_STREAM, "true")
@@ -142,7 +154,19 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 StreamSubscriptionRequest.of("cheese", "wine"))
                 .withAnnounce(true)
                 .withAuthorizationErrorsFatal(false)
-                .withCanRemoveSubscribersGroup(1)
+                .withCanAddSubscribersGroup(UserGroupSetting.of(1))
+                .withCanAdministerChannelGroup(UserGroupSetting.of(2))
+                .withCanDeleteAnyMessageGroup(UserGroupSetting.of(3))
+                .withCanDeleteOwnMessageGroup(UserGroupSetting.of(4))
+                .withCanMoveMessagesOutOfChannelGroup(UserGroupSetting.of(5))
+                .withCanMoveMessagesWithinChannelGroup(UserGroupSetting.of(6))
+                .withCanSendMessageGroup(UserGroupSetting.of(7))
+                .withCanSubscribeGroup(UserGroupSetting.of(8))
+                .withCanRemoveSubscribersGroup(9)
+                .withCanResolveTopicsGroup(UserGroupSetting.of(10))
+                .withTopicPolicy(TopicPolicy.INHERIT)
+                .withFolderId(1)
+                .withSendNewSubscriptionMessages(true)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withDefaultStream(true)
@@ -175,6 +199,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         List<String> unauthorized = result.getUnauthorized();
         assertEquals(1, unauthorized.size());
         assertEquals("secret stream", unauthorized.get(0));
+
+        assertTrue(result.isNewSubscriptionMessagesSent());
     }
 
     @Test

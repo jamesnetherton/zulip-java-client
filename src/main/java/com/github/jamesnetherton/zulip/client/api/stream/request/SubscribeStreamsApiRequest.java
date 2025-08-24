@@ -2,11 +2,13 @@ package com.github.jamesnetherton.zulip.client.api.stream.request;
 
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
 import com.github.jamesnetherton.zulip.client.api.stream.response.SubscribeStreamsApiResponse;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
@@ -27,7 +29,19 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
+    public static final String CAN_ADD_SUBSCRIBERS_GROUP = "can_add_subscribers_group";
+    public static final String CAN_ADMINISTER_CHANNEL_GROUP = "can_administer_channel_group";
+    public static final String CAN_DELETE_ANY_MESSAGE_GROUP = "can_delete_any_message_group";
+    public static final String CAN_DELETE_OWN_MESSAGE_GROUP = "can_delete_own_message_group";
+    public static final String CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP = "can_move_messages_out_of_channel_group";
+    public static final String CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP = "can_move_messages_within_channel_group";
+    public static final String CAN_SEND_MESSAGE_GROUP = "can_send_message_group";
+    public static final String CAN_SUBSCRIBE_GROUP = "can_subscribe_group";
     public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
+    public static final String CAN_RESOLVE_TOPICS_GROUP = "can_resolve_topics_group";
+    public static final String TOPICS_POLICY = "topics_policy";
+    public static final String FOLDER_ID = "folder_id";
+    public static final String SEND_NEW_SUBSCRIPTION_MESSAGES = "send_new_subscription_messages";
 
     /**
      * Constructs a {@link SubscribeStreamsApiRequest}.
@@ -170,13 +184,160 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     }
 
     /**
+     * Sets the user group settings for users who have permission to add subscribers to this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to add subscribers to this channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanAddSubscribersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_ADD_SUBSCRIBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to administer this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to administer this channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanAdministerChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_ADMINISTER_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to delete any message in the channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to delete any message in the channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanDeleteAnyMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_DELETE_ANY_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to delete the messages that they have sent in the channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to delete the messages that they have
+     *                          sent in the channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanDeleteOwnMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_DELETE_OWN_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to move messages out of this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to move messages out of this channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanMoveMessagesOutOfChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to move messages within this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to move messages within this channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanMoveMessagesWithinChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to post in this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to post in this channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanSendMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_SEND_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to subscribe themselves to this channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to subscribe themselves to this
+     *                          channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanSubscribeGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_SUBSCRIBE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
      * Sets the user group id whose members are allowed to unsubscribe others from the stream.
      *
-     * @param  userGroupID The user group id whose members are allowed to unsubscribe others from the stream
-     * @return             This {@link SubscribeStreamsApiRequest} instance
+     * @param      userGroupID The user group id whose members are allowed to unsubscribe others from the stream
+     * @return                 This {@link SubscribeStreamsApiRequest} instance
+     * @deprecated             Use {@link SubscribeStreamsApiRequest#withCanRemoveSubscribersGroup(UserGroupSetting)}
      */
     public SubscribeStreamsApiRequest withCanRemoveSubscribersGroup(long userGroupID) {
-        putParam(CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupID);
+        return withCanRemoveSubscribersGroup(UserGroupSetting.of(userGroupID));
+    }
+
+    /**
+     * Sets the user group id whose members are allowed to unsubscribe others from the stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} whose members are allowed to unsubscribe others from the stream
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanRemoveSubscribersGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to resolve topics in the channel.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to resolve topics in the channel
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanResolveTopicsGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_RESOLVE_TOPICS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets whether named topics and the empty topic are enabled in this channel.
+     *
+     * @param  topicPolicy The {@link TopicPolicy}
+     * @return             This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withTopicPolicy(TopicPolicy topicPolicy) {
+        putParamAsJsonString(TOPICS_POLICY, topicPolicy.toString());
+        return this;
+    }
+
+    /**
+     * Sets the id of the folder to which the newly created channel will be added.
+     *
+     * @param  folderId The id of the folder to which the newly created channel will be added
+     * @return          This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withFolderId(int folderId) {
+        putParam(FOLDER_ID, folderId);
+        return this;
+    }
+
+    /**
+     * Sets whether any other users newly subscribed via this request should be sent a Notification Bot DM notifying them about
+     * their new subscription.
+     *
+     * @param  sendNewSubscriptionMessages {@code true} to send new subscription messages. {@code false} to not send a
+     *                                     subscription message
+     * @return                             This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withSendNewSubscriptionMessages(boolean sendNewSubscriptionMessages) {
+        putParam(SEND_NEW_SUBSCRIPTION_MESSAGES, sendNewSubscriptionMessages);
         return this;
     }
 
