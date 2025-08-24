@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamEmailAddressApiRequest;
@@ -65,13 +66,16 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
         assertEquals(1, subscriptionA.getStreamWeeklyTraffic());
-        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroup());
+        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroup().getUserGroupId());
         assertEquals(30, subscriptionA.getMessageRetentionDays());
         assertTrue(subscriptionA.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionA.getFirstMessageId());
         assertTrue(subscriptionA.isEmailNotifications());
         assertTrue(subscriptionA.getDateCreated().toEpochMilli() > 0);
         assertEquals(5, subscriptionA.getSubscribers().size());
+        assertEquals(TopicPolicy.INHERIT, subscriptionA.getTopicPolicy());
+        assertEquals(1, subscriptionA.getSubscriberCount());
+        assertTrue(subscriptionA.getPartialSubscribers().isEmpty());
 
         StreamSubscription subscriptionB = subscriptions.get(1);
         assertTrue(subscriptionB.isAudibleNotifications());
@@ -88,13 +92,28 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
         assertEquals(1, subscriptionB.getStreamWeeklyTraffic());
-        assertEquals(2, subscriptionB.getCanRemoveSubscribersGroup());
         assertEquals(30, subscriptionB.getMessageRetentionDays());
         assertTrue(subscriptionB.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionB.getFirstMessageId());
         assertTrue(subscriptionB.isEmailNotifications());
         assertTrue(subscriptionB.getDateCreated().toEpochMilli() > 0);
         assertEquals(4, subscriptionB.getSubscribers().size());
+        assertEquals(TopicPolicy.ALLOW_EMPTY_TOPIC, subscriptionB.getTopicPolicy());
+        assertEquals(2, subscriptionB.getSubscriberCount());
+        assertEquals(1, subscriptionB.getCanDeleteAnyMessageGroup().getUserGroupId());
+        assertEquals(2, subscriptionB.getCanDeleteOwnMessageGroup().getUserGroupId());
+        assertEquals(3, subscriptionB.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+        assertEquals(4, subscriptionB.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+        assertEquals(5, subscriptionB.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+        assertEquals(6, subscriptionB.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+        assertEquals(7, subscriptionB.getCanResolveTopicsGroup().getUserGroupId());
+        assertEquals(8, subscriptionB.getCanSendMessageGroup().getUserGroupId());
+        assertEquals(9, subscriptionB.getCanSubscribeGroup().getUserGroupId());
+        assertEquals(10, subscriptionB.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(11, subscriptionB.getCanRemoveSubscribersGroupId().getUserGroupId());
+        assertEquals(12, subscriptionB.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(13, subscriptionB.getCanAddSubscribersGroup().getUserGroupId());
+        assertEquals(3, subscriptionB.getPartialSubscribers().size());
     }
 
     @Test
@@ -495,7 +514,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.EMAIL_NOTIFICATIONS, true),
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.IS_MUTED, true),
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PIN_TO_TOP, true),
-                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PUSH_NOTIFICATIONS, true)
+                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PUSH_NOTIFICATIONS, true),
+                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, true)
         };
 
         // Test subscription settings equality
@@ -523,6 +543,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withPushNotifications(1, false)
                 // Test that setting overrides work
                 .withPushNotifications(1, true)
+                .withWildcardMentionsNotify(1, true)
                 .execute();
 
         assertEquals(2, result.size());

@@ -15,7 +15,7 @@ public enum MessageReportReason {
     }
 
     @JsonCreator
-    public static MessageReportReason fromString(String type) {
-        return MessageReportReason.valueOf(type.toUpperCase());
+    public static MessageReportReason fromString(String reason) {
+        return MessageReportReason.valueOf(reason.toUpperCase());
     }
 }
