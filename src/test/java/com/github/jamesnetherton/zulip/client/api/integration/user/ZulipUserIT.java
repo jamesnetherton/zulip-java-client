@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -447,6 +448,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(members.contains(createdUser.getUserId()));
 
         List<Long> groupMembers = zulip.users().getUserGroupMembers(group.getId()).execute();
+        Collections.sort(groupMembers);
         assertEquals(List.of(ownUser.getUserId(), createdUser.getUserId()), groupMembers);
 
         boolean isMember = zulip.users().getUserGroupMembershipStatus(group.getId(), createdUser.getUserId()).execute();

@@ -26,6 +26,7 @@ public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest 
     public static final String AUDIBLE_NOTIFICATIONS = "audible_notifications";
     public static final String PUSH_NOTIFICATIONS = "push_notifications";
     public static final String EMAIL_NOTIFICATIONS = "email_notifications";
+    public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
     public static final String SUBSCRIPTION_DATA = "subscription_data";
 
     private final Set<StreamSubscriptionSetting> settings = new LinkedHashSet<>();
@@ -123,6 +124,20 @@ public class UpdateStreamSubscriptionSettingsApiRequest extends ZulipApiRequest 
      */
     public UpdateStreamSubscriptionSettingsApiRequest withEmailNotifications(long streamId, boolean emailNotifications) {
         addSetting(streamId, EMAIL_NOTIFICATIONS, emailNotifications);
+        return this;
+    }
+
+    /**
+     * Sets whether to enable or disable wildcard mentions trigger notifications for messages sent to the stream.
+     *
+     * @param  streamId               The id of the stream for which the setting should be updated
+     * @param  wildcardMentionsNotify {@code true} to enable wildcard mentions trigger notifications. {@code false} to disable
+     *                                email notifications.
+     * @return                        This {@link UpdateStreamSubscriptionSettingsApiRequest} instance
+     */
+    public UpdateStreamSubscriptionSettingsApiRequest withWildcardMentionsNotify(long streamId,
+            boolean wildcardMentionsNotify) {
+        addSetting(streamId, WILDCARD_MENTIONS_NOTIFY, wildcardMentionsNotify);
         return this;
     }
 

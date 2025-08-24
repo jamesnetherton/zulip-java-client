@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.DeleteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamEmailAddressApiRequest;
@@ -65,13 +66,16 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
         assertEquals(1, subscriptionA.getStreamWeeklyTraffic());
-        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroup());
+        assertEquals(1, subscriptionA.getCanRemoveSubscribersGroup().getUserGroupId());
         assertEquals(30, subscriptionA.getMessageRetentionDays());
         assertTrue(subscriptionA.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionA.getFirstMessageId());
         assertTrue(subscriptionA.isEmailNotifications());
         assertTrue(subscriptionA.getDateCreated().toEpochMilli() > 0);
         assertEquals(5, subscriptionA.getSubscribers().size());
+        assertEquals(TopicPolicy.INHERIT, subscriptionA.getTopicPolicy());
+        assertEquals(1, subscriptionA.getSubscriberCount());
+        assertTrue(subscriptionA.getPartialSubscribers().isEmpty());
 
         StreamSubscription subscriptionB = subscriptions.get(1);
         assertTrue(subscriptionB.isAudibleNotifications());
@@ -88,13 +92,28 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
         assertEquals(1, subscriptionB.getStreamWeeklyTraffic());
-        assertEquals(2, subscriptionB.getCanRemoveSubscribersGroup());
         assertEquals(30, subscriptionB.getMessageRetentionDays());
         assertTrue(subscriptionB.isHistoryPublicToSubscribers());
         assertEquals(1, subscriptionB.getFirstMessageId());
         assertTrue(subscriptionB.isEmailNotifications());
         assertTrue(subscriptionB.getDateCreated().toEpochMilli() > 0);
         assertEquals(4, subscriptionB.getSubscribers().size());
+        assertEquals(TopicPolicy.ALLOW_EMPTY_TOPIC, subscriptionB.getTopicPolicy());
+        assertEquals(2, subscriptionB.getSubscriberCount());
+        assertEquals(1, subscriptionB.getCanDeleteAnyMessageGroup().getUserGroupId());
+        assertEquals(2, subscriptionB.getCanDeleteOwnMessageGroup().getUserGroupId());
+        assertEquals(3, subscriptionB.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+        assertEquals(4, subscriptionB.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+        assertEquals(5, subscriptionB.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+        assertEquals(6, subscriptionB.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+        assertEquals(7, subscriptionB.getCanResolveTopicsGroup().getUserGroupId());
+        assertEquals(8, subscriptionB.getCanSendMessageGroup().getUserGroupId());
+        assertEquals(9, subscriptionB.getCanSubscribeGroup().getUserGroupId());
+        assertEquals(10, subscriptionB.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(11, subscriptionB.getCanRemoveSubscribersGroupId().getUserGroupId());
+        assertEquals(12, subscriptionB.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(13, subscriptionB.getCanAddSubscribersGroup().getUserGroupId());
+        assertEquals(3, subscriptionB.getPartialSubscribers().size());
     }
 
     @Test
@@ -102,7 +121,19 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SubscribeStreamsApiRequest.ANNOUNCE, "true")
                 .add(SubscribeStreamsApiRequest.AUTHORIZATION_ERRORS_FATAL, "false")
-                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "1")
+                .add(SubscribeStreamsApiRequest.CAN_ADD_SUBSCRIBERS_GROUP, "1")
+                .add(SubscribeStreamsApiRequest.CAN_ADMINISTER_CHANNEL_GROUP, "2")
+                .add(SubscribeStreamsApiRequest.CAN_DELETE_ANY_MESSAGE_GROUP, "3")
+                .add(SubscribeStreamsApiRequest.CAN_DELETE_OWN_MESSAGE_GROUP, "4")
+                .add(SubscribeStreamsApiRequest.CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP, "5")
+                .add(SubscribeStreamsApiRequest.CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP, "6")
+                .add(SubscribeStreamsApiRequest.CAN_SEND_MESSAGE_GROUP, "7")
+                .add(SubscribeStreamsApiRequest.CAN_SUBSCRIBE_GROUP, "8")
+                .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "9")
+                .add(SubscribeStreamsApiRequest.CAN_RESOLVE_TOPICS_GROUP, "10")
+                .add(SubscribeStreamsApiRequest.TOPICS_POLICY, "\"inherit\"")
+                .add(SubscribeStreamsApiRequest.FOLDER_ID, "1")
+                .add(SubscribeStreamsApiRequest.SEND_NEW_SUBSCRIPTION_MESSAGES, "true")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_DEFAULT_STREAM, "true")
@@ -123,7 +154,19 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 StreamSubscriptionRequest.of("cheese", "wine"))
                 .withAnnounce(true)
                 .withAuthorizationErrorsFatal(false)
-                .withCanRemoveSubscribersGroup(1)
+                .withCanAddSubscribersGroup(UserGroupSetting.of(1))
+                .withCanAdministerChannelGroup(UserGroupSetting.of(2))
+                .withCanDeleteAnyMessageGroup(UserGroupSetting.of(3))
+                .withCanDeleteOwnMessageGroup(UserGroupSetting.of(4))
+                .withCanMoveMessagesOutOfChannelGroup(UserGroupSetting.of(5))
+                .withCanMoveMessagesWithinChannelGroup(UserGroupSetting.of(6))
+                .withCanSendMessageGroup(UserGroupSetting.of(7))
+                .withCanSubscribeGroup(UserGroupSetting.of(8))
+                .withCanRemoveSubscribersGroup(9)
+                .withCanResolveTopicsGroup(UserGroupSetting.of(10))
+                .withTopicPolicy(TopicPolicy.INHERIT)
+                .withFolderId(1)
+                .withSendNewSubscriptionMessages(true)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withDefaultStream(true)
@@ -156,6 +199,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         List<String> unauthorized = result.getUnauthorized();
         assertEquals(1, unauthorized.size());
         assertEquals("secret stream", unauthorized.get(0));
+
+        assertTrue(result.isNewSubscriptionMessagesSent());
     }
 
     @Test
@@ -404,21 +449,35 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(i, stream.canRemoveSubscribersGroup().getUserGroupId());
-            assertEquals(i, stream.getCanSendMessageGroup().getUserGroupId());
-            assertEquals(i, stream.getCanAddSubscribersGroup().getUserGroupId());
-            assertEquals(i, stream.getCanAdministerChannelGroup().getUserGroupId());
+            assertEquals(1, stream.getCanDeleteAnyMessageGroup().getUserGroupId());
+            assertEquals(2, stream.getCanDeleteOwnMessageGroup().getUserGroupId());
+            assertEquals(3, stream.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+            assertEquals(4, stream.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+            assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+            assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+            assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
+            assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
+            assertEquals(i, stream.getSubscriberCount());
             assertEquals(i, stream.getStreamWeeklyTraffic());
+            assertEquals(i, stream.getFolderId());
 
             if (i < 3) {
                 assertEquals(StreamPostPolicy.fromInt(i), stream.getStreamPostPolicy());
-                assertEquals(i, stream.getCanSubscribeGroup().getUserGroupId());
+                assertEquals(9, stream.getCanSubscribeGroup().getUserGroupId());
+                assertEquals(10, stream.getCanAdministerChannelGroup().getUserGroupId());
+                assertEquals(11, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+                assertEquals(12, stream.getCanAddSubscribersGroup().getUserGroupId());
+                assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
             } else {
                 assertEquals(StreamPostPolicy.UNKNOWN, stream.getStreamPostPolicy());
                 assertTrue(stream.isArchived());
                 assertTrue(stream.isRecentlyActive());
                 assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
                 assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
+                assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());
+                assertEquals(10, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+                assertEquals(11, stream.getCanAddSubscribersGroup().getUserGroupId());
+                assertEquals(TopicPolicy.EMPTY_TOPIC_ONLY, stream.getTopicPolicy());
             }
         }
     }
@@ -445,11 +504,21 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(stream.isRecentlyActive());
         assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
         assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
-        assertEquals(1, stream.canRemoveSubscribersGroup().getUserGroupId());
-        assertEquals(1, stream.getCanSendMessageGroup().getUserGroupId());
-        assertEquals(1, stream.getCanAddSubscribersGroup().getUserGroupId());
-        assertEquals(1, stream.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(1, stream.getCanDeleteAnyMessageGroup().getUserGroupId());
+        assertEquals(2, stream.getCanDeleteOwnMessageGroup().getUserGroupId());
+        assertEquals(3, stream.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+        assertEquals(4, stream.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+        assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+        assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+        assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
+        assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
+        assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(10, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(11, stream.getCanAddSubscribersGroup().getUserGroupId());
+        assertEquals(1, stream.getSubscriberCount());
         assertEquals(1, stream.getStreamWeeklyTraffic());
+        assertEquals(1, stream.getFolderId());
+        assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
     }
 
     @Test
@@ -495,7 +564,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.EMAIL_NOTIFICATIONS, true),
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.IS_MUTED, true),
                 new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PIN_TO_TOP, true),
-                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PUSH_NOTIFICATIONS, true)
+                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.PUSH_NOTIFICATIONS, true),
+                new StreamSubscriptionSetting(1, UpdateStreamSubscriptionSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, true)
         };
 
         // Test subscription settings equality
@@ -523,6 +593,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withPushNotifications(1, false)
                 // Test that setting overrides work
                 .withPushNotifications(1, true)
+                .withWildcardMentionsNotify(1, true)
                 .execute();
 
         assertEquals(2, result.size());

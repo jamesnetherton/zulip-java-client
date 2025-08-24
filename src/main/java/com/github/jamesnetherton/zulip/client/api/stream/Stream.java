@@ -1,6 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import java.time.Instant;
 
@@ -55,12 +56,6 @@ public class Stream {
     private boolean isWebPublic;
 
     @JsonProperty
-    private UserGroupSetting canRemoveSubscribersGroup;
-
-    @JsonProperty
-    private UserGroupSetting canSendMessageGroup;
-
-    @JsonProperty
     private boolean isArchived;
 
     @JsonProperty
@@ -73,7 +68,43 @@ public class Stream {
     private UserGroupSetting canAdministerChannelGroup;
 
     @JsonProperty
+    private UserGroupSetting canDeleteAnyMessageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canDeleteOwnMessageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesBetweenChannelsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesOutOfChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesWithinChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesBetweenTopicsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canRemoveSubscribersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canResolveTopicsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canSendMessageGroup;
+
+    @JsonProperty
     private UserGroupSetting canSubscribeGroup;
+
+    @JsonProperty("topics_policy")
+    private TopicPolicy topicPolicy;
+
+    @JsonProperty
+    private int subscriberCount;
+
+    @JsonProperty
+    private int folderId;
 
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
@@ -136,24 +167,20 @@ public class Stream {
         return isWebPublic;
     }
 
-    public UserGroupSetting canRemoveSubscribersGroup() {
-        return canRemoveSubscribersGroup;
-    }
-
-    public UserGroupSetting getCanSendMessageGroup() {
-        return canSendMessageGroup;
-    }
-
     public boolean isArchived() {
         return isArchived;
     }
 
-    public UserGroupSetting getCanRemoveSubscribersGroup() {
-        return canRemoveSubscribersGroup;
-    }
-
     public boolean isRecentlyActive() {
         return isRecentlyActive;
+    }
+
+    public TopicPolicy getTopicPolicy() {
+        return topicPolicy;
+    }
+
+    public int getFolderId() {
+        return folderId;
     }
 
     public UserGroupSetting getCanAddSubscribersGroup() {
@@ -164,7 +191,47 @@ public class Stream {
         return canAdministerChannelGroup;
     }
 
+    public UserGroupSetting getCanDeleteAnyMessageGroup() {
+        return canDeleteAnyMessageGroup;
+    }
+
+    public UserGroupSetting getCanDeleteOwnMessageGroup() {
+        return canDeleteOwnMessageGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesBetweenChannelsGroup() {
+        return canMoveMessagesBetweenChannelsGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesOutOfChannelGroup() {
+        return canMoveMessagesOutOfChannelGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesWithinChannelGroup() {
+        return canMoveMessagesWithinChannelGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesBetweenTopicsGroup() {
+        return canMoveMessagesBetweenTopicsGroup;
+    }
+
+    public UserGroupSetting getCanRemoveSubscribersGroup() {
+        return canRemoveSubscribersGroup;
+    }
+
+    public UserGroupSetting getCanResolveTopicsGroup() {
+        return canResolveTopicsGroup;
+    }
+
+    public UserGroupSetting getCanSendMessageGroup() {
+        return canSendMessageGroup;
+    }
+
     public UserGroupSetting getCanSubscribeGroup() {
         return canSubscribeGroup;
+    }
+
+    public int getSubscriberCount() {
+        return subscriberCount;
     }
 }

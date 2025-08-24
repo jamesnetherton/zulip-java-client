@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
@@ -52,11 +53,14 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withWebPublic(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withStreamPostPolicy(StreamPostPolicy.ANY)
+                .withTopicPolicy(TopicPolicy.INHERIT)
+                .withSendNewSubscriptionMessages(true)
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();
         assertTrue(created.containsKey(ownUser.getUserId().toString()));
         assertEquals(3, created.get(ownUser.getUserId().toString()).size());
+        assertTrue(result.isNewSubscriptionMessagesSent());
 
         // Read
         List<Stream> streams = zulip.channels().getAll()
@@ -82,8 +86,10 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(groupIdA, stream.canRemoveSubscribersGroup().getUserGroupId());
+            assertEquals(groupIdA, stream.getCanRemoveSubscribersGroup().getUserGroupId());
             assertEquals(0, stream.getStreamWeeklyTraffic());
+            assertEquals(1, stream.getSubscriberCount());
+            assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
         }
 
         // Get stream by ID
@@ -102,7 +108,9 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
             assertEquals(-1, stream.getMessageRetentionDays());
             assertFalse(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(groupIdA, stream.canRemoveSubscribersGroup().getUserGroupId());
+            assertEquals(groupIdA, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+            assertEquals(1, stream.getSubscriberCount());
+            assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
         }
 
         long firstStreamId = createdStreams.get(0).getStreamId();
@@ -143,7 +151,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(30, updatedStream.getMessageRetentionDays());
         assertFalse(updatedStream.isDefault());
         assertFalse(updatedStream.isAnnouncementOnly());
-        assertEquals(groupIdB, updatedStream.canRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(groupIdB, updatedStream.getCanRemoveSubscribersGroup().getUserGroupId());
 
         List<String> subscriptionSettings = zulip.channels().updateSubscriptionSettings()
                 .withColor(updatedStream.getStreamId(), "#000000")
@@ -153,6 +161,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withIsMuted(updatedStream.getStreamId(), true)
                 .withPinToTop(updatedStream.getStreamId(), true)
                 .withPushNotifications(updatedStream.getStreamId(), false)
+                .withWildcardMentionsNotify(updatedStream.getStreamId(), true)
                 .execute();
 
         assertNotNull(subscriptionSettings);
@@ -218,6 +227,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertFalse(streamSubscription.isPushNotifications());
         assertFalse(streamSubscription.isWebPublic());
         assertFalse(streamSubscription.isWildcardMentionsNotify());
+        assertEquals(TopicPolicy.INHERIT, streamSubscription.getTopicPolicy());
         assertNotNull(streamSubscription.getColor());
         assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
         assertEquals(ownUser.getUserId(), streamSubscription.getCreatorId());
@@ -228,7 +238,8 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals("<p>" + streamName + "</p>", streamSubscription.getRenderedDescription());
         assertTrue(streamSubscription.getStreamId() > 0);
         assertEquals(0, streamSubscription.getStreamWeeklyTraffic());
-        assertEquals(11, streamSubscription.getCanRemoveSubscribersGroup());
+        assertEquals(11, streamSubscription.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(1, streamSubscription.getSubscriberCount());
 
         List<String> subscribers = streamSubscription.getSubscribers();
         assertEquals(1, subscribers.size());

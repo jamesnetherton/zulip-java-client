@@ -41,6 +41,17 @@ public class GetSubscribedStreamsApiRequest extends ZulipApiRequest implements E
     }
 
     /**
+     * Sets whether the response should include a list of partial subscriber user ids.
+     * Note that this overrides the value set from {@link GetSubscribedStreamsApiRequest#withIncludePartialSubscribers()}.
+     *
+     * @return This {@link GetSubscribedStreamsApiRequest} instance
+     */
+    public GetSubscribedStreamsApiRequest withIncludePartialSubscribers() {
+        putParam(INCLUDE_SUBSCRIBERS, "partial");
+        return this;
+    }
+
+    /**
      * Executes the Zulip API request for getting streams that the user is subscribed to.
      *
      * @return                      List of {@link StreamSubscription} objects
