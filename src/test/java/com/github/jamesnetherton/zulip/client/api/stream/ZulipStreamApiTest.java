@@ -449,21 +449,35 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
             assertEquals(i, stream.getMessageRetentionDays());
             assertTrue(stream.isDefault());
             assertFalse(stream.isAnnouncementOnly());
-            assertEquals(i, stream.canRemoveSubscribersGroup().getUserGroupId());
-            assertEquals(i, stream.getCanSendMessageGroup().getUserGroupId());
-            assertEquals(i, stream.getCanAddSubscribersGroup().getUserGroupId());
-            assertEquals(i, stream.getCanAdministerChannelGroup().getUserGroupId());
+            assertEquals(1, stream.getCanDeleteAnyMessageGroup().getUserGroupId());
+            assertEquals(2, stream.getCanDeleteOwnMessageGroup().getUserGroupId());
+            assertEquals(3, stream.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+            assertEquals(4, stream.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+            assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+            assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+            assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
+            assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
+            assertEquals(i, stream.getSubscriberCount());
             assertEquals(i, stream.getStreamWeeklyTraffic());
+            assertEquals(i, stream.getFolderId());
 
             if (i < 3) {
                 assertEquals(StreamPostPolicy.fromInt(i), stream.getStreamPostPolicy());
-                assertEquals(i, stream.getCanSubscribeGroup().getUserGroupId());
+                assertEquals(9, stream.getCanSubscribeGroup().getUserGroupId());
+                assertEquals(10, stream.getCanAdministerChannelGroup().getUserGroupId());
+                assertEquals(11, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+                assertEquals(12, stream.getCanAddSubscribersGroup().getUserGroupId());
+                assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
             } else {
                 assertEquals(StreamPostPolicy.UNKNOWN, stream.getStreamPostPolicy());
                 assertTrue(stream.isArchived());
                 assertTrue(stream.isRecentlyActive());
                 assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
                 assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
+                assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());
+                assertEquals(10, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+                assertEquals(11, stream.getCanAddSubscribersGroup().getUserGroupId());
+                assertEquals(TopicPolicy.EMPTY_TOPIC_ONLY, stream.getTopicPolicy());
             }
         }
     }
@@ -490,11 +504,21 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertTrue(stream.isRecentlyActive());
         assertEquals(List.of(1L, 2L, 3L), stream.getCanSubscribeGroup().getDirectMembers());
         assertEquals(List.of(4L, 5L, 6L), stream.getCanSubscribeGroup().getDirectSubGroups());
-        assertEquals(1, stream.canRemoveSubscribersGroup().getUserGroupId());
-        assertEquals(1, stream.getCanSendMessageGroup().getUserGroupId());
-        assertEquals(1, stream.getCanAddSubscribersGroup().getUserGroupId());
-        assertEquals(1, stream.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(1, stream.getCanDeleteAnyMessageGroup().getUserGroupId());
+        assertEquals(2, stream.getCanDeleteOwnMessageGroup().getUserGroupId());
+        assertEquals(3, stream.getCanMoveMessagesOutOfChannelGroup().getUserGroupId());
+        assertEquals(4, stream.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
+        assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
+        assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+        assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
+        assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
+        assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());
+        assertEquals(10, stream.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(11, stream.getCanAddSubscribersGroup().getUserGroupId());
+        assertEquals(1, stream.getSubscriberCount());
         assertEquals(1, stream.getStreamWeeklyTraffic());
+        assertEquals(1, stream.getFolderId());
+        assertEquals(TopicPolicy.INHERIT, stream.getTopicPolicy());
     }
 
     @Test
