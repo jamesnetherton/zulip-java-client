@@ -19,6 +19,7 @@ import java.util.List;
 public class EditMessageApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<DetachedUpload>> {
 
     public static final String CONTENT = "content";
+    public static final String PREV_CONTENT_SHA256 = "prev_content_sha256";
     public static final String PROPAGATE_MODE = "propagate_mode";
     public static final String SEND_NOTIFICATION_TO_OLD_THREAD = "send_notification_to_old_thread";
     public static final String SEND_NOTIFICATION_TO_NEW_THREAD = "send_notification_to_new_thread";
@@ -49,6 +50,20 @@ public class EditMessageApiRequest extends ZulipApiRequest implements Executable
      */
     public EditMessageApiRequest withContent(String content) {
         putParam(CONTENT, content);
+        return this;
+    }
+
+    /**
+     * Sets the SHA256 hash of the previous raw content of the message that the client has at the time of the request.
+     *
+     * @see                      <a href=
+     *                           "https://zulip.com/api/update-message#parameter-prev_content_sha256">https://zulip.com/api/update-message#parameter-prev_content_sha256</a>
+     *
+     * @param  prevContentSha256 The SHA-256 hash of the previous raw content
+     * @return                   This {@link EditMessageApiRequest} instance
+     */
+    public EditMessageApiRequest withPrevContentSha256(String prevContentSha256) {
+        putParam(PREV_CONTENT_SHA256, prevContentSha256);
         return this;
     }
 

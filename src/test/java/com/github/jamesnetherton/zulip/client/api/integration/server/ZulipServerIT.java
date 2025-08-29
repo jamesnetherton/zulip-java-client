@@ -27,6 +27,7 @@ import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.ResolvedTopicNoticeAutoReadPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
 import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
@@ -302,6 +303,9 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withWebNavigateToSentMessage(true)
                 .withWildcardMentionsNotify(true)
                 .withWebSuggestUpdateTimezone(true)
+                .withWebLeftSidebarShowChannelFolders(true)
+                .withWebLeftSidebarUnreadsCountSummary(true)
+                .withResolvedTopicNoticeAutoReadPolicy(ResolvedTopicNoticeAutoReadPolicy.ALWAYS)
                 .execute();
 
         assertNotNull(result);
@@ -314,8 +318,9 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
     @Test
     public void apnsDeviceToken() throws ZulipClientException {
-        zulip.server().addApnsDeviceToken("test", "test").execute();
-        zulip.server().removeApnsDeviceToken("test").execute();
+        String token = "d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5c6a1b2f3d4e5";
+        zulip.server().addApnsDeviceToken(token, "test").execute();
+        zulip.server().removeApnsDeviceToken(token).execute();
     }
 
     @Test
@@ -340,5 +345,11 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         List<DataExportConsent> dataExportConsents = zulip.server().getDataExportConsentState().execute();
         assertFalse(dataExportConsents.isEmpty());
+    }
+
+    @Test
+    public void welcomeBotCustomMessage() throws ZulipClientException {
+        Integer messageId = zulip.server().testWelcomeBotCustomMessage("Hello World").execute();
+        assertTrue(messageId > 0);
     }
 }

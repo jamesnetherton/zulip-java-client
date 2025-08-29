@@ -24,6 +24,7 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
     public static final String CAN_MANAGE_GROUP = "can_manage_group";
     public static final String CAN_MENTION_GROUP = "can_mention_group";
     public static final String CAN_REMOVE_MEMBERS_GROUP = "can_remove_members_group";
+    public static final String DEACTIVATED = "deactivated";
 
     private final long groupId;
 
@@ -152,6 +153,16 @@ public class UpdateUserGroupApiRequest extends ZulipApiRequest implements VoidEx
      */
     public UpdateUserGroupApiRequest withCanRemoveMembersGroup(UserGroupSetting userGroupSetting) {
         putParamAsWrappedObject("new", CAN_REMOVE_MEMBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Reactivates a deactivated user group.
+     *
+     * @return This {@link UpdateUserGroupApiRequest} instance
+     */
+    public UpdateUserGroupApiRequest withReactivateGroup() {
+        putParam(DEACTIVATED, false);
         return this;
     }
 

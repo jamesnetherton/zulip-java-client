@@ -1,0 +1,26 @@
+{
+  "channel_folders": [
+    {
+      "creator_id": 1,
+      "date_created": 1691057093,
+      "description": "Channel folder description 1",
+      "id": 1,
+      "is_archived": false,
+      "name": "Channel folder 1",
+      "rendered_description": "<p>Channel folder 1</p>",
+      "order": 1
+    },
+    {
+      "creator_id": 2,
+      "date_created": 1691057093,
+      "description": "Channel folder description 2",
+      "id": 2,
+      "is_archived": true,
+      "name": "Channel folder 2",
+      "rendered_description": "<p>Channel folder 2</p>",
+      "order": 2
+    }
+  ],
+  "msg": "",
+  "result": "success"
+}

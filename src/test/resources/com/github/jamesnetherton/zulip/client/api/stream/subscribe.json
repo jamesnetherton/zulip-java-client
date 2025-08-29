@@ -16,5 +16,6 @@
   },
   "unauthorized": [
     "secret stream"
-  ]
+  ],
+  "new_subscription_messages_sent": true
 }

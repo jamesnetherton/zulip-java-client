@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.ResolvedTopicNoticeAutoReadPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
 import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
@@ -80,6 +81,9 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String WEB_NAVIGATE_TO_SENT_MESSAGE = "web_navigate_to_sent_message";
     public static final String WEB_SUGGEST_UPDATE_TIMEZONE = "web_suggest_update_timezone";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
+    public static final String WEB_LEFT_SIDEBAR_SHOW_CHANNEL_FOLDERS = "web_left_sidebar_show_channel_folders";
+    public static final String WEB_LEFT_SIDEBAR_UNREADS_COUNT_SUMMARY = "web_left_sidebar_unreads_count_summary";
+    public static final String RESOLVED_TOPIC_NOTICE_AUTO_READ_POLICY = "resolved_topic_notice_auto_read_policy";
 
     /**
      * Constructs a {@link UpdateOwnUserSettingsApiRequest}.
@@ -750,6 +754,42 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest withWildcardMentionsNotify(boolean wildcardMentionsNotify) {
         putParam(WILDCARD_MENTIONS_NOTIFY, wildcardMentionsNotify);
+        return this;
+    }
+
+    /**
+     * Sets whether the left sidebar displays channel folders configured by the organization.
+     *
+     * @param  webLeftSidebarShowChannelFolders {@code true} to display channel folders configured by the organization.
+     *                                          {@code false} to not display folders
+     * @return                                  This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withWebLeftSidebarShowChannelFolders(boolean webLeftSidebarShowChannelFolders) {
+        putParam(WEB_LEFT_SIDEBAR_SHOW_CHANNEL_FOLDERS, webLeftSidebarShowChannelFolders);
+        return this;
+    }
+
+    /**
+     * Sets whether the left sidebar displays the unread message count summary.
+     *
+     * @param  webLeftSidebarUnreadsCountSummary {@code true} to display the unread message count summary. {@code false} to not
+     *                                           display the message count summary
+     * @return                                   This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withWebLeftSidebarUnreadsCountSummary(boolean webLeftSidebarUnreadsCountSummary) {
+        putParam(WEB_LEFT_SIDEBAR_UNREADS_COUNT_SUMMARY, webLeftSidebarUnreadsCountSummary);
+        return this;
+    }
+
+    /**
+     * Sets whether resolved topic notices are marked as read.
+     *
+     * @param  resolvedTopicNoticeAutoReadPolicy The {@link ResolvedTopicNoticeAutoReadPolicy} to apply
+     * @return                                   This {@link UpdateOwnUserSettingsApiRequest} instance
+     */
+    public UpdateOwnUserSettingsApiRequest withResolvedTopicNoticeAutoReadPolicy(
+            ResolvedTopicNoticeAutoReadPolicy resolvedTopicNoticeAutoReadPolicy) {
+        putParam(RESOLVED_TOPIC_NOTICE_AUTO_READ_POLICY, resolvedTopicNoticeAutoReadPolicy.toString());
         return this;
     }
 

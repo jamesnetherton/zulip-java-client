@@ -20,6 +20,7 @@ public class GetAllUsersApiRequest extends ZulipApiRequest implements Executable
 
     public static final String CLIENT_GRAVATAR = "client_gravatar";
     public static final String INCLUDE_CUSTOM_PROFILE_FIELDS = "include_custom_profile_fields";
+    public static final String USER_IDS = "user_ids";
 
     /**
      * Constructs a {@link GetAllUsersApiRequest}.
@@ -33,6 +34,9 @@ public class GetAllUsersApiRequest extends ZulipApiRequest implements Executable
     /**
      * Sets whether to include the user gravatar image URL in the response.
      *
+     * @see             <a href=
+     *                  "https://zulip.com/api/get-users#parameter-client_gravatar">https://zulip.com/api/get-users#parameter-client_gravatar</a>
+     *
      * @param  gravatar {@code true} to include the gravatar image URL in the response. {@code false} to not include the
      *                  gravatar image URL in the response
      * @return          This {@link GetAllUsersApiRequest} instance
@@ -45,12 +49,29 @@ public class GetAllUsersApiRequest extends ZulipApiRequest implements Executable
     /**
      * Sets whether to include the user custom profile fields in the response.
      *
+     * @see                               <a href=
+     *                                    "https://zulip.com/api/get-users#parameter-include_custom_profile_fields">https://zulip.com/api/get-users#parameter-include_custom_profile_fields</a>
+     *
      * @param  includeCustomProfileFields {@code true} to include user custom profile fields in the response. {@code false} to
      *                                    not include user custom profile fields in the response
      * @return                            This {@link GetAllUsersApiRequest} instance
      */
     public GetAllUsersApiRequest withIncludeCustomProfileFields(boolean includeCustomProfileFields) {
         putParam(INCLUDE_CUSTOM_PROFILE_FIELDS, includeCustomProfileFields);
+        return this;
+    }
+
+    /**
+     * Limits the response to users in the given list.
+     *
+     * @see            <a href=
+     *                 "https://zulip.com/api/get-users#parameter-user_ids">https://zulip.com/api/get-users#parameter-user_ids</a>
+     *
+     * @param  userIds The user ids to limit the response to
+     * @return         This {@link GetAllUsersApiRequest} instance
+     */
+    public GetAllUsersApiRequest withUserIds(Long... userIds) {
+        putParamAsJsonString(USER_IDS, userIds);
         return this;
     }
 

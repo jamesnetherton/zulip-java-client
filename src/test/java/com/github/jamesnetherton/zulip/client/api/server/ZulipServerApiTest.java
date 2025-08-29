@@ -19,16 +19,19 @@ import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueBu
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
+import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.ResolvedTopicNoticeAutoReadPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
 import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
@@ -431,6 +434,9 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_SUGGEST_UPDATE_TIMEZONE, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_LEFT_SIDEBAR_SHOW_CHANNEL_FOLDERS, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_LEFT_SIDEBAR_UNREADS_COUNT_SUMMARY, "true")
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.RESOLVED_TOPIC_NOTICE_AUTO_READ_POLICY, "always")
                 .get();
 
         stubZulipResponse(PATCH, "/realm/user_settings_defaults", params, "updateRealmNewUserDefaultSettings.json");
@@ -491,6 +497,9 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withWebNavigateToSentMessage(true)
                 .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
+                .withWebLeftSidebarShowChannelFolders(true)
+                .withWebLeftSidebarUnreadsCountSummary(true)
+                .withResolvedTopicNoticeAutoReadPolicy(ResolvedTopicNoticeAutoReadPolicy.ALWAYS)
                 .execute();
 
         assertNotNull(result);
@@ -636,5 +645,40 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         dataExportConsent = dataExportConsents.get(1);
         assertEquals(2, dataExportConsent.getUserId());
         assertFalse(dataExportConsent.isConsented());
+    }
+
+    @Test
+    public void customWelcomeBotMessage() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(TestWelcomeBotCustomMessageApiRequest.WELCOME_MESSAGE_CUSTOM_TEXT, "Hello World")
+                .get();
+
+        stubZulipResponse(POST, "/realm/test_welcome_bot_custom_message", params, "customWelcomeBotMessage.json");
+
+        Integer messageId = zulip.server().testWelcomeBotCustomMessage("Hello World").execute();
+
+        assertEquals(1, messageId);
+    }
+
+    @Test
+    public void mobilePushE2EPushTestNotification() throws Exception {
+        stubZulipResponse(POST, "/mobile_push/e2e/test_notification", QueryParams.create().get());
+
+        zulip.server().sendE2EMobilePushTestNotification().execute();
+    }
+
+    @Test
+    public void registerE2EMobilePushDevice() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RegisterE2EMobilePushDevice.TOKEN_KIND, "fcm")
+                .add(RegisterE2EMobilePushDevice.PUSH_ACCOUNT_ID, "123")
+                .add(RegisterE2EMobilePushDevice.PUSH_PUBLIC_KEY, "push-public")
+                .add(RegisterE2EMobilePushDevice.BOUNCER_PUBLIC_KEY, "bouncer-public")
+                .add(RegisterE2EMobilePushDevice.ENCRYPTED_PUSH_REGISTRATION, "djd282j9j")
+                .get();
+
+        stubZulipResponse(POST, "/mobile_push/register", params);
+
+        zulip.server().registerE2EMobilePushDevice(TokenKind.FCM, 123, "push-public", "bouncer-public", "djd282j9j").execute();
     }
 }

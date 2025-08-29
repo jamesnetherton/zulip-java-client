@@ -36,6 +36,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStat
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserStatusApiRequest;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -162,6 +163,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_LEAVE_GROUP, Map.of("new", 4))
                 .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_MANAGE_GROUP, Map.of("new", 5))
                 .addAsRawJsonString(UpdateUserGroupApiRequest.CAN_REMOVE_MEMBERS_GROUP, Map.of("new", data))
+                .add(UpdateUserGroupApiRequest.DEACTIVATED, "false")
                 .get();
 
         stubZulipResponse(PATCH, "/user_groups/3", params);
@@ -173,6 +175,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withCanLeaveGroup(UserGroupSetting.of(4))
                 .withCanManageGroup(UserGroupSetting.of(5))
                 .withCanRemoveMembersGroup(UserGroupSetting.of(List.of(1L, 2L, 3L), List.of(4L, 5L, 6L)))
+                .withReactivateGroup()
                 .execute();
     }
 
@@ -405,6 +408,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(GetAllUsersApiRequest.CLIENT_GRAVATAR, "true")
                 .add(GetAllUsersApiRequest.INCLUDE_CUSTOM_PROFILE_FIELDS, "true")
+                .add(GetAllUsersApiRequest.USER_IDS, "[1,2]")
                 .get();
 
         stubZulipResponse(GET, "/users", params, "getAllUsers.json");
@@ -412,6 +416,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         List<User> users = zulip.users().getAllUsers()
                 .withClientGravatar(true)
                 .withIncludeCustomProfileFields(true)
+                .withUserIds(1L, 2L)
                 .execute();
 
         assertEquals(2, users.size());
@@ -762,6 +767,9 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.WEB_NAVIGATE_TO_SENT_MESSAGE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.WEB_SUGGEST_UPDATE_TIMEZONE, "true")
                 .add(UpdateOwnUserSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_LEFT_SIDEBAR_SHOW_CHANNEL_FOLDERS, "true")
+                .add(UpdateOwnUserSettingsApiRequest.WEB_LEFT_SIDEBAR_UNREADS_COUNT_SUMMARY, "true")
+                .add(UpdateOwnUserSettingsApiRequest.RESOLVED_TOPIC_NOTICE_AUTO_READ_POLICY, "always")
                 .get();
 
         stubZulipResponse(PATCH, "/settings", params, "updateOwnUserSettings.json");
@@ -822,6 +830,9 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withWebNavigateToSentMessage(true)
                 .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
+                .withWebLeftSidebarShowChannelFolders(true)
+                .withWebLeftSidebarUnreadsCountSummary(true)
+                .withResolvedTopicNoticeAutoReadPolicy(ResolvedTopicNoticeAutoReadPolicy.ALWAYS)
                 .execute();
 
         assertNotNull(result);
@@ -946,5 +957,30 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals("1f697", userStatus.getEmojiCode());
         assertEquals("car", userStatus.getEmojiName());
         assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
+    }
+
+    @Test
+    public void setUserStatus() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateUserStatusApiRequest.STATUS_TEXT, "Test status")
+                .add(UpdateUserStatusApiRequest.EMOJI_NAME, "test")
+                .add(UpdateUserStatusApiRequest.EMOJI_CODE, "code")
+                .add(UpdateUserStatusApiRequest.REACTION_TYPE, "unicode_emoji")
+                .get();
+
+        stubZulipResponse(POST, "/users/1/status", params);
+
+        zulip.users().updateUserStatus(1)
+                .withStatusText("Test status")
+                .withEmojiName("test")
+                .withEmojiCode("code")
+                .withReactionType(ReactionType.UNICODE)
+                .execute();
+
+        assertThrows(IllegalArgumentException.class, () -> zulip.users()
+                .updateUserStatus(1)
+                .withStatusText("A".repeat(61))
+                .execute());
+
     }
 }

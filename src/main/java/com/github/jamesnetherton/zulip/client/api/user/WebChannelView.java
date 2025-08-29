@@ -7,13 +7,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  */
 public enum WebChannelView {
     /**
-     * Top topic in the channel
+     * Top topic in the channel.
      */
     CHANNEL_TOP_TOPIC(1),
     /**
-     * Channel feed
+     * Channel feed.
      */
-    CHANNEL_FEED(2);
+    CHANNEL_FEED(2),
+    /**
+     * List of topics.
+     */
+    LIST_OF_TOPICS(3),
+    /**
+     * Top unread topic in channel.
+     */
+    TOP_UNREAD_TOPIC_IN_CHANNEL(4);
 
     private final int id;
 

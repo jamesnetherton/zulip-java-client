@@ -23,6 +23,7 @@ public class SendInvitationsApiRequest extends ZulipApiRequest implements VoidEx
     public static final String INVITE_EXPIRES_IN_MINUTES = "invite_expires_in_minutes";
     public static final String NOTIFIY_REFERRER_ON_JOIN = "notify_referrer_on_join";
     public static final String STREAM_IDS = "stream_ids";
+    public static final String WELCOME_MESSAGE_CUSTOM_TEXT = "welcome_message_custom_text";
 
     /**
      * Constructs a {@link SendInvitationsApiRequest}.
@@ -104,6 +105,23 @@ public class SendInvitationsApiRequest extends ZulipApiRequest implements VoidEx
      */
     public SendInvitationsApiRequest withNotifyReferrerOnJoin(boolean notifyReferrerOnJoin) {
         putParam(NOTIFIY_REFERRER_ON_JOIN, notifyReferrerOnJoin);
+        return this;
+    }
+
+    /**
+     * Sets a custom message to be sent by the Welcome Bot to new users that join the organization via this invitation.
+     *
+     * @see                             <a href=
+     *                                  "https://zulip.com/api/send-invites#parameter-welcome_message_custom_text">https://zulip.com/api/send-invites#parameter-welcome_message_custom_text</a>
+     *
+     * @param  welcomeMessageCustomText The welcome message content
+     * @return                          This {@link SendInvitationsApiRequest} instance
+     */
+    public SendInvitationsApiRequest withWelcomeMessageCustomText(String welcomeMessageCustomText) {
+        if (welcomeMessageCustomText != null && welcomeMessageCustomText.length() > 8000) {
+            throw new IllegalArgumentException("Welcome message custom text cannot be longer than 8000 characters");
+        }
+        putParam(WELCOME_MESSAGE_CUSTOM_TEXT, welcomeMessageCustomText);
         return this;
     }
 

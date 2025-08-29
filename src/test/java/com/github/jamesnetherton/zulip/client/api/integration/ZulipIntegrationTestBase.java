@@ -3,13 +3,16 @@ package com.github.jamesnetherton.zulip.client.api.integration;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.Zulip;
+import com.github.jamesnetherton.zulip.client.api.channel.ChannelFolder;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.draft.Draft;
 import com.github.jamesnetherton.zulip.client.api.invitation.Invitation;
 import com.github.jamesnetherton.zulip.client.api.message.Anchor;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
+import com.github.jamesnetherton.zulip.client.api.message.MessageReminder;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
+import com.github.jamesnetherton.zulip.client.api.navigationview.NavigationView;
 import com.github.jamesnetherton.zulip.client.api.server.ProfileField;
 import com.github.jamesnetherton.zulip.client.api.snippet.SavedSnippet;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
@@ -249,6 +252,36 @@ public class ZulipIntegrationTestBase {
                     // ignore
                 }
             });
+
+            // Clean up message reminders
+            List<MessageReminder> messageReminders = zulip.messages().getMessageReminders().execute();
+            messageReminders.forEach(messageReminder -> {
+                try {
+                    zulip.messages().deleteMessageReminder(messageReminder.getReminderId()).execute();
+                } catch (ZulipClientException e) {
+                    // Ignore
+                }
+            });
+
+            // Clean up navigation views
+            List<NavigationView> navigationViews = zulip.navigationView().getAllNavigationViews().execute();
+            navigationViews.forEach(navigationView -> {
+                try {
+                    zulip.navigationView().deleteNavigationView(navigationView.getFragment()).execute();
+                } catch (ZulipClientException e) {
+                    // Ignore
+                }
+            });
+
+            // Clean up channel folders
+            List<ChannelFolder> channelFolders = zulip.channels().getChannelFolders().execute();
+            for (ChannelFolder channelFolder : channelFolders) {
+                if (!channelFolder.isArchived()) {
+                    zulip.channels().updateChannelFolder(channelFolder.getId())
+                            .withIsArchived(true)
+                            .execute();
+                }
+            }
         }
     }
 }

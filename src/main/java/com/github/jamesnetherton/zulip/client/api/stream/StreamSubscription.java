@@ -1,7 +1,10 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
+import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +14,45 @@ public class StreamSubscription {
 
     @JsonProperty
     private boolean audibleNotifications;
+
+    @JsonProperty
+    private UserGroupSetting canAddSubscribersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canAdministerChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canDeleteAnyMessageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canDeleteOwnMessageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesBetweenChannelsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesOutOfChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesWithinChannelGroup;
+
+    @JsonProperty
+    private UserGroupSetting canMoveMessagesBetweenTopicsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canRemoveSubscribersGroup;
+
+    @JsonProperty
+    private UserGroupSetting canRemoveSubscribersGroupId;
+
+    @JsonProperty
+    private UserGroupSetting canResolveTopicsGroup;
+
+    @JsonProperty
+    private UserGroupSetting canSendMessageGroup;
+
+    @JsonProperty
+    private UserGroupSetting canSubscribeGroup;
 
     @JsonProperty
     private String color;
@@ -34,6 +76,9 @@ public class StreamSubscription {
     private long firstMessageId;
 
     @JsonProperty
+    private int folderId;
+
+    @JsonProperty
     private boolean historyPublicToSubscribers;
 
     @JsonProperty
@@ -47,6 +92,9 @@ public class StreamSubscription {
 
     @JsonProperty
     private String name;
+
+    @JsonProperty
+    private List<String> partialSubscribers = new ArrayList<>();
 
     @JsonProperty
     private boolean pinToTop;
@@ -64,7 +112,13 @@ public class StreamSubscription {
     private int streamWeeklyTraffic;
 
     @JsonProperty
-    List<String> subscribers;
+    List<String> subscribers = new ArrayList<>();
+
+    @JsonProperty
+    private int subscriberCount;
+
+    @JsonProperty("topics_policy")
+    TopicPolicy topicPolicy;
 
     @JsonProperty
     private boolean isWebPublic;
@@ -72,11 +126,60 @@ public class StreamSubscription {
     @JsonProperty
     private boolean wildcardMentionsNotify;
 
-    @JsonProperty
-    private int canRemoveSubscribersGroup;
-
     public boolean isAudibleNotifications() {
         return audibleNotifications;
+    }
+
+    public UserGroupSetting getCanAddSubscribersGroup() {
+        return canAddSubscribersGroup;
+    }
+
+    public UserGroupSetting getCanAdministerChannelGroup() {
+        return canAdministerChannelGroup;
+    }
+
+    public UserGroupSetting getCanDeleteAnyMessageGroup() {
+        return canDeleteAnyMessageGroup;
+    }
+
+    public UserGroupSetting getCanDeleteOwnMessageGroup() {
+        return canDeleteOwnMessageGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesBetweenChannelsGroup() {
+        return canMoveMessagesBetweenChannelsGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesOutOfChannelGroup() {
+        return canMoveMessagesOutOfChannelGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesWithinChannelGroup() {
+        return canMoveMessagesWithinChannelGroup;
+    }
+
+    public UserGroupSetting getCanMoveMessagesBetweenTopicsGroup() {
+        return canMoveMessagesBetweenTopicsGroup;
+    }
+
+    public UserGroupSetting getCanRemoveSubscribersGroupId() {
+        return canRemoveSubscribersGroupId;
+    }
+
+    public UserGroupSetting getCanRemoveSubscribersGroup() {
+        return canRemoveSubscribersGroup;
+    }
+
+    public UserGroupSetting getCanResolveTopicsGroup() {
+        return canResolveTopicsGroup;
+    }
+
+    public UserGroupSetting getCanSendMessageGroup() {
+        return canSendMessageGroup;
+    }
+
+    public UserGroupSetting getCanSubscribeGroup() {
+        return canSubscribeGroup;
     }
 
     public String getColor() {
@@ -107,6 +210,10 @@ public class StreamSubscription {
         return firstMessageId;
     }
 
+    public int getFolderId() {
+        return folderId;
+    }
+
     public boolean isHistoryPublicToSubscribers() {
         return historyPublicToSubscribers;
     }
@@ -125,6 +232,10 @@ public class StreamSubscription {
 
     public String getName() {
         return name;
+    }
+
+    public List<String> getPartialSubscribers() {
+        return partialSubscribers;
     }
 
     public boolean isPinToTop() {
@@ -151,15 +262,19 @@ public class StreamSubscription {
         return subscribers;
     }
 
+    public int getSubscriberCount() {
+        return subscriberCount;
+    }
+
+    public TopicPolicy getTopicPolicy() {
+        return topicPolicy;
+    }
+
     public boolean isWebPublic() {
         return isWebPublic;
     }
 
     public boolean isWildcardMentionsNotify() {
         return wildcardMentionsNotify;
-    }
-
-    public int getCanRemoveSubscribersGroup() {
-        return canRemoveSubscribersGroup;
     }
 }

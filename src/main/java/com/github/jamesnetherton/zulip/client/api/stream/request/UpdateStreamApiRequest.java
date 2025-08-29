@@ -5,6 +5,7 @@ import static com.github.jamesnetherton.zulip.client.api.stream.request.StreamRe
 import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
+import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
@@ -19,16 +20,24 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
 
     public static final String DESCRIPTION = "description";
     public static final String NEW_NAME = "new_name";
-    public static final String PRIVATE = "is_private";
-    public static final String IS_DEFAULT_STREAM = "is_default_stream";
+    public static final String IS_PRIVATE = "is_private";
     public static final String IS_WEB_PUBLIC = "is_web_public";
-    public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
-    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
+    public static final String IS_DEFAULT_STREAM = "is_default_stream";
+    public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
+    public static final String IS_ARCHIVED = "is_archived";
+    public static final String FOLDER_ID = "folder_id";
+    public static final String TOPICS_POLICY = "topics_policy";
     public static final String CAN_ADD_SUBSCRIBERS_GROUP = "can_add_subscribers_group";
+    public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
     public static final String CAN_ADMINISTER_CHANNEL_GROUP = "can_administer_channel_group";
+    public static final String CAN_DELETE_ANY_MESSAGE_GROUP = "can_delete_any_message_group";
+    public static final String CAN_DELETE_OWN_MESSAGE_GROUP = "can_delete_own_message_group";
+    public static final String CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP = "can_move_messages_out_of_channel_group";
+    public static final String CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP = "can_move_messages_within_channel_group";
     public static final String CAN_SEND_MESSAGE_GROUP = "can_send_message_group";
     public static final String CAN_SUBSCRIBE_GROUP = "can_subscribe_group";
+    public static final String CAN_RESOLVE_TOPICS_GROUP = "can_resolve_topics_group";
 
     private final long streamId;
 
@@ -72,7 +81,7 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      * @return           This {@link UpdateStreamApiRequest} instance
      */
     public UpdateStreamApiRequest withIsPrivate(boolean isPrivate) {
-        putParam(PRIVATE, isPrivate);
+        putParam(IS_PRIVATE, isPrivate);
         return this;
     }
 
@@ -91,7 +100,7 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     /**
      * Sets whether the stream is a web-public stream.
      *
-     * @param  webPublic {@code true} results in any newly created streams created as web0public. {@code false} results in
+     * @param  webPublic {@code true} results in any newly created streams created as web public. {@code false} results in
      *                   created streams being
      *                   non web-public
      * @return           This {@link UpdateStreamApiRequest} instance
@@ -109,6 +118,42 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withMessageRetention(int messageRetentionDays) {
         putParam(MESSAGE_RETENTION_DAYS, messageRetentionDays);
+        return this;
+    }
+
+    /**
+     * Sets whether the stream is archived.
+     *
+     * @param  isArchived {@code true} to archive the stream. {@code false} to unarchive the stream
+     * @return            This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withIsArchived(boolean isArchived) {
+        putParam(IS_ARCHIVED, isArchived);
+        return this;
+    }
+
+    /**
+     * Sets the folder this stream belongs to.
+     *
+     * @param  folderId the id of the folder this stream belongs to
+     * @return          This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withFolderId(int folderId) {
+        putParam(FOLDER_ID, folderId);
+        return this;
+    }
+
+    /**
+     * Sets whether named topics and the empty topic are enabled in this channel.
+     *
+     * <a href=
+     * "https://zulip.com/api/update-stream#parameter-topics_policy">https://zulip.com/api/update-stream#parameter-topics_policy</a>
+     *
+     * @param  topicPolicy The {@link TopicPolicy}
+     * @return             This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withTopicPolicy(TopicPolicy topicPolicy) {
+        putParam(TOPICS_POLICY, topicPolicy.toString());
         return this;
     }
 
@@ -160,7 +205,7 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     }
 
     /**
-     * Set the users who have permission to administer this stream
+     * Set the users who have permission to administer this stream.
      *
      * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
      *                          stream
@@ -172,7 +217,55 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     }
 
     /**
-     * Set the users who have permission to post in this stream
+     * Set the users who have permission to delete any message in the stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining the users who have permission to delete any message in
+     *                          the stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanDeleteAnyMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_DELETE_ANY_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to delete they have sent to the stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining the users who have permission to delete they have sent
+     *                          to the stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanDeleteOwnMessageGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_DELETE_OWN_MESSAGE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to move messages out of this stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining the users who have permission to move messages out of
+     *                          this stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanMoveMessagesOutOfChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to move messages within this stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining the users who have permission to move messages within
+     *                          this stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanMoveMessagesWithinChannelGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to post in this stream.
      *
      * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
      *                          stream
@@ -184,7 +277,7 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     }
 
     /**
-     * Sets the users who have permission to subscribe themselves to this stream
+     * Sets the users who have permission to subscribe themselves to this stream.
      *
      * @param  userGroupSetting The {@link UserGroupSetting} determining which members are allowed to subscribe others to the
      *                          stream
@@ -192,6 +285,18 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withCanSubscribeGroup(UserGroupSetting userGroupSetting) {
         putParamAsWrappedObject("new", CAN_SUBSCRIBE_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Set the users who have permission to resolve topics in this stream.
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} determining the users who have permission resolve topics in this
+     *                          stream
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanResolveTopicsGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_RESOLVE_TOPICS_GROUP, userGroupSetting);
         return this;
     }
 
