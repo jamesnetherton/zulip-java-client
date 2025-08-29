@@ -1,7 +1,7 @@
 image:https://github.com/jamesnetherton/zulip-java-client/workflows/Zulip%20Java%20Client%20CI/badge.svg[title="Zulip Java Client CI", link="https://github.com/jamesnetherton/zulip-java-client/actions?query=workflow%3A%22Zulip+Java+Client+CI%22+branch%3main"]
 image:https://img.shields.io/:license-Apache2-blue.svg[title="License", link="http://www.apache.org/licenses/LICENSE-2.0"]
 image:https://img.shields.io/maven-central/v/com.github.jamesnetherton/zulip-java-client.svg?maxAge=600[title="Maven Central", link="http://search.maven.org/#search%7Cga%7C1%7Cg%3Acom.github.jamesnetherton%20a%3Azulip-java-client"]
-image:https://img.shields.io/endpoint?url=https%3A%2F%2Fjamesnetherton.github.io%2Fzulip-java-client%2Fversion.json[title="JavaDoc", link="https://jamesnetherton.github.io/zulip-java-client/0.8.0/index.html"]
+image:https://img.shields.io/endpoint?url=https%3A%2F%2Fjamesnetherton.github.io%2Fzulip-java-client%2Fversion.json[title="JavaDoc", link="https://jamesnetherton.github.io/zulip-java-client/0.9.0/index.html"]
 
 = Zulip Java Client
 
@@ -24,7 +24,7 @@ Add the `zulip-java-client` dependency to your project.
 <dependency>
     <groupId>com.github.jamesnetherton</groupId>
     <artifactId>zulip-java-client</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
 </dependency>
 ----
 
@@ -33,7 +33,7 @@ Add the `zulip-java-client` dependency to your project.
 [source,groovy]
 ----
 dependencies {
-    compile 'com.github.jamesnetherton:zulip-java-client:0.8.0'
+    compile 'com.github.jamesnetherton:zulip-java-client:0.9.0'
 }
 ----
 
