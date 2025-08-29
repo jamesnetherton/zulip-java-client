@@ -41,4 +41,13 @@ public class StreamSubscriptionResult {
     public List<String> getUnauthorized() {
         return delegate.getUnauthorized();
     }
+
+    /**
+     * Gets whether a new subscription message was sent.
+     *
+     * @return {@code true} if a new subscription message was sent. {@code false} if no new subscription message was sent.
+     */
+    public boolean isNewSubscriptionMessagesSent() {
+        return delegate.isNewSubscriptionMessagesSent();
+    }
 }

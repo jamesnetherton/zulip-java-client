@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.CreateMessageReminderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
@@ -22,6 +23,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.MarkStreamAsRe
 import com.github.jamesnetherton.zulip.client.api.message.request.MarkTopicAsReadApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.MatchesNarrowApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.RenderMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.ReportMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.SendScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.UpdateMessageFlagsApiRequest;
@@ -57,6 +59,25 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void createMessageReminder() throws Exception {
+        Instant now = Instant.now();
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateMessageReminderApiRequest.MESSAGE_ID, "1")
+                .add(CreateMessageReminderApiRequest.NOTE, "Test note")
+                .add(CreateMessageReminderApiRequest.SCHEDULED_DELIVERY_TIMESTAMP, String.valueOf(now.getEpochSecond()))
+                .get();
+
+        stubZulipResponse(POST, "/reminders", params, "createMessageReminder.json");
+
+        int messageReminderId = zulip.messages().createMessageReminder(1, now)
+                .withNote("Test note")
+                .execute();
+
+        assertEquals(42, messageReminderId);
+    }
+
+    @Test
     public void deleteEmojiReaction() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(AddEmojiReactionApiRequest.EMOJI_CODE, "test")
@@ -80,6 +101,13 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void deleteMessageReminder() throws Exception {
+        stubZulipResponse(DELETE, "/reminders/1", Collections.emptyMap());
+
+        zulip.messages().deleteMessageReminder(1).execute();
+    }
+
+    @Test
     public void deleteScheduledMessage() throws Exception {
         stubZulipResponse(DELETE, "/scheduled_messages/1", Collections.emptyMap());
 
@@ -90,6 +118,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     public void editMessage() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(EditMessageApiRequest.CONTENT, "edited content")
+                .add(EditMessageApiRequest.PREV_CONTENT_SHA256,
+                        "8f4d3c7a1b25e6d9c4f8a2b3d7e0f159c1a6b8d4e2f73a9c5d1e8b0f3c6a7d92")
                 .add(EditMessageApiRequest.PROPAGATE_MODE, PropagateMode.CHANGE_ONE.toString())
                 .add(EditMessageApiRequest.SEND_NOTIFICATION_TO_NEW_THREAD, "true")
                 .add(EditMessageApiRequest.SEND_NOTIFICATION_TO_OLD_THREAD, "true")
@@ -101,6 +131,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         List<DetachedUpload> detachedUploads = zulip.messages().editMessage(1)
                 .withContent("edited content")
+                .withPrevContentSha256("8f4d3c7a1b25e6d9c4f8a2b3d7e0f159c1a6b8d4e2f73a9c5d1e8b0f3c6a7d92")
                 .withPropagateMode(PropagateMode.CHANGE_ONE)
                 .withSendNotificationToNewThread(true)
                 .withSendNotificationToOldThread(true)
@@ -542,6 +573,30 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void getMessageReminders() throws Exception {
+        stubZulipResponse(GET, "/reminders", "getMessageReminders.json");
+
+        List<MessageReminder> messageReminders = zulip.messages().getMessageReminders().execute();
+
+        assertEquals(2, messageReminders.size());
+
+        for (int i = 1; i <= messageReminders.size(); i++) {
+            MessageReminder messageReminder = messageReminders.get(i - 1);
+            assertEquals(i, messageReminder.getReminderId());
+            assertEquals(i, messageReminder.getReminderTargetMessageId());
+            assertEquals("Test reminder " + i, messageReminder.getContent());
+            assertEquals(String.format("<p>Test reminder %d</p>", i), messageReminder.getRenderedContent());
+            assertTrue(messageReminder.getScheduledDeliveryTimestamp().toEpochMilli() > 0);
+            assertEquals(List.of(1, 2, 3), messageReminder.getTo());
+            if (i == 1) {
+                assertFalse(messageReminder.isFailed());
+            } else {
+                assertTrue(messageReminder.isFailed());
+            }
+        }
+    }
+
+    @Test
     public void getScheduledMessages() throws Exception {
         stubZulipResponse(GET, "/scheduled_messages", Collections.emptyMap(), "getScheduledMessages.json");
 
@@ -677,6 +732,54 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         String rendered = zulip.messages().renderMessage("test").execute();
 
         assertEquals("<p><strong>test</strong></p>", rendered);
+    }
+
+    @Test
+    public void reportMessage() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.DESCRIPTION, "Test description")
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.INAPPROPRIATE.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        zulip.messages().reportMessage(1, MessageReportReason.INAPPROPRIATE)
+                .withDescription("Test description")
+                .execute();
+    }
+
+    @Test
+    public void reportMessageDescriptionTooLong() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.OTHER.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER)
+                    .withDescription("1".repeat(101))
+                    .execute();
+        });
+    }
+
+    @Test
+    public void reportMessageNoDescriptionForReportTypeOther() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(ReportMessageApiRequest.REPORT_TYPE, MessageReportReason.OTHER.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages/1/report", params);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER).execute();
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.messages().reportMessage(1, MessageReportReason.OTHER)
+                    .withDescription("")
+                    .execute();
+        });
     }
 
     @Test

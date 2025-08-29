@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import com.github.jamesnetherton.zulip.client.api.user.EmojiSet;
+import com.github.jamesnetherton.zulip.client.api.user.ResolvedTopicNoticeAutoReadPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
@@ -37,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,14 +56,10 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         long userId = zulip.users().createUser(id + "@test.com", id, "T00s3cr3t").execute();
         assertTrue(userId > 0);
 
-        // Since Zulip 3.x does not return the created user id, use this method to find it
-        List<User> users = zulip.users().getAllUsers().execute();
-        User createdUser = users.stream()
-                .filter(User::isActive)
-                .filter(u -> u.getEmail().equals(id + "@test.com"))
-                .findFirst()
-                .get();
-        assertNotNull(createdUser);
+        // Filter by id
+        List<User> users = zulip.users().getAllUsers().withUserIds(userId).execute();
+        assertEquals(1, users.size());
+        User createdUser = users.get(0);
 
         // Retrieve user
         try {
@@ -414,6 +412,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withCanLeaveGroup(UserGroupSetting.of(11))
                 .withCanManageGroup(UserGroupSetting.of(11))
                 .withCanRemoveMembersGroup(UserGroupSetting.of(List.of(ownUser.getUserId()), List.of(11L)))
+                .withReactivateGroup()
                 .execute();
 
         groups = zulip.users().getUserGroups().execute();
@@ -447,6 +446,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(members.contains(createdUser.getUserId()));
 
         List<Long> groupMembers = zulip.users().getUserGroupMembers(group.getId()).execute();
+        Collections.sort(groupMembers);
         assertEquals(List.of(ownUser.getUserId(), createdUser.getUserId()), groupMembers);
 
         boolean isMember = zulip.users().getUserGroupMembershipStatus(group.getId(), createdUser.getUserId()).execute();
@@ -561,6 +561,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withWebNavigateToSentMessage(true)
                 .withWebSuggestUpdateTimezone(true)
                 .withWildcardMentionsNotify(true)
+                .withWebLeftSidebarShowChannelFolders(true)
+                .withWebLeftSidebarUnreadsCountSummary(true)
+                .withResolvedTopicNoticeAutoReadPolicy(ResolvedTopicNoticeAutoReadPolicy.ALWAYS)
                 .execute();
 
         assertNotNull(result);
@@ -619,4 +622,31 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertTrue(removedAlertWords.contains("cheese"));
     }
 
+    @Test
+    public void updateUserStatus() throws Exception {
+        zulip.users().updateUserStatus(ownUser.getUserId())
+                .withStatusText("test status")
+                .withEmojiCode("1f697")
+                .withEmojiName("car")
+                .withReactionType(ReactionType.UNICODE)
+                .execute();
+
+        UserStatus userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertEquals("test status", userStatus.getStatusText());
+        assertEquals("1f697", userStatus.getEmojiCode());
+        assertEquals("car", userStatus.getEmojiName());
+        assertEquals(ReactionType.UNICODE, userStatus.getReactionType());
+
+        zulip.users().updateUserStatus(ownUser.getUserId())
+                .withStatusText("")
+                .withEmojiCode("")
+                .withEmojiName("")
+                .execute();
+
+        userStatus = zulip.users().getUserStatus(ownUser.getUserId()).execute();
+        assertNull(userStatus.getStatusText());
+        assertNull(userStatus.getEmojiCode());
+        assertNull(userStatus.getEmojiName());
+        assertNull(userStatus.getReactionType());
+    }
 }

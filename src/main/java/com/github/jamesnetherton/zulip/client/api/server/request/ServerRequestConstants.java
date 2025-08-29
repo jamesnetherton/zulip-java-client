@@ -6,7 +6,10 @@ final class ServerRequestConstants {
     public static final String EXPORT_REALM = "export/realm";
     public static final String EXPORT_REALM_CONSENTS = "export/realm/consents";
     public static final String FETCH_API_KEY = "fetch_api_key";
-    public static final String MOBILE_PUSH_TEST = "mobile_push/test_notification";
+    public static final String MOBILE_PUSH = "mobile_push";
+    public static final String MOBILE_PUSH_REGISTER = MOBILE_PUSH + "/register";
+    public static final String MOBILE_PUSH_TEST = MOBILE_PUSH + "/test_notification";
+    public static final String MOBILE_E2E_PUSH_TEST = MOBILE_PUSH + "/e2e/test_notification";
     public static final String REALM = "realm";
     public static final String REALM_EMOJI = REALM + "/emoji";
     public static final String REALM_EMOJI_WITH_NAME = REALM_EMOJI + "/%s";
@@ -22,6 +25,7 @@ final class ServerRequestConstants {
     public static final String USERS_WITH_ME = "users/me";
     public static final String USERS_APNS_DEVICE_TOKEN = USERS_WITH_ME + "/apns_device_token";
     public static final String USERS_ANDROID_GCM_REG_ID = USERS_WITH_ME + "/android_gcm_reg_id";
+    public static final String TEST_WELCOME_BOT_CUSTOM_MESSAGE = REALM + "/test_welcome_bot_custom_message";
 
     private ServerRequestConstants() {
     }

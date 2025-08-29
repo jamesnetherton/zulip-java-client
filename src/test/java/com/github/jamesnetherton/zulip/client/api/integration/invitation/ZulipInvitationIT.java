@@ -38,6 +38,7 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
                 .withInviteAs(UserRole.MEMBER)
                 .inviteExpiresInMinutes(60)
                 .streamIds(streamId)
+                .withWelcomeMessageCustomText("Hello and welcome to this test Zulip server")
                 .execute();
 
         assertTrue(invitationLink.matches("https://localhost/join/.*/"));
@@ -82,6 +83,7 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
                 .inviteExpiresInMinutes(60)
                 .withNotifyReferrerOnJoin(true)
                 .withIncludeRealmDefaultSubscriptions(true)
+                .withWelcomeMessageCustomText("Hello and welcome to this Zulip test server")
                 .execute();
 
         List<Invitation> invitations = zulip.invitations().getAllInvitations().execute();

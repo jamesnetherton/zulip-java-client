@@ -57,7 +57,7 @@ public class UpdateOwnUserStatusApiRequest extends ZulipApiRequest implements Vo
     }
 
     /**
-     * Sets whether the user should be marked as "away".
+     * Sets the emoji to associate with the status.
      *
      * @param  emojiName The name for the emoji to associate with this status.
      * @return           This {@link UpdateOwnUserStatusApiRequest} instance

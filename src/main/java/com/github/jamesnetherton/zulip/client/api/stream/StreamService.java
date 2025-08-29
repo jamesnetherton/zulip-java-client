@@ -1,5 +1,10 @@
 package com.github.jamesnetherton.zulip.client.api.stream;
 
+import com.github.jamesnetherton.zulip.client.api.channel.request.CreateChannelApiRequest;
+import com.github.jamesnetherton.zulip.client.api.channel.request.CreateChannelFolderApiRequest;
+import com.github.jamesnetherton.zulip.client.api.channel.request.GetChannelFoldersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.channel.request.ReorderChannelFoldersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.channel.request.UpdateChannelFolderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.stream.request.AddDefaultStreamApiRequest;
@@ -256,6 +261,8 @@ public class StreamService implements ZulipService {
     /**
      * Adds a default stream for new users joining the organization.
      *
+     * @see             <a href="https://zulip.com/api/add-default-stream">https://zulip.com/api/add-default-stream</a>
+     *
      * @param  streamId The id of the stream to make a default for new users joining the organization
      * @return          The {@link AddDefaultStreamApiRequest} builder object
      */
@@ -265,6 +272,8 @@ public class StreamService implements ZulipService {
 
     /**
      * Removes a default stream for new users joining the organization.
+     *
+     * @see             <a href="https://zulip.com/api/remove-default-stream">https://zulip.com/api/remove-default-stream</a>
      *
      * @param  streamId The id of the stream to remove as a default for new users joining the organization
      * @return          The {@link RemoveDefaultStreamApiRequest} builder object
@@ -276,10 +285,74 @@ public class StreamService implements ZulipService {
     /**
      * Gets all users subscribed to a stream.
      *
+     * @see             <a href="https://zulip.com/api/get-subscribers">https://zulip.com/api/get-subscribers</a>
+     *
      * @param  streamId The id of the stream to get subscribers for
      * @return          The {@link GetStreamSubscribersApiRequest} builder object
      */
     public GetStreamSubscribersApiRequest getStreamSubscribers(long streamId) {
         return new GetStreamSubscribersApiRequest(this.client, streamId);
+    }
+
+    /**
+     * Creates a new channel.
+     *
+     * @see                <a href="https://zulip.com/api/create-channel">https://zulip.com/api/create-channel</a>
+     *
+     * @param  name        The name of the channel
+     * @param  subscribers The user ids that should be subscribed to the channel
+     * @return             The {@link CreateChannelApiRequest} builder object
+     */
+    public CreateChannelApiRequest createChannel(String name, Long... subscribers) {
+        return new CreateChannelApiRequest(this.client, name, subscribers);
+    }
+
+    /**
+     * Creates a new channel folder.
+     *
+     * @see         <a href="https://zulip.com/api/create-channel-folder">https://zulip.com/api/create-channel-folder</a>
+     *
+     * @param  name The name of the channel folder
+     * @return      The {@link CreateChannelFolderApiRequest} builder object
+     */
+    public CreateChannelFolderApiRequest createChannelFolder(String name) {
+        return new CreateChannelFolderApiRequest(this.client, name);
+    }
+
+    /**
+     * Gets all channel folders.
+     *
+     * @see    <a href="https://zulip.com/api/get-channel-folders">https://zulip.com/api/get-channel-folders</a>
+     *
+     * @return The {@link GetChannelFoldersApiRequest} builder object
+     */
+    public GetChannelFoldersApiRequest getChannelFolders() {
+        return new GetChannelFoldersApiRequest(this.client);
+    }
+
+    /**
+     * Reorders channel folders.
+     *
+     * @see                         <a href=
+     *                              "https://zulip.com/api/get-channel-folders">https://zulip.com/api/get-channel-folders</a>
+     *
+     * @param  channelFolderIdOrder The order of the channel folder ids
+     * @return                      The {@link GetChannelFoldersApiRequest} builder object
+     */
+    public ReorderChannelFoldersApiRequest reorderChannelFolders(Integer... channelFolderIdOrder) {
+        return new ReorderChannelFoldersApiRequest(this.client, channelFolderIdOrder);
+    }
+
+    /**
+     * Updates a channel folder.
+     *
+     * @see                    <a href=
+     *                         "https://zulip.com/api/update-channel-folder">https://zulip.com/api/update-channel-folder</a>
+     *
+     * @param  channelFolderId The id of the channel folder to update
+     * @return                 The {@link UpdateChannelFolderApiRequest} builder object
+     */
+    public UpdateChannelFolderApiRequest updateChannelFolder(int channelFolderId) {
+        return new UpdateChannelFolderApiRequest(this.client, channelFolderId);
     }
 }

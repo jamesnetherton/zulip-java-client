@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.POST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
@@ -24,6 +25,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
                 .add(CreateReusableInvitationLinkApiRequest.INVITE_AS, String.valueOf(UserRole.ORGANIZATION_ADMIN.getId()))
                 .add(CreateReusableInvitationLinkApiRequest.INVITE_EXPIRES_IN_MINUTES, "60")
                 .add(CreateReusableInvitationLinkApiRequest.STREAM_IDS, "[1,2,3]")
+                .add(CreateReusableInvitationLinkApiRequest.WELCOME_MESSAGE_CUSTOM_TEXT, "Test welcome message")
                 .get();
 
         stubZulipResponse(POST, "/invites/multiuse", params, "createInvitationLink.json");
@@ -34,9 +36,16 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
                 .withInviteAs(UserRole.ORGANIZATION_ADMIN)
                 .inviteExpiresInMinutes(60)
                 .streamIds(1, 2, 3)
+                .withWelcomeMessageCustomText("Test welcome message")
                 .execute();
 
         assertEquals("https://example.zulipchat.com/join/yddhtzk4jgl7rsmazc5fyyyy/", invitationLink);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.invitations().createReusableInvitationLink()
+                    .withWelcomeMessageCustomText("A".repeat(8001))
+                    .execute();
+        });
     }
 
     @Test
@@ -91,6 +100,7 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
                 .add(SendInvitationsApiRequest.INVITE_EXPIRES_IN_MINUTES, "60")
                 .add(SendInvitationsApiRequest.NOTIFIY_REFERRER_ON_JOIN, "true")
                 .add(SendInvitationsApiRequest.STREAM_IDS, "[1,2,3]")
+                .add(SendInvitationsApiRequest.WELCOME_MESSAGE_CUSTOM_TEXT, "Test welcome message")
                 .get();
 
         stubZulipResponse(POST, "/invites", params, SUCCESS_JSON);
@@ -101,6 +111,13 @@ public class ZulipInvitationApiTest extends ZulipApiTestBase {
                 .inviteExpiresInMinutes(60)
                 .withNotifyReferrerOnJoin(true)
                 .withIncludeRealmDefaultSubscriptions(true)
+                .withWelcomeMessageCustomText("Test welcome message")
                 .execute();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            zulip.invitations().sendInvitations(List.of("foo@bar.com, cheese@wine.com"), List.of(1L, 2L, 3L))
+                    .withWelcomeMessageCustomText("A".repeat(8001))
+                    .execute();
+        });
     }
 }

@@ -31,7 +31,9 @@
         11,
         12,
         14
-      ]
+      ],
+      "topics_policy": "inherit",
+      "subscriber_count": 1
     },
     {
       "audible_notifications": true,
@@ -48,7 +50,6 @@
       "role": 50,
       "stream_id": 3,
       "is_web_public": true,
-      "can_remove_subscribers_group": 2,
       "is_wildcard_mentions_notify": false,
       "stream_weekly_traffic": 1,
       "message_retention_days": 30,
@@ -61,7 +62,26 @@
         11,
         12,
         14
-      ]
+      ],
+      "partial_subscribers": [
+        1, 2, 3
+      ],
+      "topics_policy": "allow_empty_topic",
+      "folder_id": 2,
+      "can_delete_any_message_group": 1,
+      "can_delete_own_message_group": 2,
+      "can_move_messages_out_of_channel_group": 3,
+      "can_move_messages_within_channel_group": 4,
+      "can_move_messages_between_channels_group": 5,
+      "can_move_messages_between_topics_group": 6,
+      "can_resolve_topics_group": 7,
+      "can_send_message_group": 8,
+      "can_subscribe_group": 9,
+      "can_administer_channel_group": 10,
+      "can_remove_subscribers_group_id": 11,
+      "can_remove_subscribers_group": 12,
+      "can_add_subscribers_group": 13,
+      "subscriber_count": 2
     }
   ]
 }

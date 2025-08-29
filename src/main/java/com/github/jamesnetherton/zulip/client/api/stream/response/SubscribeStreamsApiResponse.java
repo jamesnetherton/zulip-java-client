@@ -23,6 +23,9 @@ public class SubscribeStreamsApiResponse extends ZulipApiResponse {
     @JsonProperty
     private List<String> unauthorized = new ArrayList<>();
 
+    @JsonProperty
+    private boolean newSubscriptionMessagesSent;
+
     public Map<String, List<String>> getSubscribed() {
         return subscribed;
     }
@@ -33,5 +36,9 @@ public class SubscribeStreamsApiResponse extends ZulipApiResponse {
 
     public List<String> getUnauthorized() {
         return unauthorized;
+    }
+
+    public boolean isNewSubscriptionMessagesSent() {
+        return newSubscriptionMessagesSent;
     }
 }

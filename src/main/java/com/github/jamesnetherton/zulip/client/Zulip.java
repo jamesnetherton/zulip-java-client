@@ -5,6 +5,7 @@ import com.github.jamesnetherton.zulip.client.api.draft.DraftService;
 import com.github.jamesnetherton.zulip.client.api.event.EventService;
 import com.github.jamesnetherton.zulip.client.api.invitation.InvitationService;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
+import com.github.jamesnetherton.zulip.client.api.navigationview.NavigationViewService;
 import com.github.jamesnetherton.zulip.client.api.server.ServerService;
 import com.github.jamesnetherton.zulip.client.api.snippet.SnippetService;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
@@ -119,6 +120,11 @@ public final class Zulip implements Closeable {
      */
     public MessageService messages() {
         return (MessageService) services.computeIfAbsent(MessageService.class, key -> new MessageService(this.client));
+    }
+
+    public NavigationViewService navigationView() {
+        return (NavigationViewService) services.computeIfAbsent(NavigationViewService.class,
+                key -> new NavigationViewService(this.client));
     }
 
     /**

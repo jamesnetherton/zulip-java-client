@@ -133,16 +133,16 @@ public class ZulipApiTestBase {
     }
 
     protected byte[] getStubbedResponse(String resourceName) throws IOException {
-        InputStream resourceAsStream = getClass().getResourceAsStream(resourceName);
-        if (resourceAsStream == null) {
-            throw new IllegalStateException("Resource: " + resourceName + " could not be found");
+        try (InputStream resourceAsStream = getClass().getResourceAsStream(resourceName)) {
+            if (resourceAsStream == null) {
+                throw new IllegalStateException("Resource: " + resourceName + " could not be found");
+            }
+            return resourceAsStream.readAllBytes();
         }
-
-        return resourceAsStream.readAllBytes();
     }
 
     protected static final class QueryParams {
-        private Map<String, StringValuePattern> params = new HashMap<>();
+        private final Map<String, StringValuePattern> params = new HashMap<>();
 
         public static QueryParams create() {
             return new QueryParams();

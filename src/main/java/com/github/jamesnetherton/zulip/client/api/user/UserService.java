@@ -36,6 +36,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserApiRequ
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserByEmailApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
@@ -435,6 +436,17 @@ public class UserService implements ZulipService {
      */
     public UpdateOwnUserSettingsApiRequest updateOwnUserSettings() {
         return new UpdateOwnUserSettingsApiRequest(this.client);
+    }
+
+    /**
+     * Updates settings for a given user.
+     *
+     * @see    <a href="https://zulip.com/api/update-status-for-user">https://zulip.com/api/update-status-for-user</a>
+     *
+     * @return The {@link UpdateUserStatusApiRequest} builder object
+     */
+    public UpdateUserStatusApiRequest updateUserStatus(long userId) {
+        return new UpdateUserStatusApiRequest(this.client, userId);
     }
 
     /**
