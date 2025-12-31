@@ -1,5 +1,6 @@
 package com.github.jamesnetherton.zulip.client.api.integration.event;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,13 +11,12 @@ import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.message.MessageService;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamService;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +43,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
     @Test
     public void messageEventsWithNarrow() throws Exception {
-        CountDownLatch latch = new CountDownLatch(5);
-        List<String> messages = new ArrayList<>();
+        List<String> messages = Collections.synchronizedList(new ArrayList<>());
 
         String streamA = UUID.randomUUID().toString().split("-")[0];
         String streamB = UUID.randomUUID().toString().split("-")[0];
@@ -53,22 +52,18 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 StreamSubscriptionRequest.of(streamA, streamA),
                 StreamSubscriptionRequest.of(streamB, streamB)).execute();
 
-        for (int i = 0; i < 10; i++) {
+        await().atMost(30, TimeUnit.SECONDS).until(() -> {
             List<Stream> streams = zulip.streams().getAll().execute();
             List<Stream> matches = streams.stream()
                     .filter(stream -> stream.getName().equals(streamA) || stream.getName().equals(streamB))
                     .collect(Collectors.toList());
-            if (matches.size() == 2) {
-                break;
-            }
-            Thread.sleep(500);
-        }
+            return matches.size() == 2;
+        });
 
         EventPoller eventPoller = zulip.events().captureMessageEvents(new MessageEventListener() {
             @Override
             public void onEvent(Message event) {
                 messages.add(event.getContent());
-                latch.countDown();
             }
         }, Narrow.of("stream", streamA), Narrow.of("is", "stream"));
 
@@ -81,7 +76,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 messageService.sendStreamMessage("Stream " + streamName + " Content " + i, streamName, "testtopic").execute();
             }
 
-            assertTrue(latch.await(30, TimeUnit.SECONDS));
+            await().atMost(30, TimeUnit.SECONDS).until(() -> messages.size() == 5);
 
             int count = 0;
             for (int i = 0; i < 5; i++) {
@@ -97,30 +92,21 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
     }
 
     private void assertMessageEvents(ExecutorService executorService) throws Exception {
-        CountDownLatch latch = new CountDownLatch(3);
-        List<String> messages = new ArrayList<>();
+        List<String> messages = Collections.synchronizedList(new ArrayList<>());
 
         String streamName = "stream" + UUID.randomUUID().toString().split("-")[0];
         StreamSubscriptionRequest subscriptionRequest = StreamSubscriptionRequest.of(streamName, streamName);
-        StreamService streamService = zulip.streams();
-        streamService.subscribe(subscriptionRequest).execute();
+        zulip.streams().subscribe(subscriptionRequest).execute();
 
-        for (int i = 0; i < 50; i++) {
-            boolean match = streamService.getAll()
-                    .execute()
-                    .stream()
-                    .anyMatch(stream -> stream.getName().equals(streamName));
-            if (match) {
-                break;
-            }
-            Thread.sleep(500);
-        }
+        await().atMost(30, TimeUnit.SECONDS).until(() -> zulip.streams().getAll()
+                .execute()
+                .stream()
+                .anyMatch(stream -> stream.getName().equals(streamName)));
 
         MessageEventListener listener = new MessageEventListener() {
             @Override
             public void onEvent(Message event) {
                 messages.add(event.getContent());
-                latch.countDown();
             }
         };
 
@@ -139,7 +125,7 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
                 messageService.sendStreamMessage("Test Content " + i, streamName, "testtopic").execute();
             }
 
-            assertTrue(latch.await(30, TimeUnit.SECONDS));
+            await().atMost(30, TimeUnit.SECONDS).until(() -> messages.size() == 3);
 
             for (int i = 0; i < 3; i++) {
                 int finalI = i;
