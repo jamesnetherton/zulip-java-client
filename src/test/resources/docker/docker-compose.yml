@@ -41,7 +41,7 @@ services:
     environment:
       REDIS_PASSWORD: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
   zulip:
-    image: 'zulip/docker-zulip:11.4-0'
+    image: 'zulip/docker-zulip:11.5-0'
     ports:
       - '80:80'
       - '443:443'
@@ -61,7 +61,7 @@ services:
       SECRETS_memcached_password: 'REPLACE_WITH_SECURE_MEMCACHED_PASSWORD'
       SECRETS_redis_password: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
       SECRETS_secret_key: 'REPLACE_WITH_SECURE_SECRET_KEY'
-      SETTING_EXTERNAL_HOST: 'localhost'
+      SETTING_EXTERNAL_HOST: 'localhost.localdomain'
       SETTING_ZULIP_ADMINISTRATOR: 'admin@example.com'
       SETTING_EMAIL_HOST: ''  # e.g. smtp.example.com
       SETTING_EMAIL_HOST_USER: 'noreply@example.com'
