@@ -1,6 +1,6 @@
 package com.github.jamesnetherton.zulip.client.http;
 
-import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.http.jdk.ZulipJdkHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class ZulipConfiguration {
     private URL proxyUrl;
     private String proxyUsername;
     private String proxyPassword;
-    private ZulipHttpClientFactory zulipHttpClientFactory = new ZulipCommonsHttpClientFactory();
+    private ZulipHttpClientFactory zulipHttpClientFactory = new ZulipJdkHttpClientFactory();
     private URL zulipUrl;
 
     /**

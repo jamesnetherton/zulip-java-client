@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.http.jdk.ZulipJdkHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +43,7 @@ public class ZulipConfigurationTest {
             assertEquals(KEY, configuration.getApiKey());
             assertEquals(SITE, configuration.getZulipUrl().toString());
             assertTrue(configuration.isInsecure());
-            assertInstanceOf(ZulipCommonsHttpClientFactory.class, configuration.getZulipHttpClientFactory());
+            assertInstanceOf(ZulipJdkHttpClientFactory.class, configuration.getZulipHttpClientFactory());
         } finally {
             System.setProperty("user.home", oldHome);
         }

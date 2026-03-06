@@ -22,7 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
-import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.http.jdk.ZulipJdkHttpClientFactory;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -65,7 +65,7 @@ public class ZulipIntegrationTestBase {
 
         if (failOnIgnoredParametersUnsupported) {
             configuration.setZulipHttpClientFactory(configuration -> {
-                final ZulipHttpClient delegate = new ZulipCommonsHttpClientFactory().createZulipHttpClient(configuration);
+                final ZulipHttpClient delegate = new ZulipJdkHttpClientFactory().createZulipHttpClient(configuration);
                 return new ZulipHttpClient() {
                     @Override
                     public <T extends ZulipApiResponse> T get(String path, Map<String, Object> parameters, Class<T> responseAs)
