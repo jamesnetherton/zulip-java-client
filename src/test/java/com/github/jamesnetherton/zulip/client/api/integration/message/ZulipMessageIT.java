@@ -85,7 +85,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(stream1Name, message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -106,7 +106,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(stream1Name, message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -136,7 +136,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(stream2Name, stream2Name);
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -251,7 +251,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(streamName1, message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -268,7 +268,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(streamName1, message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -297,7 +297,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         // assertTrue(message.getAvatarUrl().startsWith("https://secure.gravatar.com"));
         assertEquals("<p>Test Content</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertEquals(streamName2, message.getStream());
         assertEquals(MessageType.STREAM, message.getType());
         assertTrue(message.getId() > 0);
@@ -394,7 +394,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         Message message = messages.get(0);
         assertEquals("<p>Test Direct Message 1</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertNull(message.getStream());
         assertEquals(MessageType.PRIVATE, message.getType());
         assertEquals(firstMessageId, message.getId());
@@ -406,7 +406,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
         message = messages.get(1);
         assertEquals("<p>Test Direct Message 2</p>", message.getContent());
         assertEquals("text/html", message.getContentType());
-        assertEquals("Apache-HttpClient", message.getClient());
+        assertEquals("Java-http-client", message.getClient());
         assertNull(message.getStream());
         assertEquals(MessageType.PRIVATE, message.getType());
         assertEquals(secondMessageId, message.getId());

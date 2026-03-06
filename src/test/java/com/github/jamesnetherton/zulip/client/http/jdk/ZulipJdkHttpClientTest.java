@@ -1,4 +1,4 @@
-package com.github.jamesnetherton.zulip.client.http.commons;
+package com.github.jamesnetherton.zulip.client.http.jdk;
 
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
-public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
+public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void errorResponseCodeThrowsZulipClientException() throws Exception {
@@ -43,7 +43,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         URL zulipUrl = new URL(server.baseUrl());
 
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
 
         assertThrows(ZulipClientException.class, () -> {
             client.get("", Collections.emptyMap(), ZulipApiResponse.class);
@@ -61,7 +61,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         URL zulipUrl = new URL(server.baseUrl());
 
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
 
         try {
             client.get("", Collections.emptyMap(), ZulipApiResponse.class);
@@ -123,7 +123,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
         URL zulipUrl = new URL(server.baseUrl());
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
 
         ZulipApiResponse response = client.get("test", Collections.emptyMap(), ZulipApiResponse.class);
         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
@@ -177,7 +177,12 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
                         if (secure && !proxyAuthHeaderSent) {
                             outputStream
                                     .write("HTTP/1.1 407 Proxy Authentication Required\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream.write("Proxy-Authenticate: Basic\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream
+                                    .write("Proxy-Authenticate: Basic realm=\"proxy\"\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream.write("Content-Length: 0\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream.write("Connection: close\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                            outputStream.flush();
                             proxyAuthHeaderSent = true;
                             continue;
                         }
