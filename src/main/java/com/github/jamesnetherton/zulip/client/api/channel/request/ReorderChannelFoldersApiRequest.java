@@ -22,7 +22,7 @@ public class ReorderChannelFoldersApiRequest extends ZulipApiRequest implements 
      * @param client               The Zulip HTTP client
      * @param channelFolderIdOrder The order of the channel folder ids
      */
-    public ReorderChannelFoldersApiRequest(ZulipHttpClient client, Integer... channelFolderIdOrder) {
+    public ReorderChannelFoldersApiRequest(ZulipHttpClient client, Long... channelFolderIdOrder) {
         super(client);
         putParamAsJsonString(ORDER, channelFolderIdOrder);
     }

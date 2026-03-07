@@ -109,7 +109,7 @@ public class MessageService implements ZulipService {
      * @param  messageReminderId The id of the message reminder to delete
      * @return                   The {@link DeleteMessageReminderApiRequest} builder object
      */
-    public DeleteMessageReminderApiRequest deleteMessageReminder(int messageReminderId) {
+    public DeleteMessageReminderApiRequest deleteMessageReminder(long messageReminderId) {
         return new DeleteMessageReminderApiRequest(this.client, messageReminderId);
     }
 

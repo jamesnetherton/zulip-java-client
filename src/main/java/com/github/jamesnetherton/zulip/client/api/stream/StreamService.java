@@ -339,7 +339,7 @@ public class StreamService implements ZulipService {
      * @param  channelFolderIdOrder The order of the channel folder ids
      * @return                      The {@link GetChannelFoldersApiRequest} builder object
      */
-    public ReorderChannelFoldersApiRequest reorderChannelFolders(Integer... channelFolderIdOrder) {
+    public ReorderChannelFoldersApiRequest reorderChannelFolders(Long... channelFolderIdOrder) {
         return new ReorderChannelFoldersApiRequest(this.client, channelFolderIdOrder);
     }
 
@@ -352,7 +352,7 @@ public class StreamService implements ZulipService {
      * @param  channelFolderId The id of the channel folder to update
      * @return                 The {@link UpdateChannelFolderApiRequest} builder object
      */
-    public UpdateChannelFolderApiRequest updateChannelFolder(int channelFolderId) {
+    public UpdateChannelFolderApiRequest updateChannelFolder(long channelFolderId) {
         return new UpdateChannelFolderApiRequest(this.client, channelFolderId);
     }
 }

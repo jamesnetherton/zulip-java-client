@@ -11,9 +11,9 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
  */
 public class CreateMessageReminderApiResponse extends ZulipApiResponse {
     @JsonProperty
-    private int reminderId;
+    private long reminderId;
 
-    public int getReminderId() {
+    public long getReminderId() {
         return reminderId;
     }
 }

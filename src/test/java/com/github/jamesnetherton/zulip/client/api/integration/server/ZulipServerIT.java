@@ -331,7 +331,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
     @Test
     public void dataExport() throws ZulipClientException {
-        Integer id = zulip.server().createDataExport().execute();
+        Long id = zulip.server().createDataExport().execute();
         List<DataExport> dataExports = zulip.server().getAllDataExports().execute();
         assertFalse(dataExports.isEmpty());
         Optional<DataExport> export = dataExports.stream().filter(dataExport -> id.equals(dataExport.getId())).findFirst();

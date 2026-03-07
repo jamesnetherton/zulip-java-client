@@ -27,7 +27,7 @@ public class UpdateMessageFlagsForNarrowApiResponse extends ZulipApiResponse {
     @JsonProperty
     private boolean foundOldest;
     @JsonProperty
-    private List<Integer> ignoredBecauseNotSubscribedChannels = new ArrayList<>();
+    private List<Long> ignoredBecauseNotSubscribedChannels = new ArrayList<>();
 
     public int getFirstProcessedId() {
         return firstProcessedId;
@@ -53,7 +53,7 @@ public class UpdateMessageFlagsForNarrowApiResponse extends ZulipApiResponse {
         return updatedCount;
     }
 
-    public List<Integer> getIgnoredBecauseNotSubscribedChannels() {
+    public List<Long> getIgnoredBecauseNotSubscribedChannels() {
         return ignoredBecauseNotSubscribedChannels;
     }
 

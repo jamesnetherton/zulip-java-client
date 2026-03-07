@@ -614,7 +614,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
 
-        Integer id = zulip.server().createDataExport().execute();
+        Long id = zulip.server().createDataExport().execute();
 
         assertEquals(1, id);
     }
@@ -627,7 +627,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
 
-        Integer id = zulip.server().createDataExport().withExportType(DataExportType.STANDARD).execute();
+        Long id = zulip.server().createDataExport().withExportType(DataExportType.STANDARD).execute();
 
         assertEquals(1, id);
     }

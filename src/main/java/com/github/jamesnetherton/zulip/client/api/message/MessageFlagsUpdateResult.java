@@ -38,7 +38,7 @@ public class MessageFlagsUpdateResult {
         return delegate.getUpdatedCount();
     }
 
-    public List<Integer> getIgnoredBecauseNotSubscribedChannels() {
+    public List<Long> getIgnoredBecauseNotSubscribedChannels() {
         return delegate.getIgnoredBecauseNotSubscribedChannels();
     }
 }

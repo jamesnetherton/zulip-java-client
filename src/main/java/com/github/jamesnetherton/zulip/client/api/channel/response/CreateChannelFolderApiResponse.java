@@ -10,9 +10,9 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
  */
 public class CreateChannelFolderApiResponse extends ZulipApiResponse {
     @JsonProperty
-    private int channelFolderId;
+    private long channelFolderId;
 
-    public int getChannelFolderId() {
+    public long getChannelFolderId() {
         return channelFolderId;
     }
 }
