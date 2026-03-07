@@ -15,7 +15,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  *
  * @see <a href="https://zulip.com/api/export-realm">https://zulip.com/api/export-realm</a>
  */
-public class CreateDataExportApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Integer> {
+public class CreateDataExportApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
     public static final String EXPORT_TYPE = "export_type";
 
     /**
@@ -46,7 +46,7 @@ public class CreateDataExportApiRequest extends ZulipApiRequest implements Execu
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public Integer execute() throws ZulipClientException {
+    public Long execute() throws ZulipClientException {
         return client().post(EXPORT_REALM, getParams(), CreateDataExportApiResponse.class).getId();
     }
 }

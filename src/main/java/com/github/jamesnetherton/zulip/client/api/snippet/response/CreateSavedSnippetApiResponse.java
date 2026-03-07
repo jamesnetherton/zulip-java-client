@@ -10,9 +10,9 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
  */
 public class CreateSavedSnippetApiResponse extends ZulipApiResponse {
     @JsonProperty
-    private Integer savedSnippetId;
+    private long savedSnippetId;
 
-    public Integer getSavedSnippetId() {
+    public long getSavedSnippetId() {
         return savedSnippetId;
     }
 }

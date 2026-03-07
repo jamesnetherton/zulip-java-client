@@ -22,7 +22,7 @@ public class DeleteSavedSnippetApiRequest extends ZulipApiRequest implements Voi
      * @param client    The Zulip HTTP client
      * @param snippetId The ID of the saved snippet to delete
      */
-    public DeleteSavedSnippetApiRequest(ZulipHttpClient client, int snippetId) {
+    public DeleteSavedSnippetApiRequest(ZulipHttpClient client, long snippetId) {
         super(client);
         this.snippetId = snippetId;
     }

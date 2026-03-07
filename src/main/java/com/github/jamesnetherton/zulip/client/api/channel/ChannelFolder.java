@@ -26,7 +26,7 @@ public class ChannelFolder {
     private int order;
 
     @JsonProperty
-    private int id;
+    private long id;
 
     @JsonProperty("is_archived")
     private boolean archived;
@@ -55,7 +55,7 @@ public class ChannelFolder {
         return order;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

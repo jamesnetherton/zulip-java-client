@@ -7,7 +7,7 @@ import java.util.List;
 
 public final class DetachedUpload {
     @JsonProperty
-    private int id;
+    private long id;
     @JsonProperty
     private String name;
     @JsonProperty
@@ -19,7 +19,7 @@ public final class DetachedUpload {
     @JsonProperty
     private List<DetachedUploadMessage> messages = new ArrayList<>();
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

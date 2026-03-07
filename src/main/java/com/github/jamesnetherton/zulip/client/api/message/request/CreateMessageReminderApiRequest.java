@@ -14,7 +14,7 @@ import java.time.Instant;
  *
  * @see <a href="https://zulip.com/api/create-message-reminder">https://zulip.com/api/create-message-reminder</a>
  */
-public class CreateMessageReminderApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Integer> {
+public class CreateMessageReminderApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
     public static final String MESSAGE_ID = "message_id";
     public static final String NOTE = "note";
     public static final String SCHEDULED_DELIVERY_TIMESTAMP = "scheduled_delivery_timestamp";
@@ -53,7 +53,7 @@ public class CreateMessageReminderApiRequest extends ZulipApiRequest implements 
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public Integer execute() throws ZulipClientException {
+    public Long execute() throws ZulipClientException {
         return client().post(MESSAGE_REMINDER_API_PATH, getParams(), CreateMessageReminderApiResponse.class).getReminderId();
     }
 }

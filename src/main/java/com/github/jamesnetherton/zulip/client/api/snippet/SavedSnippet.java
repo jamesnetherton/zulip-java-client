@@ -5,7 +5,7 @@ import java.time.Instant;
 
 public class SavedSnippet {
     @JsonProperty
-    private int id;
+    private long id;
 
     @JsonProperty
     private String title;
@@ -16,7 +16,7 @@ public class SavedSnippet {
     @JsonProperty
     private Instant dateCreated;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

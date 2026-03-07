@@ -16,7 +16,7 @@ public class MessageReminder {
     private boolean failed;
 
     @JsonProperty
-    private int reminderId;
+    private long reminderId;
 
     @JsonProperty
     private int reminderTargetMessageId;
@@ -41,7 +41,7 @@ public class MessageReminder {
         return failed;
     }
 
-    public int getReminderId() {
+    public long getReminderId() {
         return reminderId;
     }
 

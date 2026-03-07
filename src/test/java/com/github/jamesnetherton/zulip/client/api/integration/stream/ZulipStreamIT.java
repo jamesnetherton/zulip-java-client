@@ -423,7 +423,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
     public void channelFolderCrudOperations() throws ZulipClientException {
         String channelFolderName = UUID.randomUUID().toString();
 
-        Integer channelFolderId = zulip.channels().createChannelFolder(channelFolderName)
+        Long channelFolderId = zulip.channels().createChannelFolder(channelFolderName)
                 .withDescription(channelFolderName + " Description")
                 .execute();
 
@@ -455,12 +455,12 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(ownUser.getUserId(), channelFolder.getCreatorId());
 
         channelFolders = zulip.channels().getChannelFolders().withIncludeArchived(true).execute();
-        Integer[] order = channelFolders.stream()
+        Long[] order = channelFolders.stream()
                 .map(ChannelFolder::getId)
                 .collect(Collectors.toList())
                 .stream()
                 .sorted(Collections.reverseOrder())
-                .toArray(Integer[]::new);
+                .toArray(Long[]::new);
 
         zulip.channels().reorderChannelFolders(order).execute();
     }

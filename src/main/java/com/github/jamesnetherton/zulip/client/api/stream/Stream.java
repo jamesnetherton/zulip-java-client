@@ -104,7 +104,7 @@ public class Stream {
     private int subscriberCount;
 
     @JsonProperty
-    private int folderId;
+    private long folderId;
 
     public boolean isAnnouncementOnly() {
         return isAnnouncementOnly;
@@ -179,7 +179,7 @@ public class Stream {
         return topicPolicy;
     }
 
-    public int getFolderId() {
+    public long getFolderId() {
         return folderId;
     }
 

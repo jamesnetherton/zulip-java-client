@@ -667,7 +667,7 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         // Create
         Instant nowPlusOneSecond = Instant.now().plusSeconds(1);
-        Integer messageReminderId = zulip.messages().createMessageReminder(messageId, nowPlusOneSecond)
+        Long messageReminderId = zulip.messages().createMessageReminder(messageId, nowPlusOneSecond)
                 .withNote("Remind me about this")
                 .execute();
 

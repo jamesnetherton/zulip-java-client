@@ -18,7 +18,7 @@ public class UpdateChannelFolderApiRequest extends ZulipApiRequest implements Vo
     public static final String DESCRIPTION = "description";
     public static final String IS_ARCHIVED = "is_archived";
 
-    private final int channelFolderId;
+    private final long channelFolderId;
 
     /**
      * Constructs a {@link UpdateChannelFolderApiRequest}.
@@ -26,7 +26,7 @@ public class UpdateChannelFolderApiRequest extends ZulipApiRequest implements Vo
      * @param client          The Zulip HTTP client
      * @param channelFolderId The id of the channel folder to update
      */
-    public UpdateChannelFolderApiRequest(ZulipHttpClient client, int channelFolderId) {
+    public UpdateChannelFolderApiRequest(ZulipHttpClient client, long channelFolderId) {
         super(client);
         this.channelFolderId = channelFolderId;
     }

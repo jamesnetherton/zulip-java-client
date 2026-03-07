@@ -10,9 +10,9 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
  */
 public class CreateDataExportApiResponse extends ZulipApiResponse {
     @JsonProperty
-    private int id;
+    private long id;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }
