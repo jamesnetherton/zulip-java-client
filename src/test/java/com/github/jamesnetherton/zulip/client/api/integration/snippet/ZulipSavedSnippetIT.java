@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class ZulipSavedSnippetIT extends ZulipIntegrationTestBase {
     @Test
     public void savedSnippetCrud() throws Exception {
-        Integer id = zulip.snippets().createSavedSnippet("Test title", "Test content").execute();
+        Long id = zulip.snippets().createSavedSnippet("Test title", "Test content").execute();
         assertTrue(id > 0);
 
         List<SavedSnippet> savedSnippets = zulip.snippets().getSavedSnippets().execute();

@@ -70,7 +70,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/reminders", params, "createMessageReminder.json");
 
-        int messageReminderId = zulip.messages().createMessageReminder(1, now)
+        long messageReminderId = zulip.messages().createMessageReminder(1, now)
                 .withNote("Test note")
                 .execute();
 
@@ -1008,7 +1008,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals(4, result.getUpdatedCount());
         assertTrue(result.isFoundNewest());
         assertTrue(result.isFoundOldest());
-        assertEquals(List.of(1, 2, 3), result.getIgnoredBecauseNotSubscribedChannels());
+        assertEquals(List.of(1L, 2L, 3L), result.getIgnoredBecauseNotSubscribedChannels());
     }
 
     @Test
@@ -1037,7 +1037,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         assertEquals(4, result.getUpdatedCount());
         assertTrue(result.isFoundNewest());
         assertTrue(result.isFoundOldest());
-        assertEquals(List.of(1, 2, 3), result.getIgnoredBecauseNotSubscribedChannels());
+        assertEquals(List.of(1L, 2L, 3L), result.getIgnoredBecauseNotSubscribedChannels());
     }
 
     @Test

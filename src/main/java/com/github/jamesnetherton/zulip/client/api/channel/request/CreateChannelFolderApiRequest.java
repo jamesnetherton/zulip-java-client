@@ -13,7 +13,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  *
  * @see <a href="https://zulip.com/api/create-channel-folder">https://zulip.com/api/create-channel-folder</a>
  */
-public class CreateChannelFolderApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Integer> {
+public class CreateChannelFolderApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
 
@@ -48,7 +48,7 @@ public class CreateChannelFolderApiRequest extends ZulipApiRequest implements Ex
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public Integer execute() throws ZulipClientException {
+    public Long execute() throws ZulipClientException {
         return client().post(CREATE_CHANNEL_FOLDERS, getParams(), CreateChannelFolderApiResponse.class).getChannelFolderId();
     }
 }

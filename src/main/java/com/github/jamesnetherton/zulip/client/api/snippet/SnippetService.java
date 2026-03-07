@@ -42,7 +42,7 @@ public class SnippetService implements ZulipService {
      *
      * @return The {@link DeleteSavedSnippetApiRequest} builder object
      */
-    public DeleteSavedSnippetApiRequest deleteSavedSnippet(int snippetId) {
+    public DeleteSavedSnippetApiRequest deleteSavedSnippet(long snippetId) {
         return new DeleteSavedSnippetApiRequest(client, snippetId);
     }
 
@@ -53,7 +53,7 @@ public class SnippetService implements ZulipService {
      *
      * @return The {@link EditSavedSnippetApiRequest} builder object
      */
-    public EditSavedSnippetApiRequest editSavedSnippet(int snippetId) {
+    public EditSavedSnippetApiRequest editSavedSnippet(long snippetId) {
         return new EditSavedSnippetApiRequest(client, snippetId);
     }
 

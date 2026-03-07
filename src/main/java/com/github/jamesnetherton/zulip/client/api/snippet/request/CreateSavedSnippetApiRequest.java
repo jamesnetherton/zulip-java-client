@@ -13,7 +13,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  *
  * @see <a href="https://zulip.com/api/create-saved-snippet">https://zulip.com/api/create-saved-snippet</a>
  */
-public class CreateSavedSnippetApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Integer> {
+public class CreateSavedSnippetApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Long> {
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
 
@@ -37,7 +37,7 @@ public class CreateSavedSnippetApiRequest extends ZulipApiRequest implements Exe
      * @throws ZulipClientException if the request was not successful
      */
     @Override
-    public Integer execute() throws ZulipClientException {
+    public Long execute() throws ZulipClientException {
         return client().post(SAVED_SNIPPETS, getParams(), CreateSavedSnippetApiResponse.class).getSavedSnippetId();
     }
 }

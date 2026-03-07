@@ -5,7 +5,7 @@ import java.time.Instant;
 
 public class DataExport {
     @JsonProperty
-    private int id;
+    private long id;
 
     @JsonProperty
     private int actingUserId;
@@ -28,7 +28,7 @@ public class DataExport {
     @JsonProperty
     private DataExportType exportType;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

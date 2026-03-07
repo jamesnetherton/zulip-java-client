@@ -14,7 +14,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  * @see <a href="https://zulip.com/api/delete-reminder">https://zulip.com/api/delete-reminder</a>
  */
 public class DeleteMessageReminderApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
-    private final int messageReminderId;
+    private final long messageReminderId;
 
     /**
      * Constructs a {@link DeleteMessageReminderApiRequest}.
@@ -22,7 +22,7 @@ public class DeleteMessageReminderApiRequest extends ZulipApiRequest implements 
      * @param messageReminderId The id of the message reminder to delete
      * @param client            The Zulip HTTP client
      */
-    public DeleteMessageReminderApiRequest(ZulipHttpClient client, int messageReminderId) {
+    public DeleteMessageReminderApiRequest(ZulipHttpClient client, long messageReminderId) {
         super(client);
         this.messageReminderId = messageReminderId;
     }

@@ -781,7 +781,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/channel_folders/create", params, "createChannelFolder.json");
 
-        Integer channelFolderID = zulip.channels().createChannelFolder("Test Channel Folder")
+        Long channelFolderID = zulip.channels().createChannelFolder("Test Channel Folder")
                 .withDescription("Test Channel Folder Description")
                 .execute();
 
@@ -829,7 +829,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(PATCH, "/channel_folders", params, "getChannelFolders.json");
 
-        zulip.channels().reorderChannelFolders(1, 2, 3).execute();
+        zulip.channels().reorderChannelFolders(1L, 2L, 3L).execute();
     }
 
     @Test

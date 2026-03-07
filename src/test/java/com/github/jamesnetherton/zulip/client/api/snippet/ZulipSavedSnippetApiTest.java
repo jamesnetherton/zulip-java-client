@@ -26,7 +26,7 @@ public class ZulipSavedSnippetApiTest extends ZulipApiTestBase {
 
         stubZulipResponse(POST, "/saved_snippets", params, "createSavedSnippet.json");
 
-        int id = zulip.snippets().createSavedSnippet("Test title", "Test content").execute();
+        long id = zulip.snippets().createSavedSnippet("Test title", "Test content").execute();
 
         assertEquals(1, id);
     }

@@ -76,7 +76,7 @@ public class StreamSubscription {
     private long firstMessageId;
 
     @JsonProperty
-    private int folderId;
+    private long folderId;
 
     @JsonProperty
     private boolean historyPublicToSubscribers;
@@ -210,7 +210,7 @@ public class StreamSubscription {
         return firstMessageId;
     }
 
-    public int getFolderId() {
+    public long getFolderId() {
         return folderId;
     }
 

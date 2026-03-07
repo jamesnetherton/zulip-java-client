@@ -17,7 +17,7 @@ public class EditSavedSnippetApiRequest extends ZulipApiRequest implements VoidE
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
 
-    private final int snippetId;
+    private final long snippetId;
 
     /**
      * Constructs a {@link EditSavedSnippetApiRequest}.
@@ -25,7 +25,7 @@ public class EditSavedSnippetApiRequest extends ZulipApiRequest implements VoidE
      * @param client    The Zulip HTTP client
      * @param snippetId The ID of the saved snippet to edit
      */
-    public EditSavedSnippetApiRequest(ZulipHttpClient client, int snippetId) {
+    public EditSavedSnippetApiRequest(ZulipHttpClient client, long snippetId) {
         super(client);
         this.snippetId = snippetId;
     }
