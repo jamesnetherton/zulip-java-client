@@ -41,7 +41,7 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
                 .withWelcomeMessageCustomText("Hello and welcome to this test Zulip server")
                 .execute();
 
-        assertTrue(invitationLink.matches("https://localhost/join/.*/"));
+        assertTrue(invitationLink.matches("https://localhost\\.localdomain/join/.*/"));
 
         List<Invitation> invitations = zulip.invitations().getAllInvitations().execute();
         assertEquals(1, invitations.size());
@@ -53,7 +53,7 @@ public class ZulipInvitationIT extends ZulipIntegrationTestBase {
         assertTrue(invitation.getInvited().getEpochSecond() > 0);
         assertTrue(invitation.getExpiryDate().getEpochSecond() > 0);
         assertNull(invitation.getEmail());
-        assertTrue(invitation.getLinkUrl().matches("https://localhost/join/.*/"));
+        assertTrue(invitation.getLinkUrl().matches("https://localhost\\.localdomain/join/.*/"));
         assertFalse(invitation.isNotifyReferrerOnJoin());
         assertTrue(invitation.isMultiuse());
 

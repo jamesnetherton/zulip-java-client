@@ -207,7 +207,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         String url = zulip.messages().fileUpload(file).execute();
 
         long messageId = zulip.messages()
-                .sendStreamMessage("File " + configuration.getZulipUrl() + url, streamName, "File Topic")
+                .sendStreamMessage("[File](" + url + ")", streamName, "File Topic")
                 .execute();
 
         List<UserAttachment> attachments = zulip.users().getUserAttachments().execute();
