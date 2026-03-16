@@ -14,6 +14,7 @@ import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.ProxySelector;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,9 +33,10 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 
 /**
  * A {@link ZulipHttpClient} implementation that uses the JDK HTTP Client.
@@ -95,13 +97,29 @@ class ZulipJdkHttpClient implements ZulipHttpClient {
         if (configuration.isInsecure()) {
             try {
                 TrustManager[] trustAllCerts = new TrustManager[] {
-                        new X509TrustManager() {
+                        new X509ExtendedTrustManager() {
                             @Override
                             public void checkClientTrusted(X509Certificate[] chain, String authType) {
                             }
 
                             @Override
+                            public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) {
+                            }
+
+                            @Override
+                            public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+                            }
+
+                            @Override
                             public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                            }
+
+                            @Override
+                            public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {
+                            }
+
+                            @Override
+                            public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
                             }
 
                             @Override
