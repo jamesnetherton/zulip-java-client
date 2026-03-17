@@ -2,6 +2,8 @@ package com.github.jamesnetherton.zulip.client.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,6 +84,24 @@ public class ZulipConfigurationTest {
     }
 
     @Test
+    public void certBundleFromZuliprc() throws IOException {
+        File certBundleFile = File.createTempFile("test-cert", ".pem");
+        certBundleFile.deleteOnExit();
+
+        File zuliprc = createZuliprc(EMAIL, KEY, SITE, certBundleFile.getAbsolutePath());
+        ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(zuliprc);
+        assertNotNull(configuration.getCertBundle());
+        assertEquals(certBundleFile.getAbsolutePath(), configuration.getCertBundle().getAbsolutePath());
+    }
+
+    @Test
+    public void noCertBundleInZuliprc() throws IOException {
+        File zuliprc = createZuliprc(EMAIL, KEY, SITE, null);
+        ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(zuliprc);
+        assertNull(configuration.getCertBundle());
+    }
+
+    @Test
     public void invalidHttpClientFactory() throws MalformedURLException {
         ZulipConfiguration configuration = new ZulipConfiguration(ZulipUrlUtils.getZulipApiUrl(SITE), KEY, EMAIL);
         assertThrows(IllegalArgumentException.class, () -> configuration.setZulipHttpClientFactory(null));
@@ -101,6 +121,10 @@ public class ZulipConfigurationTest {
     }
 
     private File createZuliprc(String email, String key, String site) throws IOException {
+        return createZuliprc(email, key, site, null);
+    }
+
+    private File createZuliprc(String email, String key, String site, String certBundle) throws IOException {
         Properties properties = new Properties();
 
         if (email != null) {
@@ -113,6 +137,10 @@ public class ZulipConfigurationTest {
 
         if (site != null) {
             properties.setProperty("site", site);
+        }
+
+        if (certBundle != null) {
+            properties.setProperty("cert_bundle", certBundle);
         }
 
         properties.setProperty("insecure", "true");

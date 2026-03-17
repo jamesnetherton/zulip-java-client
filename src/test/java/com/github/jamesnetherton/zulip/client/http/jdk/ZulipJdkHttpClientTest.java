@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +16,12 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipRateLimitExceededException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import io.smallrye.certs.Format;
+import io.smallrye.certs.junit5.Certificate;
+import io.smallrye.certs.junit5.Certificates;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -31,6 +37,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
+@Certificates(baseDir = "target", certificates = {
+        @Certificate(name = "zulip-test", formats = { Format.PEM,
+                Format.PKCS12 }, password = "changeit", subjectAlternativeNames = { "DNS:localhost",
+                        "IP:127.0.0.1" })
+})
 public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
     @Test
@@ -132,6 +143,60 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
         for (int i = 1; i < ignoredParametersUnsupported.size(); i++) {
             assertEquals("invalid_param_" + i, ignoredParametersUnsupported.get(i - 1));
+        }
+    }
+
+    @Test
+    public void certBundle() throws Exception {
+        WireMockServer httpsServer = new WireMockServer(options()
+                .dynamicHttpsPort()
+                .keystorePath("target/zulip-test-keystore.p12")
+                .keystorePassword("changeit")
+                .keyManagerPassword("changeit"));
+
+        httpsServer.start();
+        httpsServer.stubFor(request("GET", urlPathEqualTo("/api/v1/server_settings"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new String(getStubbedResponse(
+                                "/com/github/jamesnetherton/zulip/client/api/server/getServerSettings.json")))));
+
+        try {
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()),
+                    "test@test.com", "abc123");
+            configuration.setCertBundle(new File("target/zulip-test.crt"));
+
+            Zulip httpsZulip = new Zulip(configuration);
+            httpsZulip.server().getServerSettings().execute();
+            httpsZulip.close();
+        } finally {
+            httpsServer.stop();
+        }
+    }
+
+    @Test
+    public void certBundleWithUntrustedServer() throws Exception {
+        WireMockServer httpsServer = new WireMockServer(options()
+                .dynamicHttpsPort()
+                .keystorePath("target/zulip-test-keystore.p12")
+                .keystorePassword("changeit")
+                .keyManagerPassword("changeit"));
+        httpsServer.start();
+
+        try {
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()),
+                    "test@test.com", "abc123");
+
+            Zulip httpsZulip = new Zulip(configuration);
+            assertThrows(ZulipClientException.class, () -> {
+                httpsZulip.messages().markAllAsRead().execute();
+            });
+            httpsZulip.close();
+        } finally {
+            httpsServer.stop();
         }
     }
 
