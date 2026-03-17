@@ -10,6 +10,7 @@ import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -25,17 +26,24 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 /**
@@ -134,6 +142,27 @@ class ZulipJdkHttpClient implements ZulipHttpClient {
                 sslParameters.setEndpointIdentificationAlgorithm("");
                 builder.sslContext(sslContext).sslParameters(sslParameters);
             } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                throw new ZulipClientException(e);
+            }
+        } else if (configuration.getCertBundle() != null) {
+            try {
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                trustStore.load(null, null);
+                try (InputStream is = Files.newInputStream(configuration.getCertBundle().toPath())) {
+                    Collection<? extends Certificate> certs = cf.generateCertificates(is);
+                    int i = 0;
+                    for (Certificate cert : certs) {
+                        trustStore.setCertificateEntry("cert-" + i++, cert);
+                    }
+                }
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmf.init(trustStore);
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
+                builder.sslContext(sslContext);
+            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | CertificateException
+                    | IOException e) {
                 throw new ZulipClientException(e);
             }
         }

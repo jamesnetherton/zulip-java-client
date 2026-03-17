@@ -16,6 +16,7 @@ import java.util.Properties;
 public class ZulipConfiguration {
 
     private String apiKey;
+    private File certBundle;
     private String email;
     private boolean insecure;
     private URL proxyUrl;
@@ -63,6 +64,21 @@ public class ZulipConfiguration {
      */
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    /**
+     * The path to a PEM-format CA certificate bundle to use for verifying the Zulip server's SSL certificate.
+     * This is useful when connecting to a Zulip server that uses a self-signed certificate.
+     * If set, this certificate bundle will be used instead of the system default CA bundle.
+     *
+     * @param certBundle The {@link File} pointing to a PEM-format CA certificate bundle
+     */
+    public void setCertBundle(File certBundle) {
+        this.certBundle = certBundle;
+    }
+
+    public File getCertBundle() {
+        return certBundle;
     }
 
     /**
@@ -201,6 +217,7 @@ public class ZulipConfiguration {
         String email = (String) zulipProperties.get("email");
         String site = (String) zulipProperties.get("site");
         String insecureProperty = (String) zulipProperties.get("insecure");
+        String certBundleProperty = (String) zulipProperties.get("cert_bundle");
 
         if (email == null) {
             throw new IllegalArgumentException("email property is not present in zuliprc");
@@ -225,6 +242,9 @@ public class ZulipConfiguration {
             configuration.setApiKey(key);
             configuration.setZulipUrl(ZulipUrlUtils.getZulipApiUrl(site));
             configuration.setInsecure(insecure);
+            if (certBundleProperty != null && !certBundleProperty.isEmpty()) {
+                configuration.setCertBundle(new File(certBundleProperty));
+            }
             return configuration;
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Site must be a valid URL");
