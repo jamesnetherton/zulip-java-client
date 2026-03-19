@@ -1,0 +1,26 @@
+{
+  "result": "success",
+  "msg": "",
+  "api_key": "test-api-key",
+  "email": "test@example.com",
+  "user": {
+    "user_id": 5,
+    "delivery_email": "test@example.com",
+    "email": "test@example.com",
+    "full_name": "Test123",
+    "date_joined": "2019-10-20T07:50:53.728864+00:00",
+    "is_active": true,
+    "is_owner": false,
+    "is_admin": true,
+    "is_guest": false,
+    "is_bot": false,
+    "bot_type": null,
+    "bot_owner_id": null,
+    "role": 400,
+    "timezone": "Europe/London",
+    "avatar_url": "https://secure.gravatar.com/avatar/test?d=identicon&version=1",
+    "avatar_version": 1,
+    "is_imported_stub": false,
+    "profile_data": {}
+  }
+}

@@ -1,34 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
-import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTokenApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.DeleteProfileFieldApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetAllDataExportsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetAllEmojiApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetDataExportConsentStateApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
-import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.SendE2EMobilePushTestNotification;
-import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
-import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
-import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.*;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import java.io.File;
 
@@ -217,6 +190,18 @@ public class ServerService implements ZulipService {
      */
     public GetApiKeyApiRequest getApiKey(String username, String password) {
         return new GetApiKeyApiRequest(this.client, username, password);
+    }
+
+    /**
+     * Fetches a Zulip API key using a JWT token.
+     *
+     * @see          <a href="https://zulip.com/api/jwt-fetch-api-key">https://zulip.com/api/jwt-fetch-api-key</a>
+     *
+     * @param  token The JWT token
+     * @return       The {@link JwtFetchApiKeyApiRequest} builder object
+     */
+    public JwtFetchApiKeyApiRequest jwtFetchApiKey(String token) {
+        return new JwtFetchApiKeyApiRequest(this.client, token);
     }
 
     /**
