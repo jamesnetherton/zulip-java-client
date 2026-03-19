@@ -8,16 +8,23 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -143,6 +150,33 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
                 builder.setConnectionManager(connectionManager);
             } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                 throw new ZulipClientException(e);
+            }
+        } else {
+            String certBundle = configuration.getCertBundle();
+            if (certBundle != null && !certBundle.isEmpty()) {
+                try (InputStream is = new FileInputStream(certBundle)) {
+                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                    Collection<? extends Certificate> certs = cf.generateCertificates(is);
+                    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+                    ks.load(null, null);
+                    int i = 0;
+                    for (Certificate cert : certs) {
+                        ks.setCertificateEntry("cert" + i++, cert);
+                    }
+                    SSLContext sslContext = new SSLContextBuilder()
+                            .loadTrustMaterial(ks, null)
+                            .build();
+                    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
+                            NoopHostnameVerifier.INSTANCE);
+                    HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
+                            .create()
+                            .setSSLSocketFactory(sslConnectionSocketFactory)
+                            .build();
+                    builder.setConnectionManager(connectionManager);
+                } catch (CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException
+                        | KeyManagementException e) {
+                    throw new ZulipClientException(e);
+                }
             }
         }
 

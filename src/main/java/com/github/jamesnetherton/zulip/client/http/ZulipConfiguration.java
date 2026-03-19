@@ -16,6 +16,7 @@ import java.util.Properties;
 public class ZulipConfiguration {
 
     private String apiKey;
+    private String certBundle;
     private String email;
     private boolean insecure;
     private URL proxyUrl;
@@ -63,6 +64,19 @@ public class ZulipConfiguration {
      */
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    /**
+     * The path to a PEM-format CA certificate bundle for connecting to a Zulip server that uses a self-signed certificate.
+     *
+     * @param certBundle The path to the PEM-format CA certificate bundle
+     */
+    public void setCertBundle(String certBundle) {
+        this.certBundle = certBundle;
+    }
+
+    public String getCertBundle() {
+        return certBundle;
     }
 
     /**
@@ -201,6 +215,7 @@ public class ZulipConfiguration {
         String email = (String) zulipProperties.get("email");
         String site = (String) zulipProperties.get("site");
         String insecureProperty = (String) zulipProperties.get("insecure");
+        String certBundleProperty = (String) zulipProperties.get("cert_bundle");
 
         if (email == null) {
             throw new IllegalArgumentException("email property is not present in zuliprc");
@@ -225,6 +240,9 @@ public class ZulipConfiguration {
             configuration.setApiKey(key);
             configuration.setZulipUrl(ZulipUrlUtils.getZulipApiUrl(site));
             configuration.setInsecure(insecure);
+            if (certBundleProperty != null) {
+                configuration.setCertBundle(certBundleProperty);
+            }
             return configuration;
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Site must be a valid URL");

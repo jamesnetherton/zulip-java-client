@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +16,10 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipRateLimitExceededException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -23,12 +27,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import org.junit.jupiter.api.Test;
 
 public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
@@ -133,6 +145,86 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         for (int i = 1; i < ignoredParametersUnsupported.size(); i++) {
             assertEquals("invalid_param_" + i, ignoredParametersUnsupported.get(i - 1));
         }
+    }
+
+    @Test
+    public void certBundle() throws Exception {
+        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
+        httpsServer.start();
+
+        try {
+            X509Certificate cert = getServerCertificate("localhost", httpsServer.httpsPort());
+            File certFile = writeCertToPem(cert);
+
+            httpsServer.stubFor(request("GET", urlPathEqualTo("/api/v1/messages"))
+                    .willReturn(aResponse()
+                            .withStatus(200)
+                            .withBody("{\"result\":\"success\",\"msg\":\"\"}")));
+
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()), "test@test.com", "abc123");
+            configuration.setCertBundle(certFile.getAbsolutePath());
+
+            ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+            ZulipApiResponse response = client.get("messages", Collections.emptyMap(), ZulipApiResponse.class);
+            assertNotNull(response);
+        } finally {
+            httpsServer.stop();
+        }
+    }
+
+    @Test
+    public void certBundleWithUntrustedServer() throws Exception {
+        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
+        httpsServer.start();
+
+        try {
+            File emptyCertFile = File.createTempFile("empty-cert", ".pem");
+            emptyCertFile.deleteOnExit();
+
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()), "test@test.com", "abc123");
+            configuration.setCertBundle(emptyCertFile.getAbsolutePath());
+
+            ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+            assertThrows(ZulipClientException.class, () -> {
+                client.get("messages", Collections.emptyMap(), ZulipApiResponse.class);
+            });
+        } finally {
+            httpsServer.stop();
+        }
+    }
+
+    private X509Certificate getServerCertificate(String host, int port) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        } }, new SecureRandom());
+
+        try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory().createSocket(host, port)) {
+            socket.startHandshake();
+            Certificate[] certs = socket.getSession().getPeerCertificates();
+            return (X509Certificate) certs[0];
+        }
+    }
+
+    private File writeCertToPem(X509Certificate cert) throws Exception {
+        File certFile = File.createTempFile("test-cert", ".pem");
+        certFile.deleteOnExit();
+        try (FileWriter fw = new FileWriter(certFile)) {
+            fw.write("-----BEGIN CERTIFICATE-----\n");
+            fw.write(Base64.getMimeEncoder(64, new byte[] { '\n' }).encodeToString(cert.getEncoded()));
+            fw.write("\n-----END CERTIFICATE-----\n");
+        }
+        return certFile;
     }
 
     private class FakeServer {
