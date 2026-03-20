@@ -1,4 +1,4 @@
-package com.github.jamesnetherton.zulip.client.http.jdk;
+package com.github.jamesnetherton.zulip.client.http.commons;
 
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -17,11 +17,9 @@ import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipRateLimitExceededException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import io.smallrye.certs.Format;
-import io.smallrye.certs.junit5.Certificate;
-import io.smallrye.certs.junit5.Certificates;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -29,20 +27,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import org.junit.jupiter.api.Test;
 
-@Certificates(baseDir = "target", certificates = {
-        @Certificate(name = "zulip-test", formats = { Format.PEM,
-                Format.PKCS12 }, password = "changeit", subjectAlternativeNames = { "DNS:localhost",
-                        "IP:127.0.0.1" })
-})
-public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
+public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void errorResponseCodeThrowsZulipClientException() throws Exception {
@@ -54,7 +55,7 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
         URL zulipUrl = new URL(server.baseUrl());
 
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
         assertThrows(ZulipClientException.class, () -> {
             client.get("", Collections.emptyMap(), ZulipApiResponse.class);
@@ -72,7 +73,7 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
         URL zulipUrl = new URL(server.baseUrl());
 
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
         try {
             client.get("", Collections.emptyMap(), ZulipApiResponse.class);
@@ -134,7 +135,7 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
         URL zulipUrl = new URL(server.baseUrl());
         ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
-        ZulipJdkHttpClient client = new ZulipJdkHttpClient(configuration);
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
 
         ZulipApiResponse response = client.get("test", Collections.emptyMap(), ZulipApiResponse.class);
         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
@@ -148,29 +149,25 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void certBundle() throws Exception {
-        WireMockServer httpsServer = new WireMockServer(options()
-                .dynamicHttpsPort()
-                .keystorePath("target/zulip-test-keystore.p12")
-                .keystorePassword("changeit")
-                .keyManagerPassword("changeit"));
-
+        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
         httpsServer.start();
-        httpsServer.stubFor(request("GET", urlPathEqualTo("/api/v1/server_settings"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(new String(getStubbedResponse(
-                                "/com/github/jamesnetherton/zulip/client/api/server/getServerSettings.json")))));
 
         try {
-            ZulipConfiguration configuration = new ZulipConfiguration(
-                    new URL("https://localhost:" + httpsServer.httpsPort()),
-                    "test@test.com", "abc123");
-            configuration.setCertBundle(new File("target/zulip-test.crt"));
+            X509Certificate cert = getServerCertificate("localhost", httpsServer.httpsPort());
+            File certFile = writeCertToPem(cert);
 
-            Zulip httpsZulip = new Zulip(configuration);
-            httpsZulip.server().getServerSettings().execute();
-            httpsZulip.close();
+            httpsServer.stubFor(request("GET", urlPathEqualTo("/api/v1/messages"))
+                    .willReturn(aResponse()
+                            .withStatus(200)
+                            .withBody("{\"result\":\"success\",\"msg\":\"\"}")));
+
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()), "test@test.com", "abc123");
+            configuration.setCertBundle(certFile.getAbsolutePath());
+
+            ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+            ZulipApiResponse response = client.get("messages", Collections.emptyMap(), ZulipApiResponse.class);
+            assertNotNull(response);
         } finally {
             httpsServer.stop();
         }
@@ -178,26 +175,56 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void certBundleWithUntrustedServer() throws Exception {
-        WireMockServer httpsServer = new WireMockServer(options()
-                .dynamicHttpsPort()
-                .keystorePath("target/zulip-test-keystore.p12")
-                .keystorePassword("changeit")
-                .keyManagerPassword("changeit"));
+        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
         httpsServer.start();
 
         try {
-            ZulipConfiguration configuration = new ZulipConfiguration(
-                    new URL("https://localhost:" + httpsServer.httpsPort()),
-                    "test@test.com", "abc123");
+            File emptyCertFile = File.createTempFile("empty-cert", ".pem");
+            emptyCertFile.deleteOnExit();
 
-            Zulip httpsZulip = new Zulip(configuration);
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://localhost:" + httpsServer.httpsPort()), "test@test.com", "abc123");
+            configuration.setCertBundle(emptyCertFile.getAbsolutePath());
+
+            ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
             assertThrows(ZulipClientException.class, () -> {
-                httpsZulip.messages().markAllAsRead().execute();
+                client.get("messages", Collections.emptyMap(), ZulipApiResponse.class);
             });
-            httpsZulip.close();
         } finally {
             httpsServer.stop();
         }
+    }
+
+    private X509Certificate getServerCertificate(String host, int port) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        } }, new SecureRandom());
+
+        try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory().createSocket(host, port)) {
+            socket.startHandshake();
+            Certificate[] certs = socket.getSession().getPeerCertificates();
+            return (X509Certificate) certs[0];
+        }
+    }
+
+    private File writeCertToPem(X509Certificate cert) throws Exception {
+        File certFile = File.createTempFile("test-cert", ".pem");
+        certFile.deleteOnExit();
+        try (FileWriter fw = new FileWriter(certFile)) {
+            fw.write("-----BEGIN CERTIFICATE-----\n");
+            fw.write(Base64.getMimeEncoder(64, new byte[] { '\n' }).encodeToString(cert.getEncoded()));
+            fw.write("\n-----END CERTIFICATE-----\n");
+        }
+        return certFile;
     }
 
     private class FakeServer {
@@ -242,12 +269,7 @@ public class ZulipJdkHttpClientTest extends ZulipApiTestBase {
                         if (secure && !proxyAuthHeaderSent) {
                             outputStream
                                     .write("HTTP/1.1 407 Proxy Authentication Required\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream
-                                    .write("Proxy-Authenticate: Basic realm=\"proxy\"\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream.write("Content-Length: 0\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream.write("Connection: close\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
-                            outputStream.flush();
+                            outputStream.write("Proxy-Authenticate: Basic\r\n".getBytes(StandardCharsets.UTF_8));
                             proxyAuthHeaderSent = true;
                             continue;
                         }

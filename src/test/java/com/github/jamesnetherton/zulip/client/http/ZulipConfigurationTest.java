@@ -2,12 +2,11 @@ package com.github.jamesnetherton.zulip.client.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.github.jamesnetherton.zulip.client.http.jdk.ZulipJdkHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,7 +44,7 @@ public class ZulipConfigurationTest {
             assertEquals(KEY, configuration.getApiKey());
             assertEquals(SITE, configuration.getZulipUrl().toString());
             assertTrue(configuration.isInsecure());
-            assertInstanceOf(ZulipJdkHttpClientFactory.class, configuration.getZulipHttpClientFactory());
+            assertInstanceOf(ZulipCommonsHttpClientFactory.class, configuration.getZulipHttpClientFactory());
         } finally {
             System.setProperty("user.home", oldHome);
         }
@@ -84,19 +83,15 @@ public class ZulipConfigurationTest {
     }
 
     @Test
-    public void certBundleFromZuliprc() throws IOException {
-        File certBundleFile = File.createTempFile("test-cert", ".pem");
-        certBundleFile.deleteOnExit();
-
-        File zuliprc = createZuliprc(EMAIL, KEY, SITE, certBundleFile.getAbsolutePath());
+    public void certBundle() throws IOException {
+        File zuliprc = createZuliprc(EMAIL, KEY, SITE, "/path/to/cert.pem");
         ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(zuliprc);
-        assertNotNull(configuration.getCertBundle());
-        assertEquals(certBundleFile.getAbsolutePath(), configuration.getCertBundle().getAbsolutePath());
+        assertEquals("/path/to/cert.pem", configuration.getCertBundle());
     }
 
     @Test
-    public void noCertBundleInZuliprc() throws IOException {
-        File zuliprc = createZuliprc(EMAIL, KEY, SITE, null);
+    public void certBundleNotSet() throws IOException {
+        File zuliprc = createZuliprc(EMAIL, KEY, SITE);
         ZulipConfiguration configuration = ZulipConfiguration.fromZuliprc(zuliprc);
         assertNull(configuration.getCertBundle());
     }
