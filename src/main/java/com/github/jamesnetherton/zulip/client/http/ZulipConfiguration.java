@@ -1,6 +1,6 @@
 package com.github.jamesnetherton.zulip.client.http;
 
-import com.github.jamesnetherton.zulip.client.http.jdk.ZulipJdkHttpClientFactory;
+import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +16,13 @@ import java.util.Properties;
 public class ZulipConfiguration {
 
     private String apiKey;
-    private File certBundle;
+    private String certBundle;
     private String email;
     private boolean insecure;
     private URL proxyUrl;
     private String proxyUsername;
     private String proxyPassword;
-    private ZulipHttpClientFactory zulipHttpClientFactory = new ZulipJdkHttpClientFactory();
+    private ZulipHttpClientFactory zulipHttpClientFactory = new ZulipCommonsHttpClientFactory();
     private URL zulipUrl;
 
     /**
@@ -67,17 +67,15 @@ public class ZulipConfiguration {
     }
 
     /**
-     * The path to a PEM-format CA certificate bundle to use for verifying the Zulip server's SSL certificate.
-     * This is useful when connecting to a Zulip server that uses a self-signed certificate.
-     * If set, this certificate bundle will be used instead of the system default CA bundle.
+     * The path to a PEM-format CA certificate bundle for connecting to a Zulip server that uses a self-signed certificate.
      *
-     * @param certBundle The {@link File} pointing to a PEM-format CA certificate bundle
+     * @param certBundle The path to the PEM-format CA certificate bundle
      */
-    public void setCertBundle(File certBundle) {
+    public void setCertBundle(String certBundle) {
         this.certBundle = certBundle;
     }
 
-    public File getCertBundle() {
+    public String getCertBundle() {
         return certBundle;
     }
 
@@ -242,8 +240,8 @@ public class ZulipConfiguration {
             configuration.setApiKey(key);
             configuration.setZulipUrl(ZulipUrlUtils.getZulipApiUrl(site));
             configuration.setInsecure(insecure);
-            if (certBundleProperty != null && !certBundleProperty.isEmpty()) {
-                configuration.setCertBundle(new File(certBundleProperty));
+            if (certBundleProperty != null) {
+                configuration.setCertBundle(certBundleProperty);
             }
             return configuration;
         } catch (MalformedURLException e) {
