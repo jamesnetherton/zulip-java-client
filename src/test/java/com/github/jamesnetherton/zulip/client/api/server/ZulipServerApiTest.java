@@ -19,6 +19,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueBu
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.JwtFetchApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
@@ -27,6 +28,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileF
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.response.JwtFetchApiKeyResponse;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
@@ -36,6 +38,7 @@ import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
 import com.github.jamesnetherton.zulip.client.api.user.WebAnimateImageOption;
 import com.github.jamesnetherton.zulip.client.api.user.WebChannelView;
 import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
+import com.github.jamesnetherton.zulip.client.api.user.response.UserApiResponse;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import java.io.File;
 import java.util.Collections;
@@ -351,6 +354,59 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         String key = zulip.server().getApiKey("test@test.com", "test").execute();
 
         assertEquals("abc123zxy", key);
+    }
+
+    @Test
+    public void jwtFetchApiKey() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(JwtFetchApiKeyApiRequest.TOKEN, "test-jwt-token")
+                .get();
+
+        stubZulipResponse(POST, "/jwt/fetch_api_key", params, "jwtFetchApiKey.json");
+
+        JwtFetchApiKeyResponse response = zulip.server()
+                .jwtFetchApiKey("test-jwt-token")
+                .execute();
+
+        assertNotNull(response);
+        assertEquals("test-api-key", response.getApiKey());
+        assertEquals("test@example.com", response.getEmail());
+        assertNull(response.getUser());
+    }
+
+    @Test
+    public void jwtFetchApiKeyWithProfile() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(JwtFetchApiKeyApiRequest.TOKEN, "test-jwt-token")
+                .add(JwtFetchApiKeyApiRequest.INCLUDE_PROFILE, "true")
+                .get();
+
+        stubZulipResponse(POST, "/jwt/fetch_api_key", params, "jwtFetchApiKeyWithProfile.json");
+
+        JwtFetchApiKeyResponse response = zulip.server()
+                .jwtFetchApiKey("test-jwt-token")
+                .withIncludeProfile(true)
+                .execute();
+
+        assertNotNull(response);
+        assertEquals("test-api-key", response.getApiKey());
+        assertEquals("test@example.com", response.getEmail());
+        assertNotNull(response.getUser());
+
+        UserApiResponse user = response.getUser();
+        assertEquals(5L, user.getUserId());
+        assertEquals("test@example.com", user.getDeliveryEmail());
+        assertEquals("test@example.com", user.getEmail());
+        assertEquals("Test123", user.getFullName());
+        assertEquals("2019-10-20T07:50:53.728864+00:00", user.getDateJoined());
+        assertEquals("Europe/London", user.getTimezone());
+        assertEquals("https://secure.gravatar.com/avatar/test?d=identicon&version=1", user.getAvatarUrl());
+        assertEquals(1, user.getAvatarVersion());
+        assertEquals(false, user.isBot());
+        assertEquals(false, user.isGuest());
+        assertEquals(false, user.isOwner());
+        assertEquals(true, user.isAdmin());
+        assertEquals(true, user.isActive());
     }
 
     @Test

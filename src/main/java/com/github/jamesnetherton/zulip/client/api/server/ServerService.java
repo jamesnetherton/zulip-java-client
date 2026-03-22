@@ -17,6 +17,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.GetDataExportCo
 import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.JwtFetchApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
@@ -217,6 +218,18 @@ public class ServerService implements ZulipService {
      */
     public GetApiKeyApiRequest getApiKey(String username, String password) {
         return new GetApiKeyApiRequest(this.client, username, password);
+    }
+
+    /**
+     * Fetches a Zulip API key using a JWT token.
+     *
+     * @see          <a href="https://zulip.com/api/jwt-fetch-api-key">https://zulip.com/api/jwt-fetch-api-key</a>
+     *
+     * @param  token The JWT token
+     * @return       The {@link JwtFetchApiKeyApiRequest} builder object
+     */
+    public JwtFetchApiKeyApiRequest jwtFetchApiKey(String token) {
+        return new JwtFetchApiKeyApiRequest(this.client, token);
     }
 
     /**

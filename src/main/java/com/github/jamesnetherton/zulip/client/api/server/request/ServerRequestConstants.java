@@ -6,6 +6,7 @@ final class ServerRequestConstants {
     public static final String EXPORT_REALM = "export/realm";
     public static final String EXPORT_REALM_CONSENTS = "export/realm/consents";
     public static final String FETCH_API_KEY = "fetch_api_key";
+    public static final String JWT_FETCH_API_KEY = "jwt/fetch_api_key";
     public static final String MOBILE_PUSH = "mobile_push";
     public static final String MOBILE_PUSH_REGISTER = MOBILE_PUSH + "/register";
     public static final String MOBILE_PUSH_TEST = MOBILE_PUSH + "/test_notification";
