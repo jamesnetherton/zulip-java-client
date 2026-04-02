@@ -41,7 +41,7 @@ services:
     environment:
       REDIS_PASSWORD: 'REPLACE_WITH_SECURE_REDIS_PASSWORD'
   zulip:
-    image: 'ghcr.io/zulip/zulip-server:11.5-2'
+    image: 'ghcr.io/zulip/zulip-server:11.6-1'
     ports:
       - '80:80'
       - '443:443'
