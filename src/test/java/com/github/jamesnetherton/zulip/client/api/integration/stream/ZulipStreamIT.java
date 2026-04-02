@@ -356,15 +356,16 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         zulip.channels().addDefaultStream(streamId).execute();
 
         String uuid = UUID.randomUUID().toString().substring(0, 5);
+        String password = UUID.randomUUID().toString().substring(0, 10);
 
-        long userIdA = zulip.users().createUser("foo@" + uuid + ".com", "Foo Bar", "f00B4r").execute();
+        long userIdA = zulip.users().createUser("foo@" + uuid + ".com", "Foo Bar", password).execute();
 
         List<Long> subscribers = zulip.channels().getStreamSubscribers(streamId).execute();
         assertTrue(subscribers.contains(userIdA));
 
         zulip.channels().removeDefaultStream(streamId).execute();
 
-        long userIdB = zulip.users().createUser("bar@" + uuid + ".com", "Bar Foo", "f00B4r").execute();
+        long userIdB = zulip.users().createUser("bar@" + uuid + ".com", "Bar Foo", password).execute();
 
         subscribers = zulip.channels().getStreamSubscribers(streamId).execute();
         assertFalse(subscribers.contains(userIdB));
