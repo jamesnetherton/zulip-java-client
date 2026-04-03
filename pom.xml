@@ -19,7 +19,7 @@
         <!-- Project dependency versions -->
         <httpcomponents.version>5.6</httpcomponents.version>
         <jackson.version>2.21.2</jackson.version>
-        <nimbus.jose.jwt.version>10.8</nimbus.jose.jwt.version>
+        <nimbus.jose.jwt.version>10.9</nimbus.jose.jwt.version>
 
         <!-- Project test dependency versions -->
         <awaitility.version>4.3.0</awaitility.version>
