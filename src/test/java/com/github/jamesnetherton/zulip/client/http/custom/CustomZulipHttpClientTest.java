@@ -157,6 +157,13 @@ public class CustomZulipHttpClientTest extends ZulipApiTestBase {
         }
 
         @Override
+        public <T extends ZulipApiResponse> T put(String path, Map<String, Object> parameters, Class<T> responseAs)
+                throws ZulipClientException {
+            // Noop
+            return null;
+        }
+
+        @Override
         public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs) throws ZulipClientException {
             // Noop
             return null;

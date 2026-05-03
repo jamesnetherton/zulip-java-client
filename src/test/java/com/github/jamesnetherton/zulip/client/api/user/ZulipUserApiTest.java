@@ -22,6 +22,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.AddAlertWordsApiR
 import com.github.jamesnetherton.zulip.client.api.user.request.AddUsersToGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteOwnProfileDataApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
@@ -30,6 +31,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembe
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnProfileDataApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
@@ -324,7 +326,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateNotificationSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
-                .add(UpdateNotificationSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
                 .get();
@@ -349,10 +350,9 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withEnableStreamPushNotifications(true)
                 .withMessageContentInEmailNotifications(true)
                 .withWildcardMentionsNotify(true)
-                .withRealmNameInNotifications(true)
                 .execute();
 
-        assertEquals(18, settings.size());
+        assertEquals(17, settings.size());
 
         for (String key : settings.keySet()) {
             Object value = settings.get(key);
@@ -479,6 +479,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertTrue(user.isAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
+        assertFalse(user.isImportedStub());
         assertFalse(user.isOwner());
 
         Map<String, ProfileData> profileDataMap = user.getProfileData();
@@ -520,6 +521,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertTrue(user.isAdmin());
         assertFalse(user.isBot());
         assertFalse(user.isGuest());
+        assertFalse(user.isImportedStub());
         assertFalse(user.isOwner());
 
         Map<String, ProfileData> profileDataMap = user.getProfileData();
@@ -624,16 +626,10 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
         assertEquals(1603913066000L, attachment.getCreateTime().toEpochMilli());
         assertEquals(1, attachment.getId());
         assertEquals(12345, attachment.getSize());
-        assertEquals(2, attachment.getMessages().size());
+        assertEquals(3, attachment.getMessageIds().size());
 
-        List<UserAttachmentMessage> messages = attachment.getMessages();
-        UserAttachmentMessage messageA = messages.get(0);
-        assertEquals(1, messageA.getId());
-        assertEquals(1603913066000L, messageA.getDateSent().toEpochMilli());
-
-        UserAttachmentMessage messageB = messages.get(0);
-        assertEquals(1, messageB.getId());
-        assertEquals(1603913066000L, messageB.getDateSent().toEpochMilli());
+        List<Long> messageIds = attachment.getMessageIds();
+        assertEquals(List.of(1L, 2L, 3L), messageIds);
     }
 
     @ParameterizedTest
@@ -712,7 +708,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.ALLOW_PRIVATE_DATA_EXPORT, "true")
                 .add(UpdateOwnUserSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
                 .add(UpdateOwnUserSettingsApiRequest.DEFAULT_LANGUAGE, "de")
-                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, WebHomeView.RECENT_TOPICS.toString())
+                .add(UpdateOwnUserSettingsApiRequest.DEFAULT_VIEW, WebHomeView.RECENT.toString())
                 .add(UpdateOwnUserSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
                         String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
                 .add(UpdateOwnUserSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
@@ -748,7 +744,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.OLD_PASSWORD, "old-password")
                 .add(UpdateOwnUserSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
-                .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
                 .add(UpdateOwnUserSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
@@ -778,7 +773,7 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withAllowPrivateDataExport(true)
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("de")
-                .withDefaultView(WebHomeView.RECENT_TOPICS)
+                .withDefaultView(WebHomeView.RECENT)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
@@ -811,7 +806,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withOldPassword("old-password")
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
-                .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
@@ -982,5 +976,63 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withStatusText("A".repeat(61))
                 .execute());
 
+    }
+
+    @Test
+    public void getBotApiKey() throws Exception {
+        stubZulipResponse(GET, "/bots/17/api_key", Collections.emptyMap(), "getBotApiKey.json");
+
+        String apiKey = zulip.users().getBotApiKey(17).execute();
+        assertEquals("hkA04ZYcqXKalvYMA8OeXSfzUOLrtbZv", apiKey);
+    }
+
+    @Test
+    public void regenerateBotApiKey() throws Exception {
+        stubZulipResponse(POST, "/bots/17/api_key/regenerate", Collections.emptyMap(), "getBotApiKey.json");
+
+        String apiKey = zulip.users().regenerateBotApiKey(17).execute();
+        assertEquals("hkA04ZYcqXKalvYMA8OeXSfzUOLrtbZv", apiKey);
+    }
+
+    @Test
+    public void regenerateApiKey() throws Exception {
+        stubZulipResponse(POST, "/users/me/api_key/regenerate", Collections.emptyMap(), "regenerateApiKey.json");
+
+        String apiKey = zulip.users().regenerateApiKey().execute();
+        assertEquals("new_api_key_abc123", apiKey);
+    }
+
+    @Test
+    public void updateOwnProfileData() throws Exception {
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("id", 4);
+        entry.put("value", "0");
+
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateOwnProfileDataApiRequest.DATA, "[{\"id\":4,\"value\":\"0\"}]")
+                .get();
+
+        stubZulipResponse(PATCH, "/users/me/profile_data", params);
+
+        zulip.users().updateOwnProfileData(List.of(entry)).execute();
+    }
+
+    @Test
+    public void deleteOwnProfileData() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeleteOwnProfileDataApiRequest.DATA, "[1,2]")
+                .get();
+
+        stubZulipResponse(DELETE, "/users/me/profile_data", params);
+
+        zulip.users().deleteOwnProfileData(List.of(1, 2)).execute();
+    }
+
+    @Test
+    public void getUserChannels() throws Exception {
+        stubZulipResponse(GET, "/users/5/channels", Collections.emptyMap(), "getUserChannels.json");
+
+        List<Long> channelIds = zulip.users().getUserChannels(5).execute();
+        assertEquals(List.of(3L, 5L, 10L), channelIds);
     }
 }

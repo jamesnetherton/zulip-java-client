@@ -4,7 +4,6 @@ import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.TopicPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
 import com.github.jamesnetherton.zulip.client.api.stream.response.SubscribeStreamsApiResponse;
@@ -27,7 +26,6 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String IS_DEFAULT_STREAM = "is_default_stream";
     public static final String IS_WEB_PUBLIC = "is_web_public";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
-    public static final String STREAM_POST_POLICY = "stream_post_policy";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
     public static final String CAN_ADD_SUBSCRIBERS_GROUP = "can_add_subscribers_group";
     public static final String CAN_ADMINISTER_CHANNEL_GROUP = "can_administer_channel_group";
@@ -41,7 +39,6 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String CAN_RESOLVE_TOPICS_GROUP = "can_resolve_topics_group";
     public static final String TOPICS_POLICY = "topics_policy";
     public static final String FOLDER_ID = "folder_id";
-    public static final String SEND_NEW_SUBSCRIPTION_MESSAGES = "send_new_subscription_messages";
 
     /**
      * Constructs a {@link SubscribeStreamsApiRequest}.
@@ -147,17 +144,6 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
      */
     public SubscribeStreamsApiRequest withHistoryPublicToSubscribers(boolean historyPublicToSubscribers) {
         putParam(HISTORY_PUBLIC_TO_SUBSCRIBERS, historyPublicToSubscribers);
-        return this;
-    }
-
-    /**
-     * Sets the policy for which users can post messages to the stream.
-     *
-     * @param  policy The {@link StreamPostPolicy} that should apply to the stream
-     * @return        This {@link SubscribeStreamsApiRequest} instance
-     */
-    public SubscribeStreamsApiRequest withStreamPostPolicy(StreamPostPolicy policy) {
-        putParam(STREAM_POST_POLICY, policy.getId());
         return this;
     }
 
@@ -325,19 +311,6 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
      */
     public SubscribeStreamsApiRequest withFolderId(int folderId) {
         putParam(FOLDER_ID, folderId);
-        return this;
-    }
-
-    /**
-     * Sets whether any other users newly subscribed via this request should be sent a Notification Bot DM notifying them about
-     * their new subscription.
-     *
-     * @param  sendNewSubscriptionMessages {@code true} to send new subscription messages. {@code false} to not send a
-     *                                     subscription message
-     * @return                             This {@link SubscribeStreamsApiRequest} instance
-     */
-    public SubscribeStreamsApiRequest withSendNewSubscriptionMessages(boolean sendNewSubscriptionMessages) {
-        putParam(SEND_NEW_SUBSCRIPTION_MESSAGES, sendNewSubscriptionMessages);
         return this;
     }
 

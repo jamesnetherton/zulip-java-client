@@ -2,6 +2,12 @@ package com.github.jamesnetherton.zulip.client.api.server.request;
 
 final class ServerRequestConstants {
     public static final String CALLS_BIG_BLUE_BUTTON = "calls/bigbluebutton/create";
+    public static final String CALLS_CONSTRUCTOR_GROUPS = "calls/constructorgroups/create";
+    public static final String CALLS_NEXTCLOUD_TALK = "calls/nextcloud_talk/create";
+    public static final String CALLS_WEBEX = "calls/webex/create";
+    public static final String REGISTER_CLIENT_DEVICE = "register_client_device";
+    public static final String REMOVE_CLIENT_DEVICE = "remove_client_device";
+    public static final String BOT_STORAGE = "bot_storage";
     public static final String DEV_FETCH_API_KEY = "dev_fetch_api_key";
     public static final String EXPORT_REALM = "export/realm";
     public static final String EXPORT_REALM_CONSENTS = "export/realm/consents";
@@ -10,7 +16,7 @@ final class ServerRequestConstants {
     public static final String MOBILE_PUSH = "mobile_push";
     public static final String MOBILE_PUSH_REGISTER = MOBILE_PUSH + "/register";
     public static final String MOBILE_PUSH_TEST = MOBILE_PUSH + "/test_notification";
-    public static final String MOBILE_E2E_PUSH_TEST = MOBILE_PUSH + "/e2e/test_notification";
+    public static final String MOBILE_E2E_PUSH_TEST = MOBILE_PUSH + "/e2ee/test_notification";
     public static final String REALM = "realm";
     public static final String REALM_EMOJI = REALM + "/emoji";
     public static final String REALM_EMOJI_WITH_NAME = REALM_EMOJI + "/%s";
@@ -21,6 +27,8 @@ final class ServerRequestConstants {
     public static final String REALM_PLAYGROUNDS_WITH_ID = REALM_PLAYGROUNDS + "/%d";
     public static final String REALM_PROFILE_FIELDS = REALM + "/profile_fields";
     public static final String REALM_PROFILE_FIELDS_WITH_ID = REALM_PROFILE_FIELDS + "/%d";
+    public static final String REALM_DOMAINS = REALM + "/domains";
+    public static final String REALM_DOMAINS_WITH_DOMAIN = REALM_DOMAINS + "/%s";
     public static final String REALM_USER_SETTINGS_DEFAULTS = REALM + "/user_settings_defaults";
     public static final String SERVER_SETTINGS = "server_settings";
     public static final String USERS_WITH_ME = "users/me";

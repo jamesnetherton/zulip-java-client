@@ -10,5 +10,6 @@
       "timestamp": 1603913066
     }
   },
-  "result": "success"
+  "result": "success",
+  "server_timestamp": 1603913066.0
 }

@@ -98,6 +98,12 @@ public class ZulipIntegrationTestBase {
                     }
 
                     @Override
+                    public <T extends ZulipApiResponse> T put(String path, Map<String, Object> parameters, Class<T> responseAs)
+                            throws ZulipClientException {
+                        return handleResponse(delegate.put(path, parameters, responseAs));
+                    }
+
+                    @Override
                     public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs)
                             throws ZulipClientException {
                         return handleResponse(delegate.upload(path, file, responseAs));
@@ -111,7 +117,11 @@ public class ZulipIntegrationTestBase {
                     private <T extends ZulipApiResponse> T handleResponse(T response) {
                         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
                         if (ignoredParametersUnsupported != null && !ignoredParametersUnsupported.isEmpty()) {
-                            throw new IllegalStateException("Unsupported parameters detected in the request");
+                            StringBuilder message = new StringBuilder();
+                            message.append("Unsupported parameters detected in the request\n");
+                            ignoredParametersUnsupported
+                                    .forEach(ignoredParameter -> message.append(ignoredParameter).append("\n"));
+                            throw new IllegalStateException(message.toString());
                         }
                         return response;
                     }

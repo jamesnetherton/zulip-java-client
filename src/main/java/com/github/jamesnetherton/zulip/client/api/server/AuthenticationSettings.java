@@ -14,6 +14,9 @@ public class AuthenticationSettings {
     private boolean dev;
 
     @JsonProperty
+    private boolean discord;
+
+    @JsonProperty
     private boolean email;
 
     @JsonProperty
@@ -40,6 +43,15 @@ public class AuthenticationSettings {
 
     public boolean isDev() {
         return dev;
+    }
+
+    /**
+     * Returns whether users can authenticate using their Discord account.
+     *
+     * @return {@code true} if Discord authentication is enabled
+     */
+    public boolean isDiscord() {
+        return discord;
     }
 
     public boolean isEmail() {

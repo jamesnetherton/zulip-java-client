@@ -55,6 +55,12 @@ public class UserApiResponse extends ZulipApiResponse {
     @JsonProperty
     private Map<String, ProfileData> profileData = new HashMap<>();
 
+    @JsonProperty
+    private boolean isImportedStub;
+
+    @JsonProperty
+    private boolean isDeleted;
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -109,5 +115,13 @@ public class UserApiResponse extends ZulipApiResponse {
 
     public Map<String, ProfileData> getProfileData() {
         return profileData;
+    }
+
+    public boolean isImportedStub() {
+        return isImportedStub;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
     }
 }

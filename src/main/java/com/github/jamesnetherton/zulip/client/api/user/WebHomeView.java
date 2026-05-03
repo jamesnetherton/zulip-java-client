@@ -4,8 +4,18 @@ package com.github.jamesnetherton.zulip.client.api.user;
  * Defines options for the Zulip UI web home view.
  */
 public enum WebHomeView {
+    /**
+     * Combined feed view.
+     */
     ALL_MESSAGES,
-    RECENT_TOPICS;
+    /**
+     * Inbox view.
+     */
+    INBOX,
+    /**
+     * Recent conversations view.
+     */
+    RECENT;
 
     @Override
     public String toString() {

@@ -34,7 +34,6 @@ public class UpdateNotificationSettingsApiRequest extends ZulipApiRequest implem
     public static final String PM_CONTENT_IN_DESKTOP_NOTIFICATIONS = "pm_content_in_desktop_notifications";
     public static final String WILDCARD_MENTIONS_NOTIFY = "wildcard_mentions_notify";
     public static final String DESKTOP_ICON_COUNT_DISPLAY = "desktop_icon_count_display";
-    public static final String REALM_NAME_IN_NOTIFICATIONS = "realm_name_in_notifications";
     public static final String PRESENCE_ENABLED = "presence_enabled";
 
     /**
@@ -223,19 +222,6 @@ public class UpdateNotificationSettingsApiRequest extends ZulipApiRequest implem
      */
     public UpdateNotificationSettingsApiRequest withDesktopIconCountDisplay(DesktopIconCountDisplay desktopIconCountDisplay) {
         putParam(DESKTOP_ICON_COUNT_DISPLAY, desktopIconCountDisplay.getSetting());
-        return this;
-    }
-
-    /**
-     * Sets whether to include organization name in subject of missed message emails.
-     *
-     * @param  realmNameInNotifications {@code true} to include the organization name in the subject of missed message emails.
-     *                                  {@code false} to not include the organization name in the subject of missed message
-     *                                  emails
-     * @return                          This {@link UpdateNotificationSettingsApiRequest} instance
-     */
-    public UpdateNotificationSettingsApiRequest withRealmNameInNotifications(boolean realmNameInNotifications) {
-        putParam(REALM_NAME_IN_NOTIFICATIONS, realmNameInNotifications);
         return this;
     }
 

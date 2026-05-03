@@ -1,8 +1,10 @@
 package com.github.jamesnetherton.zulip.client.api.user.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetail;
+import com.github.jamesnetherton.zulip.client.api.user.UserPresenceDetailMapDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import java.util.Map;
  */
 public class GetAllUserPresenceApiResponse extends ZulipApiResponse {
     @JsonProperty
+    @JsonDeserialize(contentUsing = UserPresenceDetailMapDeserializer.class)
     Map<String, Map<String, UserPresenceDetail>> presences = new HashMap<>();
 
     @JsonProperty

@@ -62,6 +62,18 @@ public interface ZulipHttpClient {
             throws ZulipClientException;
 
     /**
+     * Performs a HTTP PUT request on the given API endpoint path and URL parameters. The response type is
+     * determined by the type provided via the responseAs argument.
+     *
+     * @param  path       The base path of the API endpoint
+     * @param  parameters Map of URL query parameters that should be used on the API request
+     * @param  responseAs The expected class of the API response
+     * @return            The {@link ZulipApiResponse}
+     */
+    <T extends ZulipApiResponse> T put(String path, Map<String, Object> parameters, Class<T> responseAs)
+            throws ZulipClientException;
+
+    /**
      * Performs a HTTP POST request on the given API endpoint path and URL parameters. The response type is
      * determined by the type provided via the responseAs argument.
      *

@@ -8,7 +8,6 @@ import com.github.jamesnetherton.zulip.client.api.draft.DraftType;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.Stream;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
 import java.time.Instant;
@@ -32,7 +31,6 @@ public class ZulipDraftIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();

@@ -8,14 +8,17 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupAp
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteOwnProfileDataApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllUsersApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetBotApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetSubGroupsOfUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserAttachmentsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.GetUserChannelsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupMembershipStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserGroupsApiRequest;
@@ -23,12 +26,15 @@ import com.github.jamesnetherton.zulip.client.api.user.request.GetUserPresenceAp
 import com.github.jamesnetherton.zulip.client.api.user.request.GetUserStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.MuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.ReactivateUserApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.RegenerateApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.RegenerateBotApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveAlertWordsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.RemoveUsersFromGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.SetTypingStatusForMessageEditApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UnmuteUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnProfileDataApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserPresenceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateOwnUserStatusApiRequest;
@@ -535,5 +541,77 @@ public class UserService implements ZulipService {
      */
     public GetUserStatusApiRequest getUserStatus(long userId) {
         return new GetUserStatusApiRequest(this.client, userId);
+    }
+
+    /**
+     * Fetches the API key for a bot user. Only the bot's owner and organization administrators have access to a bot's API
+     * key.
+     *
+     * @see          <a href="https://zulip.com/api/get-bot-api-key">https://zulip.com/api/get-bot-api-key</a>
+     *
+     * @param  botId The user ID of the target bot
+     * @return       The {@link GetBotApiKeyApiRequest} builder object
+     */
+    public GetBotApiKeyApiRequest getBotApiKey(long botId) {
+        return new GetBotApiKeyApiRequest(this.client, botId);
+    }
+
+    /**
+     * Regenerates the API key of a bot user. Only the bot's owner and organization administrators have access.
+     *
+     * @see          <a href="https://zulip.com/api/regenerate-bot-api-key">https://zulip.com/api/regenerate-bot-api-key</a>
+     *
+     * @param  botId The user ID of the target bot
+     * @return       The {@link RegenerateBotApiKeyApiRequest} builder object
+     */
+    public RegenerateBotApiKeyApiRequest regenerateBotApiKey(long botId) {
+        return new RegenerateBotApiKeyApiRequest(this.client, botId);
+    }
+
+    /**
+     * Regenerates the current user's API key. This will immediately log out all devices registered for push notifications.
+     *
+     * @see    <a href="https://zulip.com/api/regenerate-api-key">https://zulip.com/api/regenerate-api-key</a>
+     *
+     * @return The {@link RegenerateApiKeyApiRequest} builder object
+     */
+    public RegenerateApiKeyApiRequest regenerateApiKey() {
+        return new RegenerateApiKeyApiRequest(this.client);
+    }
+
+    /**
+     * Updates the current user's custom profile field data.
+     *
+     * @see         <a href="https://zulip.com/api/update-profile-data">https://zulip.com/api/update-profile-data</a>
+     *
+     * @param  data List of maps each with {@code id} (integer) and {@code value} (string or null) entries
+     * @return      The {@link UpdateOwnProfileDataApiRequest} builder object
+     */
+    public UpdateOwnProfileDataApiRequest updateOwnProfileData(java.util.List<java.util.Map<String, Object>> data) {
+        return new UpdateOwnProfileDataApiRequest(this.client, data);
+    }
+
+    /**
+     * Removes the current user's data for the specified custom profile fields.
+     *
+     * @see             <a href="https://zulip.com/api/remove-profile-data">https://zulip.com/api/remove-profile-data</a>
+     *
+     * @param  fieldIds List of custom profile field IDs to remove data for
+     * @return          The {@link DeleteOwnProfileDataApiRequest} builder object
+     */
+    public DeleteOwnProfileDataApiRequest deleteOwnProfileData(java.util.List<Integer> fieldIds) {
+        return new DeleteOwnProfileDataApiRequest(this.client, fieldIds);
+    }
+
+    /**
+     * Gets the list of channels the target user is subscribed to.
+     *
+     * @see           <a href="https://zulip.com/api/get-user-channels">https://zulip.com/api/get-user-channels</a>
+     *
+     * @param  userId The ID of the user to get channels for
+     * @return        The {@link GetUserChannelsApiRequest} builder object
+     */
+    public GetUserChannelsApiRequest getUserChannels(long userId) {
+        return new GetUserChannelsApiRequest(this.client, userId);
     }
 }

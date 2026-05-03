@@ -94,7 +94,7 @@ public class ZulipApiTestBase {
             }
         }
 
-        if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PATCH)) {
+        if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PATCH) || method.equals(HttpMethod.PUT)) {
             if (!params.isEmpty()) {
                 StringBuilder urlParamString = new StringBuilder();
                 Iterator<String> it = params.keySet().iterator();
@@ -168,5 +168,6 @@ public class ZulipApiTestBase {
         GET,
         PATCH,
         POST,
+        PUT,
     }
 }

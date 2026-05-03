@@ -20,6 +20,8 @@ final class MessageRequestConstants {
     final static String SCHEDULED_MESSAGES_API_PATH = "scheduled_messages";
     final static String SCHEDULED_MESSAGES_ID_API_PATH = SCHEDULED_MESSAGES_API_PATH + "/%d";
     final static String USER_UPLOADS_API_PATH = "user_uploads";
+    final static String USER_UPLOADS_TEMPORARY_URL_API_PATH = USER_UPLOADS_API_PATH + "/%s/%s";
+    final static String THUMBNAIL_STATUS_API_PATH = "thumbnail/status/%s/%s";
 
     private MessageRequestConstants() {
     }

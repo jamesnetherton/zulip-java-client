@@ -5,21 +5,32 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTo
 import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateConstructorGroupsVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateNextcloudTalkVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateWebexVideoCallApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.DeactivateEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteProfileFieldApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.DeleteRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetAllDataExportsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetAllEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.GetBotStorageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetDataExportConsentStateApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.GetRealmDomainsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetServerSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.JwtFetchApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RegisterClientDeviceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveBotStorageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveClientDeviceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
@@ -27,7 +38,9 @@ import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileF
 import com.github.jamesnetherton.zulip.client.api.server.request.SendE2EMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateBotStorageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -134,6 +147,104 @@ public class ServerService implements ZulipService {
      */
     public GetAllEmojiApiRequest getEmoji() {
         return new GetAllEmojiApiRequest(this.client);
+    }
+
+    /**
+     * Deactivates a custom emoji.
+     *
+     * @see              <a href=
+     *                   "https://zulip.com/api/deactivate-custom-emoji">https://zulip.com/api/deactivate-custom-emoji</a>
+     *
+     * @param  emojiName The name of the custom emoji to deactivate
+     * @return           The {@link DeactivateEmojiApiRequest} builder object
+     */
+    public DeactivateEmojiApiRequest deactivateEmoji(String emojiName) {
+        return new DeactivateEmojiApiRequest(this.client, emojiName);
+    }
+
+    /**
+     * Gets the allowed email domains configured in the organization.
+     *
+     * @see    <a href="https://zulip.com/api/get-realm-domains">https://zulip.com/api/get-realm-domains</a>
+     *
+     * @return The {@link GetRealmDomainsApiRequest} builder object
+     */
+    public GetRealmDomainsApiRequest getRealmDomains() {
+        return new GetRealmDomainsApiRequest(this.client);
+    }
+
+    /**
+     * Adds a domain to the set of allowed email domains in the organization. Requires organization owner permissions.
+     *
+     * @see                    <a href="https://zulip.com/api/add-realm-domain">https://zulip.com/api/add-realm-domain</a>
+     *
+     * @param  domain          The domain to add
+     * @param  allowSubdomains Whether subdomains are allowed for this domain
+     * @return                 The {@link AddRealmDomainApiRequest} builder object
+     */
+    public AddRealmDomainApiRequest addRealmDomain(String domain, boolean allowSubdomains) {
+        return new AddRealmDomainApiRequest(this.client, domain, allowSubdomains);
+    }
+
+    /**
+     * Updates whether subdomains are allowed for an existing realm domain. Requires organization owner permissions.
+     *
+     * @see                    <a href=
+     *                         "https://zulip.com/api/patch-realm-domain">https://zulip.com/api/patch-realm-domain</a>
+     *
+     * @param  domain          The domain to update
+     * @param  allowSubdomains Whether subdomains are allowed for this domain
+     * @return                 The {@link UpdateRealmDomainApiRequest} builder object
+     */
+    public UpdateRealmDomainApiRequest updateRealmDomain(String domain, boolean allowSubdomains) {
+        return new UpdateRealmDomainApiRequest(this.client, domain, allowSubdomains);
+    }
+
+    /**
+     * Removes a domain from the set of allowed email domains in the organization. Requires organization owner permissions.
+     *
+     * @see           <a href=
+     *                "https://zulip.com/api/remove-realm-domain">https://zulip.com/api/remove-realm-domain</a>
+     *
+     * @param  domain The domain to remove
+     * @return        The {@link DeleteRealmDomainApiRequest} builder object
+     */
+    public DeleteRealmDomainApiRequest deleteRealmDomain(String domain) {
+        return new DeleteRealmDomainApiRequest(this.client, domain);
+    }
+
+    /**
+     * Retrieves data stored for the bot user. Only available to bot user accounts.
+     *
+     * @see    <a href="https://zulip.com/api/get-bot-storage">https://zulip.com/api/get-bot-storage</a>
+     *
+     * @return The {@link GetBotStorageApiRequest} builder object
+     */
+    public GetBotStorageApiRequest getBotStorage() {
+        return new GetBotStorageApiRequest(this.client);
+    }
+
+    /**
+     * Adds or updates data stored for the bot user. Only available to bot user accounts.
+     *
+     * @see         <a href="https://zulip.com/api/update-bot-storage">https://zulip.com/api/update-bot-storage</a>
+     *
+     * @param  data Map of string key-value pairs to store
+     * @return      The {@link UpdateBotStorageApiRequest} builder object
+     */
+    public UpdateBotStorageApiRequest updateBotStorage(java.util.Map<String, String> data) {
+        return new UpdateBotStorageApiRequest(this.client, data);
+    }
+
+    /**
+     * Deletes data stored for the bot user. Only available to bot user accounts.
+     *
+     * @see    <a href="https://zulip.com/api/remove-bot-storage">https://zulip.com/api/remove-bot-storage</a>
+     *
+     * @return The {@link RemoveBotStorageApiRequest} builder object
+     */
+    public RemoveBotStorageApiRequest removeBotStorage() {
+        return new RemoveBotStorageApiRequest(this.client);
     }
 
     /**
@@ -346,6 +457,42 @@ public class ServerService implements ZulipService {
     }
 
     /**
+     * Creates a Constructor Groups video call URL. Requires Constructor Groups to be configured on the Zulip server.
+     *
+     * @see    <a href=
+     *         "https://zulip.com/api/create-constructor-groups-video-call">https://zulip.com/api/create-constructor-groups-video-call</a>
+     *
+     * @return The {@link CreateConstructorGroupsVideoCallApiRequest} builder object
+     */
+    public CreateConstructorGroupsVideoCallApiRequest createConstructorGroupsVideoCall() {
+        return new CreateConstructorGroupsVideoCallApiRequest(this.client);
+    }
+
+    /**
+     * Creates a Nextcloud Talk video call URL. Requires Nextcloud Talk to be configured on the Zulip server.
+     *
+     * @see             <a href=
+     *                  "https://zulip.com/api/create-nextcloud-talk-video-call">https://zulip.com/api/create-nextcloud-talk-video-call</a>
+     *
+     * @param  roomName Room name for the Nextcloud Talk conversation
+     * @return          The {@link CreateNextcloudTalkVideoCallApiRequest} builder object
+     */
+    public CreateNextcloudTalkVideoCallApiRequest createNextcloudTalkVideoCall(String roomName) {
+        return new CreateNextcloudTalkVideoCallApiRequest(this.client, roomName);
+    }
+
+    /**
+     * Creates a Webex video call URL. Requires Webex integration to be configured on the Zulip server.
+     *
+     * @see    <a href="https://zulip.com/api/create-webex-video-call">https://zulip.com/api/create-webex-video-call</a>
+     *
+     * @return The {@link CreateWebexVideoCallApiRequest} builder object
+     */
+    public CreateWebexVideoCallApiRequest createWebexVideoCall() {
+        return new CreateWebexVideoCallApiRequest(this.client);
+    }
+
+    /**
      * Gets all data exports.
      *
      * @see    <a href="https://zulip.com/api/get-realm-exports">https://zulip.com/api/get-realm-exports</a>
@@ -427,5 +574,28 @@ public class ServerService implements ZulipService {
             String encryptedPushRegistration) {
         return new RegisterE2EMobilePushDevice(this.client, tokenKind, pushAccountId, pushPublicKey, bouncerPublicKey,
                 encryptedPushRegistration);
+    }
+
+    /**
+     * Registers a logged-in device as an initial step before registering for E2EE push notifications.
+     *
+     * @see    <a href="https://zulip.com/api/register-client-device">https://zulip.com/api/register-client-device</a>
+     *
+     * @return The {@link RegisterClientDeviceApiRequest} builder object
+     */
+    public RegisterClientDeviceApiRequest registerClientDevice() {
+        return new RegisterClientDeviceApiRequest(this.client);
+    }
+
+    /**
+     * Removes a registered device when the user logs out.
+     *
+     * @see             <a href="https://zulip.com/api/remove-client-device">https://zulip.com/api/remove-client-device</a>
+     *
+     * @param  deviceId The ID of the device to remove
+     * @return          The {@link RemoveClientDeviceApiRequest} builder object
+     */
+    public RemoveClientDeviceApiRequest removeClientDevice(long deviceId) {
+        return new RemoveClientDeviceApiRequest(this.client, deviceId);
     }
 }

@@ -5,12 +5,18 @@
     {
       "pattern": "#(?P<id>[0-9]+)",
       "url_template": "https:\/\/github.com\/zulip\/zulip\/issues\/{id}s",
-      "id": 1
+      "id": 1,
+      "example_input": "#123",
+      "reverse_template": "#{id}",
+      "alternative_url_templates": ["https:\/\/github.com\/zulip\/zulip\/pull\/{id}s"]
     },
     {
       "pattern": "(?P<id>[0-9a-f]{40})",
       "url_template": "https:\/\/github.com\/zulip\/zulip\/commit\/{id}s",
-      "id": 2
+      "id": 2,
+      "example_input": null,
+      "reverse_template": null,
+      "alternative_url_templates": []
     }
   ]
 }

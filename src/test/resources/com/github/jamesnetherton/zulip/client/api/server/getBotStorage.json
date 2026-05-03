@@ -1,0 +1,8 @@
+{
+  "msg": "",
+  "result": "success",
+  "storage": {
+    "foo": "bar",
+    "baz": "qux"
+  }
+}
