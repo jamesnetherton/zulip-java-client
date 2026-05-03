@@ -4,10 +4,13 @@
 
 ==== Enhancements
 
-Zulip 12 support
+* Zulip 12 support
+* https://github.com/jamesnetherton/zulip-java-client/issues/308[#308] - Add jwt_fetch_api_key support
+* https://github.com/jamesnetherton/zulip-java-client/issues/445[#445] - Add ability to configure a trust store for self-signed Zulip server certificates
 
 ==== Breaking changes
 
+* JDK 11 support has been dropped. The minimum supported JDK is now JDK 17
 * `UserAttachment.getMessages()` removed; replaced by `UserAttachment.getMessageIds()` which returns `List<Long>`
 * `UserAttachmentMessage` class removed
 * `WebHomeView.RECENT_TOPICS` removed; replaced by `WebHomeView.RECENT`; new `WebHomeView.INBOX` added
