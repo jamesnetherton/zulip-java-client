@@ -284,7 +284,6 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withNotificationSound("ding")
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
-                .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)

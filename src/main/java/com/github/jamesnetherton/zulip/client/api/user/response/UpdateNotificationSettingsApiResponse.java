@@ -16,7 +16,6 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNoti
 import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.NOTIFICATION_SOUND;
 import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS;
 import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.PRESENCE_ENABLED;
-import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS;
 import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -118,11 +117,6 @@ public class UpdateNotificationSettingsApiResponse extends ZulipApiResponse {
     @JsonSetter
     public void setDesktopIconCountDisplay(JsonNode node) {
         addSetting(DESKTOP_ICON_COUNT_DISPLAY, node);
-    }
-
-    @JsonSetter
-    public void setRealmNameInNotifications(JsonNode node) {
-        addSetting(REALM_NAME_IN_NOTIFICATIONS, node);
     }
 
     @JsonSetter

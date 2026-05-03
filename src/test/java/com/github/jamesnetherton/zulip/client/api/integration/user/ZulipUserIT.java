@@ -10,7 +10,6 @@ import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTe
 import com.github.jamesnetherton.zulip.client.api.message.ReactionType;
 import com.github.jamesnetherton.zulip.client.api.server.MarkReadOnScrollPolicy;
 import com.github.jamesnetherton.zulip.client.api.server.RealmNameInNotificationsPolicy;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
 import com.github.jamesnetherton.zulip.client.api.user.DemoteInactiveStreamOption;
@@ -191,7 +190,6 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Path tmpFile = Files.createTempFile("zulip", ".txt");
@@ -520,7 +518,6 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withNotificationSound("ding")
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
-                .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)

@@ -54,15 +54,12 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withDefaultStream(false)
                 .withWebPublic(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .withTopicPolicy(TopicPolicy.INHERIT)
-                .withSendNewSubscriptionMessages(true)
                 .execute();
 
         Map<String, List<String>> created = result.getSubscribed();
         assertTrue(created.containsKey(ownUser.getUserId().toString()));
         assertEquals(3, created.get(ownUser.getUserId().toString()).size());
-        assertTrue(result.isNewSubscriptionMessagesSent());
 
         // Read
         List<Stream> streams = zulip.channels().getAll()
@@ -192,7 +189,6 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         // Get ID
@@ -275,7 +271,6 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Long streamId = zulip.channels().getStreamId(streamName).execute();
@@ -308,7 +303,6 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Long streamId = zulip.channels().getStreamId(streamName).execute();
@@ -399,7 +393,6 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withDescription("Test Channel Description")
                 .withAnnounce(true)
                 .withInviteOnly(true)
-                .withSendNewSubscriptionMessages(true)
                 .withTopicPolicy(TopicPolicy.ALLOW_EMPTY_TOPIC)
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetentionDays(30)

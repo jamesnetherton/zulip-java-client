@@ -117,7 +117,11 @@ public class ZulipIntegrationTestBase {
                     private <T extends ZulipApiResponse> T handleResponse(T response) {
                         List<String> ignoredParametersUnsupported = response.getIgnoredParametersUnsupported();
                         if (ignoredParametersUnsupported != null && !ignoredParametersUnsupported.isEmpty()) {
-                            throw new IllegalStateException("Unsupported parameters detected in the request");
+                            StringBuilder message = new StringBuilder();
+                            message.append("Unsupported parameters detected in the request\n");
+                            ignoredParametersUnsupported
+                                    .forEach(ignoredParameter -> message.append(ignoredParameter).append("\n"));
+                            throw new IllegalStateException(message.toString());
                         }
                         return response;
                     }

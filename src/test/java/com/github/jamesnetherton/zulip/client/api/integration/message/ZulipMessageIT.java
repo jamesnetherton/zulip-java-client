@@ -25,7 +25,6 @@ import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
-import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.IOException;
@@ -56,7 +55,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withInviteOnly(false)
                 .withAnnounce(true)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Long streamId = zulip.streams().getStreamId(stream2Name).execute();
@@ -203,7 +201,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withInviteOnly(false)
                 .withAnnounce(true)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         Long streamId = zulip.channels().getStreamId(streamName2).execute();
@@ -281,7 +278,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         // Create message
@@ -438,7 +434,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         zulip.messages()
@@ -472,7 +467,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         zulip.messages()
@@ -511,7 +505,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         for (int i = 1; i <= 3; i++) {
@@ -548,7 +541,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         long messageId = zulip.messages()
@@ -629,7 +621,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         zulip.messages()
@@ -655,7 +646,6 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
-                .withStreamPostPolicy(StreamPostPolicy.ANY)
                 .execute();
 
         zulip.messages()

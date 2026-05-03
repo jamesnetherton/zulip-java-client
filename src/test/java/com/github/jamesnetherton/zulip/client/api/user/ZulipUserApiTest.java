@@ -326,7 +326,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateNotificationSettingsApiRequest.MESSAGE_CONTENT_IN_EMAIL_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY, "true")
-                .add(UpdateNotificationSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateNotificationSettingsApiRequest.PRESENCE_ENABLED, "true")
                 .add(UpdateNotificationSettingsApiRequest.ENABLE_STREAM_DESKTOP_NOTIFICATIONS, "true")
                 .get();
@@ -351,10 +350,9 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withEnableStreamPushNotifications(true)
                 .withMessageContentInEmailNotifications(true)
                 .withWildcardMentionsNotify(true)
-                .withRealmNameInNotifications(true)
                 .execute();
 
-        assertEquals(18, settings.size());
+        assertEquals(17, settings.size());
 
         for (String key : settings.keySet()) {
             Object value = settings.get(key);
@@ -746,7 +744,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .add(UpdateOwnUserSettingsApiRequest.OLD_PASSWORD, "old-password")
                 .add(UpdateOwnUserSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.PRESENCE_ENABLED, "true")
-                .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
                 .add(UpdateOwnUserSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateOwnUserSettingsApiRequest.SEND_PRIVATE_TYPING_NOTIFICATIONS, "true")
@@ -809,7 +806,6 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
                 .withOldPassword("old-password")
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
-                .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)

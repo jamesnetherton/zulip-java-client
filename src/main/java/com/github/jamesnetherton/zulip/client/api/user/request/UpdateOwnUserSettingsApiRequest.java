@@ -29,7 +29,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String ALLOW_PRIVATE_DATA_EXPORT = "allow_private_data_export";
     public static final String COLOR_SCHEME = "color_scheme";
     public static final String DEFAULT_LANGUAGE = "default_language";
-    public static final String DEFAULT_VIEW = "default_view";
+    public static final String DEFAULT_VIEW = "web_home_view";
     public static final String DEMOTE_INACTIVE_STREAMS = "demote_inactive_streams";
     public static final String DESKTOP_ICON_COUNT_DISPLAY = "desktop_icon_count_display";
     public static final String DISPLAY_EMOJI_REACTION_USERS = "display_emoji_reaction_users";
@@ -50,7 +50,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String ENABLE_STREAM_PUSH_NOTIFICATIONS = "enable_stream_push_notifications";
     public static final String ENABLE_STREAM_AUDIBLE_NOTIFICATIONS = "enable_stream_audible_notifications";
     public static final String ENTER_SENDS = "enter_sends";
-    public static final String ESCAPE_NAVIGATES_TO_DEFAULT_VIEW = "escape_navigates_to_default_view";
+    public static final String ESCAPE_NAVIGATES_TO_DEFAULT_VIEW = "web_escape_navigates_to_home_view";
     public static final String FLUID_LAYOUT_WIDTH = "fluid_layout_width";
     public static final String FULL_NAME = "full_name";
     public static final String HIDE_AI_FEATURES = "hide_ai_features";
@@ -62,7 +62,7 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
     public static final String OLD_PASSWORD = "old_password";
     public static final String PM_CONTENT_IN_DESKTOP_NOTIFICATIONS = "pm_content_in_desktop_notifications";
     public static final String PRESENCE_ENABLED = "presence_enabled";
-    public static final String REALM_NAME_IN_NOTIFICATIONS = "realm_name_in_notifications";
+
     public static final String REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY = "realm_name_in_email_notifications_policy";
     public static final String RECEIVES_TYPING_NOTIFICATIONS = "receives_typing_notifications";
     public static final String SEND_PRIVATE_TYPING_NOTIFICATIONS = "send_private_typing_notifications";
@@ -511,22 +511,6 @@ public class UpdateOwnUserSettingsApiRequest extends ZulipApiRequest implements 
      */
     public UpdateOwnUserSettingsApiRequest withPresenceEnabled(boolean enable) {
         putParam(PRESENCE_ENABLED, enable);
-        return this;
-    }
-
-    /**
-     * Sets whether to include organization name in subject of missed message emails.
-     *
-     * @param      realmNameInNotifications {@code true} to include the organization name in the subject of missed message
-     *                                      emails.
-     *                                      {@code false} to not include the organization name in the subject of missed message
-     *                                      emails
-     * @return                              This {@link UpdateOwnUserSettingsApiRequest} instance
-     * @deprecated                          Use withRealmNameInEmailNotifications instead
-     */
-    @Deprecated
-    public UpdateOwnUserSettingsApiRequest withRealmNameInNotifications(boolean realmNameInNotifications) {
-        putParam(REALM_NAME_IN_NOTIFICATIONS, realmNameInNotifications);
         return this;
     }
 

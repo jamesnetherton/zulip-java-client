@@ -138,7 +138,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.CAN_RESOLVE_TOPICS_GROUP, "10")
                 .add(SubscribeStreamsApiRequest.TOPICS_POLICY, "\"inherit\"")
                 .add(SubscribeStreamsApiRequest.FOLDER_ID, "1")
-                .add(SubscribeStreamsApiRequest.SEND_NEW_SUBSCRIPTION_MESSAGES, "true")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(SubscribeStreamsApiRequest.INVITE_ONLY, "false")
                 .add(SubscribeStreamsApiRequest.IS_DEFAULT_STREAM, "true")
@@ -147,7 +146,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.PRINCIPALS, "[1,2,3]")
                 .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS,
                         "[{\"name\":\"foo\",\"description\":\"bar\"},{\"name\":\"secret\",\"description\":\"stream\"},{\"name\":\"old\",\"description\":\"stream\"},{\"name\":\"cheese\",\"description\":\"wine\"}]")
-                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
@@ -171,14 +169,12 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withCanResolveTopicsGroup(UserGroupSetting.of(10))
                 .withTopicPolicy(TopicPolicy.INHERIT)
                 .withFolderId(1)
-                .withSendNewSubscriptionMessages(true)
                 .withHistoryPublicToSubscribers(true)
                 .withInviteOnly(false)
                 .withDefaultStream(true)
                 .withWebPublic(true)
                 .withMessageRetention(RetentionPolicy.UNLIMITED)
                 .withPrincipals(1, 2, 3)
-                .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
 
         Map<String, List<String>> subscriptions = result.getSubscribed();
@@ -220,7 +216,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.PRINCIPALS, "[\"test@test.com\",\"foo@bar.com\"]")
                 .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS,
                         "[{\"name\":\"foo\",\"description\":\"bar\"},{\"name\":\"secret\",\"description\":\"stream\"},{\"name\":\"old\",\"description\":\"stream\"},{\"name\":\"cheese\",\"description\":\"wine\"}]")
-                .add(SubscribeStreamsApiRequest.STREAM_POST_POLICY, "3")
                 .get();
 
         stubZulipResponse(POST, "/users/me/subscriptions", params, "subscribe.json");
@@ -237,7 +232,6 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withWebPublic(false)
                 .withMessageRetention(30)
                 .withPrincipals("test@test.com", "foo@bar.com")
-                .withStreamPostPolicy(StreamPostPolicy.NEW_MEMBERS_ONLY)
                 .execute();
 
         Map<String, List<String>> subscriptions = result.getSubscribed();

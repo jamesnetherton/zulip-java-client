@@ -486,7 +486,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.NOTIFICATION_SOUND, "ding")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.PM_CONTENT_IN_DESKTOP_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.PRESENCE_ENABLED, "true")
-                .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_NOTIFICATIONS, "true")
+
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.REALM_NAME_IN_EMAIL_NOTIFICATIONS_POLICY, "2")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.RECEIVES_TYPING_NOTIFICATIONS, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.SEND_READ_RECEIPTS, "true")
@@ -549,7 +549,6 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withNotificationSound("ding")
                 .withPmContentInDesktopNotifications(true)
                 .withPresenceEnabled(true)
-                .withRealmNameInNotifications(true)
                 .withRealmNameInEmailNotifications(RealmNameInNotificationsPolicy.ALWAYS)
                 .withReceivesTypingNotifications(true)
                 .withSendPrivateTypingNotifications(true)
