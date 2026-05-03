@@ -1,39 +1,46 @@
 package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Data export types.
  */
 public enum DataExportType {
     /**
-     * Public data export.
+     * Public data only export.
      */
-    PUBLIC(1),
+    PUBLIC("public"),
     /**
-     * Standard data export.
+     * Public and private data export including private data for users who have granted consent.
      */
-    STANDARD(2),
+    FULL_WITH_CONSENT("full_with_consent"),
     /**
-     * Unknown data export. Indicates an API response error.
+     * Full data export including private data for all users. Requires the organization to have the
+     * {@code owner_full_content_access} feature enabled.
      */
-    UNKNOWN(0);
+    FULL_WITHOUT_CONSENT("full_without_consent"),
+    /**
+     * Unknown data export type. Indicates an API response error.
+     */
+    UNKNOWN("unknown");
 
-    private final int id;
+    private final String value;
 
-    DataExportType(int id) {
-        this.id = id;
+    DataExportType(String value) {
+        this.value = value;
     }
 
-    public int getId() {
-        return id;
+    @JsonValue
+    public String getValue() {
+        return value;
     }
 
     @JsonCreator
-    public static DataExportType fromInt(int dataExportTypeId) {
-        for (DataExportType dataExportType : DataExportType.values()) {
-            if (dataExportType.getId() == dataExportTypeId) {
-                return dataExportType;
+    public static DataExportType fromString(String value) {
+        for (DataExportType type : DataExportType.values()) {
+            if (type.getValue().equals(value)) {
+                return type;
             }
         }
         return UNKNOWN;

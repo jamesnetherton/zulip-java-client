@@ -252,7 +252,7 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
                 .withAutomaticallyUnmuteTopicsInMutedStreamsPolicy(UnmuteTopicInMutedStreamsPolicy.PARTICIPATING)
                 .withAutomaticallyFollowTopicsWhereMentioned(true)
                 .withColorScheme(ColorScheme.DARK)
-                .withWebHomeView(WebHomeView.RECENT_TOPICS)
+                .withWebHomeView(WebHomeView.RECENT)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)

@@ -2,6 +2,7 @@
   "authentication_methods": {
     "azuread": false,
     "dev": true,
+    "discord": false,
     "email": true,
     "github": true,
     "google": true,

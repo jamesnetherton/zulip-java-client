@@ -531,6 +531,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(4, stream.getCanMoveMessagesWithinChannelGroup().getUserGroupId());
         assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
         assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
+        assertEquals(12, stream.getCanCreateTopicGroup().getUserGroupId());
         assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
         assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
         assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());

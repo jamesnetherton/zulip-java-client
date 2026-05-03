@@ -2,6 +2,8 @@ package com.github.jamesnetherton.zulip.client.api.user.request;
 
 final class UserRequestConstants {
     public static final String ATTACHMENTS = "attachments";
+    public static final String BOTS_API_KEY = "bots/%d/api_key";
+    public static final String BOTS_API_KEY_REGENERATE = "bots/%d/api_key/regenerate";
     public static final String ATTACHMENTS_WITH_ID = "attachments/%d";
     public static final String SETTINGS = "settings";
     public static final String SETTINGS_NOTIFICATIONS = SETTINGS + "/notifications";
@@ -26,6 +28,9 @@ final class UserRequestConstants {
     public static final String USERS_STATUS = USERS_WITH_ID + "/status";
     public static final String USERS_OWN_STATUS = USERS_WITH_ME + "/status";
     public static final String USERS_ALERT_WORDS = USERS_WITH_ME + "/alert_words";
+    public static final String USERS_WITH_ID_CHANNELS = USERS_WITH_ID + "/channels";
+    public static final String USERS_WITH_ME_API_KEY_REGENERATE = USERS_WITH_ME + "/api_key/regenerate";
+    public static final String USERS_WITH_ME_PROFILE_DATA = USERS_WITH_ME + "/profile_data";
 
     private UserRequestConstants() {
     }

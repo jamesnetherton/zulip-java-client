@@ -269,6 +269,24 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void getMessagesWithDateAnchor() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetMessagesApiRequest.ANCHOR, Anchor.DATE.toString())
+                .add(GetMessagesApiRequest.ANCHOR_DATE, "2024-01-15")
+                .add(GetMessagesApiRequest.NUM_BEFORE, "3")
+                .add(GetMessagesApiRequest.NUM_AFTER, "1")
+                .add(GetMessagesApiRequest.INCLUDE_ANCHOR, "true")
+                .get();
+
+        stubZulipResponse(GET, "/messages", params, "getMessages.json");
+
+        zulip.messages().getMessages(3, 1, Anchor.DATE)
+                .withAnchorDate("2024-01-15")
+                .withIncludeAnchor(true)
+                .execute();
+    }
+
+    @Test
     public void getMessage() throws Exception {
         stubZulipResponse(GET, "/messages/1", "getMessage.json");
 
@@ -1046,5 +1064,23 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         List<Long> messageIds = zulip.messages().getMessageReadReceipts(1).execute();
         assertEquals(List.of(1L, 2L, 3L), messageIds);
+    }
+
+    @Test
+    public void getFileTemporaryUrl() throws Exception {
+        stubZulipResponse(GET, "/user_uploads/1/4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt",
+                Collections.emptyMap(), "getFileTemporaryUrl.json");
+
+        String url = zulip.messages().getFileTemporaryUrl("1", "4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt").execute();
+        assertEquals("/user_uploads/temporary/abc123xyz", url);
+    }
+
+    @Test
+    public void checkThumbnailStatus() throws Exception {
+        stubZulipResponse(GET, "/thumbnail/status/1/4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt",
+                Collections.emptyMap(), "checkThumbnailStatus.json");
+
+        boolean hasThumbnail = zulip.messages().checkThumbnailStatus("1", "4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt").execute();
+        assertTrue(hasThumbnail);
     }
 }

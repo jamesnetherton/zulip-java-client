@@ -25,7 +25,7 @@ public class CreateDataExportApiRequest extends ZulipApiRequest implements Execu
      */
     public CreateDataExportApiRequest(ZulipHttpClient client) {
         super(client);
-        putParam(EXPORT_TYPE, DataExportType.PUBLIC.getId());
+        putParam(EXPORT_TYPE, DataExportType.PUBLIC.getValue());
     }
 
     /**
@@ -35,7 +35,7 @@ public class CreateDataExportApiRequest extends ZulipApiRequest implements Execu
      * @return            This {@link CreateDataExportApiRequest} instance
      */
     public CreateDataExportApiRequest withExportType(DataExportType exportType) {
-        putParam(EXPORT_TYPE, exportType.getId());
+        putParam(EXPORT_TYPE, exportType.getValue());
         return this;
     }
 

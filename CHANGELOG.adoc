@@ -1,5 +1,18 @@
 = Changelog
 
+== 0.10.0
+
+==== Enhancements
+
+Zulip 12 support
+
+==== Breaking changes
+
+* `UserAttachment.getMessages()` removed; replaced by `UserAttachment.getMessageIds()` which returns `List<Long>`
+* `UserAttachmentMessage` class removed
+* `WebHomeView.RECENT_TOPICS` removed; replaced by `WebHomeView.RECENT`; new `WebHomeView.INBOX` added
+* `DataExportType.STANDARD` removed; replaced by `DataExportType.FULL_WITH_CONSENT`; new `DataExportType.FULL_WITHOUT_CONSENT` added; `DataExportType.getId()` removed; replaced by `DataExportType.getValue()` returning a string
+
 == 0.9.0
 
 ==== Enhancements

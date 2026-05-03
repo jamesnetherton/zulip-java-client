@@ -38,6 +38,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPatch;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
@@ -217,6 +218,14 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     public <T extends ZulipApiResponse> T post(String path, Map<String, Object> parameters, Class<T> responseAs)
             throws ZulipClientException {
         HttpPost request = new HttpPost(getRequestUri(path, null));
+        configureFormEntity(request, parameters);
+        return doRequest(request, responseAs);
+    }
+
+    @Override
+    public <T extends ZulipApiResponse> T put(String path, Map<String, Object> parameters, Class<T> responseAs)
+            throws ZulipClientException {
+        HttpPut request = new HttpPut(getRequestUri(path, null));
         configureFormEntity(request, parameters);
         return doRequest(request, responseAs);
     }

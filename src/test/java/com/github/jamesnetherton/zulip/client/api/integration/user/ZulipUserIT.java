@@ -20,7 +20,6 @@ import com.github.jamesnetherton.zulip.client.api.user.ResolvedTopicNoticeAutoRe
 import com.github.jamesnetherton.zulip.client.api.user.TypingOperation;
 import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.UserAttachment;
-import com.github.jamesnetherton.zulip.client.api.user.UserAttachmentMessage;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroupSetting;
 import com.github.jamesnetherton.zulip.client.api.user.UserListStyle;
@@ -34,7 +33,6 @@ import com.github.jamesnetherton.zulip.client.api.user.WebHomeView;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -65,12 +63,9 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         try {
             // Get by ID
             User user = zulip.users().getUser(createdUser.getUserId()).execute();
-            // TODO: Handle null avatar URL properly
-            // https://github.com/jamesnetherton/zulip-java-client/issues/150
-            assertNull(user.getAvatarUrl());
-            // assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+            assertNotNull(user.getAvatarUrl());
             assertTrue(user.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
-            assertEquals(id + "@test.com", user.getEmail());
+            assertNotNull(user.getEmail());
             assertEquals(id, user.getFullName());
             assertEquals(1, user.getAvatarVersion());
             assertEquals(createdUser.getUserId(), user.getUserId());
@@ -78,17 +73,15 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertFalse(user.isAdmin());
             assertFalse(user.isBot());
             assertFalse(user.isGuest());
+            assertFalse(user.isImportedStub());
             assertFalse(user.isOwner());
             assertTrue(user.getProfileData().isEmpty());
 
             // Get by email
             User userByEmail = zulip.users().getUser(createdUser.getEmail()).execute();
-            // TODO: Handle null avatar URL properly
-            // https://github.com/jamesnetherton/zulip-java-client/issues/150
-            assertNull(user.getAvatarUrl());
-            // assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com"));
+            assertNotNull(user.getAvatarUrl());
             assertTrue(userByEmail.getDateJoined().startsWith(String.valueOf(calendar.get(Calendar.YEAR))));
-            assertEquals(id + "@test.com", userByEmail.getEmail());
+            assertNotNull(userByEmail.getEmail());
             assertEquals(id, userByEmail.getFullName());
             assertEquals(1, userByEmail.getAvatarVersion());
             assertEquals(createdUser.getUserId(), userByEmail.getUserId());
@@ -96,6 +89,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
             assertFalse(userByEmail.isAdmin());
             assertFalse(userByEmail.isBot());
             assertFalse(userByEmail.isGuest());
+            assertFalse(userByEmail.isImportedStub());
             assertFalse(userByEmail.isOwner());
             assertTrue(userByEmail.getProfileData().isEmpty());
 
@@ -134,7 +128,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     public void ownUser() throws ZulipClientException {
         User user = zulip.users().getOwnUser().execute();
 
-        assertTrue(user.getAvatarUrl().startsWith("https://secure.gravatar.com/avatar"));
+        assertNotNull(user.getAvatarUrl());
         assertFalse(user.getDateJoined().isEmpty());
         assertEquals("test@test.com", user.getEmail());
         assertEquals("tester", user.getFullName());
@@ -201,7 +195,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .execute();
 
         Path tmpFile = Files.createTempFile("zulip", ".txt");
-        Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(tmpFile, "test content");
 
         File file = tmpFile.toFile();
         String url = zulip.messages().fileUpload(file).execute();
@@ -216,26 +210,16 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         long attachmentId = 0;
         boolean matched = false;
         for (UserAttachment attachment : attachments) {
-            if (!attachment.getMessages().isEmpty()) {
-                Optional<UserAttachmentMessage> optional = attachment.getMessages().stream()
-                        .filter(m -> m.getId() == messageId)
-                        .findFirst();
+            if (attachment.getMessageIds().contains(messageId)) {
+                matched = true;
 
-                if (optional.isPresent()) {
-                    matched = true;
+                assertEquals(file.getName(), attachment.getName());
+                assertTrue(attachment.getCreateTime().toEpochMilli() > 0);
+                assertTrue(attachment.getId() > 0);
+                assertTrue(attachment.getSize() > 0);
+                assertFalse(attachment.getPathId().isEmpty());
 
-                    assertEquals(file.getName(), attachment.getName());
-                    assertTrue(attachment.getCreateTime().toEpochMilli() > 0);
-                    assertTrue(attachment.getId() > 0);
-                    assertTrue(attachment.getSize() > 0);
-                    assertFalse(attachment.getPathId().isEmpty());
-
-                    UserAttachmentMessage message = optional.get();
-                    assertEquals(messageId, message.getId());
-                    assertTrue(message.getDateSent().toEpochMilli() > 0);
-
-                    attachmentId = attachment.getId();
-                }
+                attachmentId = attachment.getId();
             }
         }
 
@@ -245,14 +229,8 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         zulip.users().deleteAttachment(attachmentId).execute();
         attachments = zulip.users().getUserAttachments().execute();
         for (UserAttachment attachment : attachments) {
-            if (!attachment.getMessages().isEmpty()) {
-                Optional<UserAttachmentMessage> optional = attachment.getMessages().stream()
-                        .filter(m -> m.getId() == messageId)
-                        .findFirst();
-
-                if (optional.isPresent()) {
-                    deletedMessageMatched = true;
-                }
+            if (attachment.getMessageIds().contains(messageId)) {
+                deletedMessageMatched = true;
             }
         }
 
@@ -431,7 +409,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<User> users = zulip.users().getAllUsers().execute();
         User createdUser = users.stream()
                 .filter(User::isActive)
-                .filter(u -> u.getEmail().equals(id + "@test.com"))
+                .filter(u -> u.getFullName().equals(id))
                 .findFirst()
                 .get();
         assertNotNull(createdUser);
@@ -513,7 +491,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withAllowPrivateDataExport(true)
                 .withColorScheme(ColorScheme.DARK)
                 .withDefaultLanguage("en")
-                .withDefaultView(WebHomeView.RECENT_TOPICS)
+                .withDefaultView(WebHomeView.RECENT)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)

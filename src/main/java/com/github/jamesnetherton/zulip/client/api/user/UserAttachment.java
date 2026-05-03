@@ -2,6 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class UserAttachment {
     private long id;
 
     @JsonProperty
-    private List<UserAttachmentMessage> messages;
+    private List<Long> messageIds = new ArrayList<>();
 
     @JsonProperty
     private String name;
@@ -35,8 +36,8 @@ public class UserAttachment {
         return id;
     }
 
-    public List<UserAttachmentMessage> getMessages() {
-        return messages;
+    public List<Long> getMessageIds() {
+        return messageIds;
     }
 
     public String getName() {

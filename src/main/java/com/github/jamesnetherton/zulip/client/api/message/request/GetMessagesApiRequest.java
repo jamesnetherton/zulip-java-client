@@ -23,6 +23,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
 
     public static final String ALLOW_EMPTY_TOPIC_NAME = "allow_empty_topic_name";
     public static final String ANCHOR = "anchor";
+    public static final String ANCHOR_DATE = "anchor_date";
     public static final String GRAVATAR = "gravatar";
     public static final String INCLUDE_ANCHOR = "include_anchor";
     public static final String MARKDOWN = "apply_markdown";
@@ -79,6 +80,21 @@ public class GetMessagesApiRequest extends ZulipApiRequest
      */
     public GetMessagesApiRequest withAnchor(long messageId) {
         putParam(ANCHOR, Long.toString(messageId));
+        return this;
+    }
+
+    /**
+     * Sets the date or datetime to use as the anchor when {@link Anchor#DATE} is used. Accepted formats include ISO 8601
+     * date-only strings (e.g. {@code 2005-04-18}) as well as full datetime strings (e.g. {@code 2005-04-18T12:34:56Z}).
+     *
+     * @see               <a href=
+     *                    "https://zulip.com/api/get-messages#parameter-anchor_date">https://zulip.com/api/get-messages#parameter-anchor_date</a>
+     *
+     * @param  anchorDate The date or datetime string to use as the anchor
+     * @return            This {@link GetMessagesApiRequest} instance
+     */
+    public GetMessagesApiRequest withAnchorDate(String anchorDate) {
+        putParam(ANCHOR_DATE, anchorDate);
         return this;
     }
 

@@ -4,6 +4,7 @@ import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.PATCH;
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.POST;
+import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.PUT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,18 +16,25 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddApnsDeviceTo
 import com.github.jamesnetherton.zulip.client.api.server.request.AddCodePlaygroundApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.AddLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.AddRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateNextcloudTalkVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.GetBotStorageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.JwtFetchApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RegisterE2EMobilePushDevice;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveApnsDeviceTokenApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveBotStorageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.RemoveClientDeviceApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateBotStorageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.response.JwtFetchApiKeyResponse;
 import com.github.jamesnetherton.zulip.client.api.user.ColorScheme;
@@ -92,11 +100,17 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals("#(?P<id>[0-9]+)", linkifierA.getPattern());
         assertEquals("https://github.com/zulip/zulip/issues/{id}s", linkifierA.getUrlTemplate());
         assertEquals(1, linkifierA.getId());
+        assertEquals("#123", linkifierA.getExampleInput());
+        assertEquals("#{id}", linkifierA.getReverseTemplate());
+        assertEquals(List.of("https://github.com/zulip/zulip/pull/{id}s"), linkifierA.getAlternativeUrlTemplates());
 
         Linkifier linkifierB = linkifiers.get(1);
         assertEquals("(?P<id>[0-9a-f]{40})", linkifierB.getPattern());
         assertEquals("https://github.com/zulip/zulip/commit/{id}s", linkifierB.getUrlTemplate());
         assertEquals(2, linkifierB.getId());
+        assertNull(linkifierB.getExampleInput());
+        assertNull(linkifierB.getReverseTemplate());
+        assertTrue(linkifierB.getAlternativeUrlTemplates().isEmpty());
     }
 
     @Test
@@ -164,6 +178,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         AuthenticationSettings authenticationMethods = settings.getAuthenticationMethods();
         assertFalse(authenticationMethods.isAzuread());
         assertTrue(authenticationMethods.isDev());
+        assertFalse(authenticationMethods.isDiscord());
         assertTrue(authenticationMethods.isEmail());
         assertTrue(authenticationMethods.isGithub());
         assertTrue(authenticationMethods.isGoogle());
@@ -437,7 +452,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.AUTOMATICALLY_UNMUTE_TOPICS_IN_MUTED_STREAMS_POLICY, "1")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.AUTOMATICALLY_FOLLOW_TOPICS_WHERE_MENTIONED, "true")
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.COLOR_SCHEME, String.valueOf(ColorScheme.DARK.getId()))
-                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_HOME_VIEW, WebHomeView.RECENT_TOPICS.toString())
+                .add(UpdateRealmNewUserDefaultSettingsApiRequest.WEB_HOME_VIEW, WebHomeView.RECENT.toString())
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DEMOTE_INACTIVE_STREAMS,
                         String.valueOf(DemoteInactiveStreamOption.ALWAYS.getId()))
                 .add(UpdateRealmNewUserDefaultSettingsApiRequest.DESKTOP_ICON_COUNT_DISPLAY,
@@ -502,7 +517,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .withAutomaticallyUnmuteTopicsInMutedStreamsPolicy(UnmuteTopicInMutedStreamsPolicy.PARTICIPATING)
                 .withAutomaticallyFollowTopicsWhereMentioned(true)
                 .withColorScheme(ColorScheme.DARK)
-                .withWebHomeView(WebHomeView.RECENT_TOPICS)
+                .withWebHomeView(WebHomeView.RECENT)
                 .withDemoteInactiveStreams(DemoteInactiveStreamOption.ALWAYS)
                 .withDesktopIconCountDisplay(DesktopIconCountDisplay.ALL_UNREADS)
                 .withDisplayEmojiReactionUsers(true)
@@ -623,6 +638,109 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void getBotStorage() throws Exception {
+        stubZulipResponse(GET, "/bot_storage", Collections.emptyMap(), "getBotStorage.json");
+
+        Map<String, String> storage = zulip.server().getBotStorage().execute();
+        assertEquals(2, storage.size());
+        assertEquals("bar", storage.get("foo"));
+        assertEquals("qux", storage.get("baz"));
+    }
+
+    @Test
+    public void getBotStorageWithKeys() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(GetBotStorageApiRequest.KEYS, "[\"foo\"]")
+                .get();
+
+        stubZulipResponse(GET, "/bot_storage", params, "getBotStorage.json");
+
+        zulip.server().getBotStorage().withKeys(List.of("foo")).execute();
+    }
+
+    @Test
+    public void updateBotStorage() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateBotStorageApiRequest.STORAGE, "{\"foo\":\"bar\"}")
+                .get();
+
+        stubZulipResponse(PUT, "/bot_storage", params);
+
+        zulip.server().updateBotStorage(Map.of("foo", "bar")).execute();
+    }
+
+    @Test
+    public void removeBotStorage() throws Exception {
+        stubZulipResponse(DELETE, "/bot_storage", Collections.emptyMap());
+
+        zulip.server().removeBotStorage().execute();
+    }
+
+    @Test
+    public void removeBotStorageWithKeys() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveBotStorageApiRequest.KEYS, "[\"foo\"]")
+                .get();
+
+        stubZulipResponse(DELETE, "/bot_storage", params);
+
+        zulip.server().removeBotStorage().withKeys(List.of("foo")).execute();
+    }
+
+    @Test
+    public void deactivateEmoji() throws Exception {
+        stubZulipResponse(DELETE, "/realm/emoji/green_tick", Collections.emptyMap());
+
+        zulip.server().deactivateEmoji("green_tick").execute();
+    }
+
+    @Test
+    public void getRealmDomains() throws Exception {
+        stubZulipResponse(GET, "/realm/domains", Collections.emptyMap(), "getRealmDomains.json");
+
+        List<RealmDomain> domains = zulip.server().getRealmDomains().execute();
+        assertEquals(2, domains.size());
+
+        RealmDomain domainA = domains.get(0);
+        assertEquals("example.com", domainA.getDomain());
+        assertFalse(domainA.isAllowSubdomains());
+
+        RealmDomain domainB = domains.get(1);
+        assertEquals("test.org", domainB.getDomain());
+        assertTrue(domainB.isAllowSubdomains());
+    }
+
+    @Test
+    public void addRealmDomain() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddRealmDomainApiRequest.DOMAIN, "example.com")
+                .add(AddRealmDomainApiRequest.ALLOW_SUBDOMAINS, "false")
+                .get();
+
+        stubZulipResponse(POST, "/realm/domains", params);
+
+        zulip.server().addRealmDomain("example.com", false).execute();
+    }
+
+    @Test
+    public void updateRealmDomain() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateRealmDomainApiRequest.ALLOW_SUBDOMAINS, "true")
+                .get();
+
+        stubZulipResponse(PATCH, "/realm/domains/example.com", params);
+
+        zulip.server().updateRealmDomain("example.com", true).execute();
+    }
+
+    @Test
+    public void deleteRealmDomain() throws Exception {
+        stubZulipResponse(DELETE, "/realm/domains/example.com", Collections.emptyMap());
+
+        zulip.server().deleteRealmDomain("example.com").execute();
+    }
+
+    @Test
     public void createBigBlueButtonMeeting() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(CreateBigBlueButtonVideoCallApiRequest.MEETING_NAME, "Test Meeting")
@@ -632,6 +750,54 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
         String url = zulip.server().createBigBlueButtonVideoCall("Test Meeting").execute();
         assertEquals("https://test.com/test/meeting/url", url);
+    }
+
+    @Test
+    public void createConstructorGroupsVideoCall() throws Exception {
+        stubZulipResponse(POST, "/calls/constructorgroups/create", Collections.emptyMap(),
+                "createConstructorGroupsVideoCall.json");
+
+        String url = zulip.server().createConstructorGroupsVideoCall().execute();
+        assertEquals("https://example.constructor.app/groups/room/room-123", url);
+    }
+
+    @Test
+    public void createNextcloudTalkVideoCall() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateNextcloudTalkVideoCallApiRequest.ROOM_NAME, "Test Room")
+                .get();
+
+        stubZulipResponse(POST, "/calls/nextcloud_talk/create", params, "createNextcloudTalkVideoCall.json");
+
+        String url = zulip.server().createNextcloudTalkVideoCall("Test Room").execute();
+        assertEquals("https://nextcloud.example.com/index.php/call/abc123xyz", url);
+    }
+
+    @Test
+    public void createWebexVideoCall() throws Exception {
+        stubZulipResponse(POST, "/calls/webex/create", Collections.emptyMap(), "createWebexVideoCall.json");
+
+        String url = zulip.server().createWebexVideoCall().execute();
+        assertEquals("https://xxkk-7xpz.webex.com/xxkk-7xpz/j.php?MTID=mebb3ba1f366f683bcaec9d32773ce034", url);
+    }
+
+    @Test
+    public void registerClientDevice() throws Exception {
+        stubZulipResponse(POST, "/register_client_device", Collections.emptyMap(), "registerClientDevice.json");
+
+        Long deviceId = zulip.server().registerClientDevice().execute();
+        assertEquals(42, deviceId);
+    }
+
+    @Test
+    public void removeClientDevice() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RemoveClientDeviceApiRequest.DEVICE_ID, "5")
+                .get();
+
+        stubZulipResponse(POST, "/remove_client_device", params);
+
+        zulip.server().removeClientDevice(5).execute();
     }
 
     @Test
@@ -658,14 +824,14 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals("https://test.com/export-2.tar.gz", dataExport.getExportUrl());
         assertEquals(2, dataExport.getActingUserId());
         assertEquals(2, dataExport.getId());
-        assertEquals(DataExportType.STANDARD, dataExport.getExportType());
+        assertEquals(DataExportType.FULL_WITH_CONSENT, dataExport.getExportType());
         assertTrue(dataExport.isPending());
     }
 
     @Test
     public void createDataExport() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(CreateDataExportApiRequest.EXPORT_TYPE, "1")
+                .add(CreateDataExportApiRequest.EXPORT_TYPE, "public")
                 .get();
 
         stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
@@ -678,12 +844,25 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     @Test
     public void createDataExportWithExplicitType() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(CreateDataExportApiRequest.EXPORT_TYPE, "2")
+                .add(CreateDataExportApiRequest.EXPORT_TYPE, "full_with_consent")
                 .get();
 
         stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
 
-        Long id = zulip.server().createDataExport().withExportType(DataExportType.STANDARD).execute();
+        Long id = zulip.server().createDataExport().withExportType(DataExportType.FULL_WITH_CONSENT).execute();
+
+        assertEquals(1, id);
+    }
+
+    @Test
+    public void createDataExportFullWithoutConsent() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(CreateDataExportApiRequest.EXPORT_TYPE, "full_without_consent")
+                .get();
+
+        stubZulipResponse(POST, "/export/realm", params, "createDataExport.json");
+
+        Long id = zulip.server().createDataExport().withExportType(DataExportType.FULL_WITHOUT_CONSENT).execute();
 
         assertEquals(1, id);
     }
@@ -718,7 +897,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
 
     @Test
     public void mobilePushE2EPushTestNotification() throws Exception {
-        stubZulipResponse(POST, "/mobile_push/e2e/test_notification", QueryParams.create().get());
+        stubZulipResponse(POST, "/mobile_push/e2ee/test_notification", QueryParams.create().get());
 
         zulip.server().sendE2EMobilePushTestNotification().execute();
     }

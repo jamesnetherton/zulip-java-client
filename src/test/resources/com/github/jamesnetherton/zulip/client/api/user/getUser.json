@@ -12,6 +12,7 @@
     "is_admin": true,
     "is_bot": false,
     "is_guest": false,
+    "is_imported_stub": false,
     "is_owner": false,
     "max_message_id": 30,
     "msg": "",

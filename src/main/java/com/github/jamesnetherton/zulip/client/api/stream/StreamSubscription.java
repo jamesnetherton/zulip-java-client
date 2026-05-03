@@ -46,6 +46,9 @@ public class StreamSubscription {
     private UserGroupSetting canRemoveSubscribersGroupId;
 
     @JsonProperty
+    private UserGroupSetting canCreateTopicGroup;
+
+    @JsonProperty
     private UserGroupSetting canResolveTopicsGroup;
 
     @JsonProperty
@@ -168,6 +171,15 @@ public class StreamSubscription {
 
     public UserGroupSetting getCanRemoveSubscribersGroup() {
         return canRemoveSubscribersGroup;
+    }
+
+    /**
+     * Returns the group of users who have permission to create a new topic in this channel.
+     *
+     * @return the {@link UserGroupSetting} for topic creation permission, or {@code null} if not set
+     */
+    public UserGroupSetting getCanCreateTopicGroup() {
+        return canCreateTopicGroup;
     }
 
     public UserGroupSetting getCanResolveTopicsGroup() {

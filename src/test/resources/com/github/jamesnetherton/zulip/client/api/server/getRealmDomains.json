@@ -1,0 +1,14 @@
+{
+  "msg": "",
+  "result": "success",
+  "domains": [
+    {
+      "domain": "example.com",
+      "allow_subdomains": false
+    },
+    {
+      "domain": "test.org",
+      "allow_subdomains": true
+    }
+  ]
+}

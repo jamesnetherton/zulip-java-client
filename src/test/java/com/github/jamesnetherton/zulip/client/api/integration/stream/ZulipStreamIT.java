@@ -198,11 +198,13 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         // Get ID
         Long streamId = zulip.channels().getStreamId(streamName).execute();
 
+        zulip.messages().sendChannelMessage("Test Message", streamId, "Test Topic").execute();
+
         List<Topic> topics = zulip.channels().getTopics(streamId).allowEmptyTopicName(true).execute();
         assertEquals(1, topics.size());
 
         Topic topic = topics.get(0);
-        assertEquals("channel events", topic.getName());
+        assertEquals("Test Topic", topic.getName());
         assertTrue(topic.getMaxId() > 0);
     }
 
@@ -236,7 +238,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertTrue(streamSubscription.getColor().matches("#[a-z0-9]+"));
         assertEquals(ownUser.getUserId(), streamSubscription.getCreatorId());
         assertEquals(streamName, streamSubscription.getDescription());
-        assertTrue(streamSubscription.getFirstMessageId() > 0);
+        assertEquals(0, streamSubscription.getFirstMessageId());
         assertEquals(0, streamSubscription.getMessageRetentionDays());
         assertEquals(streamName, streamSubscription.getName());
         assertEquals("<p>" + streamName + "</p>", streamSubscription.getRenderedDescription());
@@ -267,7 +269,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         String streamName = UUID.randomUUID().toString();
 
         // Create stream & topic
-        zulip.channels().subscribe(
+        StreamSubscriptionResult execute = zulip.channels().subscribe(
                 StreamSubscriptionRequest.of(streamName, streamName))
                 .withAuthorizationErrorsFatal(false)
                 .withHistoryPublicToSubscribers(true)
@@ -278,11 +280,13 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
 
         Long streamId = zulip.channels().getStreamId(streamName).execute();
 
+        zulip.messages().sendChannelMessage("Testing", streamId, "Test Topic").execute();
+
         List<Topic> topics = zulip.channels().getTopics(streamId).execute();
         assertEquals(1, topics.size());
 
         Topic topic = topics.get(0);
-        assertEquals("channel events", topic.getName());
+        assertEquals("Test Topic", topic.getName());
         assertTrue(topic.getMaxId() > 0);
 
         // Delete topic

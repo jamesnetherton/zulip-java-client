@@ -98,6 +98,12 @@ public class ZulipIntegrationTestBase {
                     }
 
                     @Override
+                    public <T extends ZulipApiResponse> T put(String path, Map<String, Object> parameters, Class<T> responseAs)
+                            throws ZulipClientException {
+                        return handleResponse(delegate.put(path, parameters, responseAs));
+                    }
+
+                    @Override
                     public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs)
                             throws ZulipClientException {
                         return handleResponse(delegate.upload(path, file, responseAs));

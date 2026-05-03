@@ -3,6 +3,7 @@ package com.github.jamesnetherton.zulip.client.api.message;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipService;
 import com.github.jamesnetherton.zulip.client.api.message.request.AddEmojiReactionApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.CheckThumbnailStatusApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.CreateMessageReminderApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteEmojiReactionApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.DeleteMessageApiRequest;
@@ -11,6 +12,7 @@ import com.github.jamesnetherton.zulip.client.api.message.request.DeleteSchedule
 import com.github.jamesnetherton.zulip.client.api.message.request.EditMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.EditScheduledMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.FileUploadApiRequest;
+import com.github.jamesnetherton.zulip.client.api.message.request.GetFileTemporaryUrlApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageHistoryApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.request.GetMessageReadReceiptsApiRequest;
@@ -523,6 +525,38 @@ public class MessageService implements ZulipService {
             MessageFlag flag,
             Narrow... narrows) {
         return new UpdateMessageFlagsForNarrowApiRequest(this.client, anchor, numBefore, numAfter, operation, flag, narrows);
+    }
+
+    /**
+     * Checks whether a thumbnail exists for a specific file uploaded by a user. Intended to be polled by clients to
+     * determine when thumbnail generation is complete.
+     *
+     * @see               <a href=
+     *                    "https://zulip.com/api/check-thumbnail-status">https://zulip.com/api/check-thumbnail-status</a>
+     *
+     * @param  realmIdStr The realm ID component of the file's {@code path_id}. For example, if the {@code path_id} is
+     *                    {@code 1/4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt}, the value would be {@code 1}
+     * @param  filename   The file path component of the file's {@code path_id} (everything after the first {@code /}).
+     *                    For example, if the {@code path_id} is {@code 1/4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt}, the value
+     *                    would be {@code 4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt}
+     * @return            The {@link CheckThumbnailStatusApiRequest} builder object
+     */
+    public CheckThumbnailStatusApiRequest checkThumbnailStatus(String realmIdStr, String filename) {
+        return new CheckThumbnailStatusApiRequest(this.client, realmIdStr, filename);
+    }
+
+    /**
+     * Gets a temporary URL for access to an uploaded file that doesn't require authentication.
+     *
+     * @see               <a href=
+     *                    "https://zulip.com/api/get-file-temporary-url">https://zulip.com/api/get-file-temporary-url</a>
+     *
+     * @param  realmIdStr The realm ID component of the file's {@code path_id}
+     * @param  filename   The file path component of the file's {@code path_id} (everything after the first {@code /})
+     * @return            The {@link GetFileTemporaryUrlApiRequest} builder object
+     */
+    public GetFileTemporaryUrlApiRequest getFileTemporaryUrl(String realmIdStr, String filename) {
+        return new GetFileTemporaryUrlApiRequest(this.client, realmIdStr, filename);
     }
 
 }
