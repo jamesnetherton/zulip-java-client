@@ -84,9 +84,9 @@ public class EventPoller {
                                 });
                             }
 
-                            lastEventId = messageEvents.stream().max(Comparator.comparing(Event::getId))
-                                    .get()
-                                    .getId();
+                            messageEvents.stream()
+                                    .max(Comparator.comparing(Event::getId))
+                                    .ifPresent(event -> lastEventId = event.getId());
 
                             Thread.sleep(5000);
                         } catch (ZulipClientException e) {
