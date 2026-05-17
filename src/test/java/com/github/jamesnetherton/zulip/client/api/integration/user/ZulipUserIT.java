@@ -151,7 +151,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         List<User> users = zulip.users().getAllUsers().execute();
         User createdUser = users.stream()
                 .filter(User::isActive)
-                .filter(u -> u.getEmail().equals(id + "@test.com"))
+                .filter(u -> u.getDeliveryEmail().equals(id + "@test.com"))
                 .findFirst()
                 .get();
         assertNotNull(createdUser);
