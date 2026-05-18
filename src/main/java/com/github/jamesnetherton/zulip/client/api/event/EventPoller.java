@@ -76,8 +76,7 @@ public class EventPoller {
                             for (MessageEvent event : messageEvents) {
                                 eventListenerExecutorService.submit(() -> {
                                     Message message = event.getMessage();
-                                    if (message == null
-                                            || (message.getContent() != null && message.getContent().equals("heartbeat"))) {
+                                    if (message == null) {
                                         return;
                                     }
                                     configuration.getListener().onEvent(message);
@@ -87,14 +86,13 @@ public class EventPoller {
                             messageEvents.stream()
                                     .max(Comparator.comparing(Event::getId))
                                     .ifPresent(event -> lastEventId = event.getId());
-
-                            Thread.sleep(5000);
                         } catch (ZulipClientException e) {
                             LOG.fine("Error processing events - " + e.getMessage());
                             if (e.getCode() != null && e.getCode().equals("BAD_EVENT_QUEUE_ID")) {
                                 // Queue may have been garbage collected so recreate it
                                 try {
                                     queue = createQueue.execute();
+                                    lastEventId = queue.getLastEventId();
                                 } catch (ZulipClientException zulipClientException) {
                                     LOG.warning("Error recreating message queue - " + e.getMessage());
                                 }
@@ -105,8 +103,6 @@ public class EventPoller {
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                             }
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
                         }
                     }
                 }
