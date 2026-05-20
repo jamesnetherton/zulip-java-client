@@ -3,20 +3,14 @@
 [options="header"]
 |=======================
 |Zulip Java Client Version|Zulip Server Version
-|0.10.0   |Zulip 12.x
-|0.9.0    |Zulip 11.x
-|0.8.0    |Zulip 10.x
-|0.7.3    |Zulip 9.x
-|0.7.2    |Zulip 9.x
-|0.7.1    |Zulip 9.x
-|0.7.0    |Zulip 9.x
-|0.6.0    |Zulip 8.x
-|0.5.2    |Zulip 7.x
-|0.5.1    |Zulip 7.x
-|0.5.0    |Zulip 7.x
-|0.4.0    |Zulip 6.x
-|0.3.0    |Zulip 5.x
-|0.2.0    |Zulip 4.x
-|0.1.1    |Zulip 3.x
-|0.1.0    |Zulip 3.x
+|0.10.x   |Zulip 12.x
+|0.9.x    |Zulip 11.x
+|0.8.x    |Zulip 10.x
+|0.7.x    |Zulip 9.x
+|0.6.x    |Zulip 8.x
+|0.5.x    |Zulip 7.x
+|0.4.x    |Zulip 6.x
+|0.3.x    |Zulip 5.x
+|0.2.x    |Zulip 4.x
+|0.1.x    |Zulip 3.x
 |=======================
