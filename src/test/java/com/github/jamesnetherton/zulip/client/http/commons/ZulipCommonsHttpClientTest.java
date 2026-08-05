@@ -2,6 +2,8 @@ package com.github.jamesnetherton.zulip.client.http.commons;
 
 import static com.github.jamesnetherton.zulip.client.ZulipApiTestBase.HttpMethod.GET;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -148,6 +150,28 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         for (int i = 1; i < ignoredParametersUnsupported.size(); i++) {
             assertEquals("invalid_param_" + i, ignoredParametersUnsupported.get(i - 1));
         }
+    }
+
+    @Test
+    public void preemptiveAuthenticationIsAppliedOnAnyThread() throws Exception {
+        stubZulipResponse(GET, "/test", SUCCESS_JSON);
+
+        URL zulipUrl = new URL(server.baseUrl());
+        ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            // The client is constructed here but used from a different thread
+            executor.submit(() -> client.get("test", Collections.emptyMap(), ZulipApiResponse.class)).get();
+        } finally {
+            executor.shutdown();
+        }
+
+        String expected = "Basic " + Base64.getEncoder()
+                .encodeToString("test@test.com:abc123".getBytes(StandardCharsets.UTF_8));
+        server.verify(getRequestedFor(urlPathEqualTo("/api/v1/test"))
+                .withHeader("Authorization", equalTo(expected)));
     }
 
     @Test
