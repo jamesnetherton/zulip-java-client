@@ -230,7 +230,8 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs) throws ZulipClientException {
         ContentType contentType;
         try {
-            contentType = ContentType.create(Files.probeContentType(file.toPath()));
+            String mimeType = Files.probeContentType(file.toPath());
+            contentType = mimeType == null ? ContentType.DEFAULT_BINARY : ContentType.create(mimeType);
         } catch (IOException e) {
             contentType = ContentType.DEFAULT_BINARY;
         }
