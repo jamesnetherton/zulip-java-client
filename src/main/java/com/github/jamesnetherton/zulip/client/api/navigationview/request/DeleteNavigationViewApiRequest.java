@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for deleting a navigation view.
@@ -34,7 +35,7 @@ public class DeleteNavigationViewApiRequest extends ZulipApiRequest implements V
      */
     @Override
     public void execute() throws ZulipClientException {
-        String path = String.format(NAVIGATION_VIEW_WITH_FRAGMENT_API_PATH, fragment);
+        String path = String.format(NAVIGATION_VIEW_WITH_FRAGMENT_API_PATH, ZulipUrlUtils.pathSegment(fragment));
         client().delete(path, getParams(), ZulipApiResponse.class);
     }
 }

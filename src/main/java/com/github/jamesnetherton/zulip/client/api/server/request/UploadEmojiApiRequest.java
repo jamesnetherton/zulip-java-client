@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 import java.io.File;
 
 /**
@@ -39,7 +40,7 @@ public class UploadEmojiApiRequest extends ZulipApiRequest implements VoidExecut
      */
     @Override
     public void execute() throws ZulipClientException {
-        String path = String.format(REALM_EMOJI_WITH_NAME, name);
+        String path = String.format(REALM_EMOJI_WITH_NAME, ZulipUrlUtils.pathSegment(name));
         client().upload(path, emojiFile, ZulipApiResponse.class);
     }
 }

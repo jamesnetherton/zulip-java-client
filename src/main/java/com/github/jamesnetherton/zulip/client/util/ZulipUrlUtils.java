@@ -26,4 +26,56 @@ public class ZulipUrlUtils {
     public static URL getZulipApiUrl(String baseUrl) throws MalformedURLException {
         return new URL(baseUrl);
     }
+
+    /**
+     * Verifies that a value destined for a single Zulip API request path segment cannot modify the structure of that path.
+     *
+     * @param  value The value to be interpolated into the request path
+     * @return       The unmodified value
+     */
+    public static String pathSegment(String value) {
+        if (value != null && (value.indexOf('/') > -1 || value.indexOf('\\') > -1)) {
+            throw new IllegalArgumentException("Zulip API request path value must not contain a path separator: " + value);
+        }
+        return pathSegments(value);
+    }
+
+    /**
+     * Verifies that a value destined for one or more Zulip API request path segments cannot traverse outside of the request
+     * path that it is interpolated into.
+     *
+     * @param  value The value to be interpolated into the request path
+     * @return       The unmodified value
+     */
+    public static String pathSegments(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value.indexOf('\\') > -1) {
+            throw new IllegalArgumentException("Zulip API request path value must not contain a backslash: " + value);
+        }
+
+        if (containsRelativePathSegment(value)) {
+            throw new IllegalArgumentException(
+                    "Zulip API request path value must not contain relative path segments: " + value);
+        }
+
+        return value;
+    }
+
+    /**
+     * Determines whether a request path contains a segment that a server could resolve to a different path.
+     *
+     * @param  path The request path to check
+     * @return      {@code true} if the path contains a relative path segment. {@code false} otherwise
+     */
+    public static boolean containsRelativePathSegment(String path) {
+        for (String segment : path.split("/", -1)) {
+            if (segment.equals(".") || segment.equals("..")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

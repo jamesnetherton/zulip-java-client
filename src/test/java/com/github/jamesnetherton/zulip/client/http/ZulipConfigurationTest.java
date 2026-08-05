@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.http.commons.ZulipCommonsHttpClientFactory;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
@@ -12,9 +13,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 
 public class ZulipConfigurationTest {
@@ -31,6 +40,43 @@ public class ZulipConfigurationTest {
         assertEquals(KEY, configuration.getApiKey());
         assertEquals(SITE, configuration.getZulipUrl().toString());
         assertTrue(configuration.isInsecure());
+    }
+
+    @Test
+    public void warnsWhenZuliprcIsAccessibleToOtherUsers() throws IOException {
+        File zuliprc = createZuliprc(EMAIL, KEY, SITE);
+        assumeTrue(Files.getFileStore(zuliprc.toPath()).supportsFileAttributeView(PosixFileAttributeView.class));
+
+        List<LogRecord> logRecords = new ArrayList<>();
+        Logger logger = Logger.getLogger(ZulipConfiguration.class.getName());
+        Handler handler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                logRecords.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+        logger.addHandler(handler);
+
+        try {
+            Files.setPosixFilePermissions(zuliprc.toPath(), PosixFilePermissions.fromString("rw-------"));
+            ZulipConfiguration.fromZuliprc(zuliprc);
+            assertTrue(logRecords.isEmpty(), "Expected no warning for a file only the owner can read");
+
+            Files.setPosixFilePermissions(zuliprc.toPath(), PosixFilePermissions.fromString("rw-r--r--"));
+            ZulipConfiguration.fromZuliprc(zuliprc);
+            assertEquals(1, logRecords.size());
+            assertTrue(logRecords.get(0).getMessage().contains("is accessible to other users"));
+        } finally {
+            logger.removeHandler(handler);
+        }
     }
 
     @Test
@@ -145,6 +191,13 @@ public class ZulipConfigurationTest {
         try (FileOutputStream fos = new FileOutputStream(zuliprc)) {
             properties.store(fos, null);
         }
+
+        try {
+            Files.setPosixFilePermissions(path, PosixFilePermissions.fromString("rw-------"));
+        } catch (UnsupportedOperationException e) {
+            // Not a POSIX file system
+        }
+
         return zuliprc;
     }
 

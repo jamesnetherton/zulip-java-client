@@ -9,6 +9,7 @@ import com.github.jamesnetherton.zulip.client.api.user.User;
 import com.github.jamesnetherton.zulip.client.api.user.response.GetUserApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for getting a user.
@@ -42,7 +43,7 @@ public class GetUserApiRequest extends ZulipApiRequest implements ExecutableApiR
      */
     public GetUserApiRequest(ZulipHttpClient client, String email) {
         super(client);
-        this.path = String.format(USERS_WITH_EMAIL, email);
+        this.path = String.format(USERS_WITH_EMAIL, ZulipUrlUtils.pathSegment(email));
     }
 
     /**

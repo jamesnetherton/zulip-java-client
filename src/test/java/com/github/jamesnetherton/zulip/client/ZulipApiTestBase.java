@@ -121,11 +121,16 @@ public class ZulipApiTestBase {
     }
 
     protected void stubMultiPartZulipResponse(HttpMethod method, String path, String stubbedResponse) throws IOException {
+        stubMultiPartZulipResponse(method, path, stubbedResponse, "text/plain");
+    }
+
+    protected void stubMultiPartZulipResponse(HttpMethod method, String path, String stubbedResponse, String contentType)
+            throws IOException {
         server.stubFor(request(method.name(), urlPathEqualTo("/" + ZulipUrlUtils.API_BASE_PATH + path))
                 .withMultipartRequestBody(
                         aMultipart()
                                 .withName("files")
-                                .withHeader("Content-Type", equalTo("text/plain"))
+                                .withHeader("Content-Type", equalTo(contentType))
                                 .withBody(equalTo("test content")))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")

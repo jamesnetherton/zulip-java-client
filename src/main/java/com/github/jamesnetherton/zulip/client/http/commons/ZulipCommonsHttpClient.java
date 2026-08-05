@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -75,8 +76,9 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     private static final Logger LOG = Logger.getLogger(ZulipCommonsHttpClient.class.getName());
 
     private final ZulipConfiguration configuration;
-    private final ThreadLocal<HttpClientContext> context = new ThreadLocal<>();
     private CloseableHttpClient client;
+    private CredentialsProvider credentialsProvider;
+    private AuthCache authCache;
 
     /**
      * Constructs a {@link ZulipCommonsHttpClient}.
@@ -129,13 +131,8 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
             }
         }
 
-        HttpClientContext httpClientContext = context.get();
-        if (httpClientContext == null) {
-            httpClientContext = HttpClientContext.create();
-            httpClientContext.setCredentialsProvider(provider);
-            httpClientContext.setAuthCache(authCache);
-            context.set(httpClientContext);
-        }
+        this.credentialsProvider = provider;
+        this.authCache = authCache;
 
         if (configuration.isInsecure()) {
             try {
@@ -167,8 +164,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
                     SSLContext sslContext = new SSLContextBuilder()
                             .loadTrustMaterial(ks, null)
                             .build();
-                    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                            NoopHostnameVerifier.INSTANCE);
+                    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
                     HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
                             .create()
                             .setSSLSocketFactory(sslConnectionSocketFactory)
@@ -234,7 +230,8 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     public <T extends ZulipApiResponse> T upload(String path, File file, Class<T> responseAs) throws ZulipClientException {
         ContentType contentType;
         try {
-            contentType = ContentType.create(Files.probeContentType(file.toPath()));
+            String mimeType = Files.probeContentType(file.toPath());
+            contentType = mimeType == null ? ContentType.DEFAULT_BINARY : ContentType.create(mimeType);
         } catch (IOException e) {
             contentType = ContentType.DEFAULT_BINARY;
         }
@@ -251,7 +248,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     private <T extends ZulipApiResponse> T doRequest(ClassicHttpRequest request, Class<T> responseAs)
             throws ZulipClientException {
         try {
-            ResponseHolder response = client.execute(request, context.get(), new HttpClientResponseHandler<ResponseHolder>() {
+            ResponseHolder response = client.execute(request, createContext(), new HttpClientResponseHandler<ResponseHolder>() {
                 @Override
                 public ResponseHolder handleResponse(ClassicHttpResponse response) throws IOException {
                     Header header = response.getFirstHeader("x-ratelimit-reset");
@@ -298,7 +295,18 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
         }
     }
 
+    private HttpClientContext createContext() {
+        HttpClientContext httpClientContext = HttpClientContext.create();
+        httpClientContext.setCredentialsProvider(credentialsProvider);
+        httpClientContext.setAuthCache(authCache);
+        return httpClientContext;
+    }
+
     private URI getRequestUri(String path, Map<String, Object> parameters) throws ZulipClientException {
+        if (ZulipUrlUtils.containsRelativePathSegment(path)) {
+            throw new ZulipClientException("Zulip API request path must not contain relative path segments: " + path);
+        }
+
         URL zulipUrl = configuration.getZulipUrl();
         URIBuilder builder = new URIBuilder()
                 .setScheme(zulipUrl.getProtocol())

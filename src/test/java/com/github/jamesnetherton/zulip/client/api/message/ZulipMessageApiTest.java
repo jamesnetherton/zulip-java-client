@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jamesnetherton.zulip.client.ZulipApiTestBase;
 import com.github.jamesnetherton.zulip.client.api.common.Operation;
@@ -219,6 +220,19 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
         Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
 
         stubMultiPartZulipResponse(POST, "/user_uploads", "fileUpload.json");
+
+        String url = zulip.messages().fileUpload(tmpFile.toFile()).execute();
+
+        assertEquals("/user_uploads/1/4e/m2A3MSqFnWRLUf9SaPzQ0Up_/zulip.txt", url);
+    }
+
+    @Test
+    public void fileUploadWithUnrecognizedFileType() throws Exception {
+        Path tmpFile = Files.createTempFile("zulip", ".zzzunknown");
+        Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
+        assumeTrue(Files.probeContentType(tmpFile) == null, "Platform recognized the file type");
+
+        stubMultiPartZulipResponse(POST, "/user_uploads", "fileUpload.json", "application/octet-stream");
 
         String url = zulip.messages().fileUpload(tmpFile.toFile()).execute();
 

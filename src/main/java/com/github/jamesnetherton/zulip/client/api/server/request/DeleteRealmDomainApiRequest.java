@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for removing an allowed domain from the organization.
@@ -35,7 +36,7 @@ public class DeleteRealmDomainApiRequest extends ZulipApiRequest implements Void
      */
     @Override
     public void execute() throws ZulipClientException {
-        String path = String.format(REALM_DOMAINS_WITH_DOMAIN, domain);
+        String path = String.format(REALM_DOMAINS_WITH_DOMAIN, ZulipUrlUtils.pathSegment(domain));
         client().delete(path, getParams(), ZulipApiResponse.class);
     }
 }
