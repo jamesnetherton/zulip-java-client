@@ -8,12 +8,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Provides configuration options for the Zulip HTTP client library.
  */
 public class ZulipConfiguration {
+
+    private static final Logger LOG = Logger.getLogger(ZulipConfiguration.class.getName());
+    private static final Set<PosixFilePermission> SHARED_FILE_PERMISSIONS = Set.of(
+            PosixFilePermission.GROUP_READ,
+            PosixFilePermission.GROUP_WRITE,
+            PosixFilePermission.OTHERS_READ,
+            PosixFilePermission.OTHERS_WRITE);
 
     private String apiKey;
     private String certBundle;
@@ -201,8 +212,10 @@ public class ZulipConfiguration {
         }
 
         if (!zulipRcFile.exists() || !zulipRcFile.canRead()) {
-            throw new IllegalArgumentException("zuliprc file does not exist or is not writable");
+            throw new IllegalArgumentException("zuliprc file does not exist or is not readable");
         }
+
+        warnIfAccessibleToOtherUsers(zulipRcFile);
 
         Properties zulipProperties = new Properties();
         try {
@@ -246,6 +259,21 @@ public class ZulipConfiguration {
             return configuration;
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Site must be a valid URL");
+        }
+    }
+
+    private static void warnIfAccessibleToOtherUsers(File zulipRcFile) {
+        Set<PosixFilePermission> permissions;
+        try {
+            permissions = Files.getPosixFilePermissions(zulipRcFile.toPath());
+        } catch (IOException | UnsupportedOperationException e) {
+            return;
+        }
+
+        if (!Collections.disjoint(permissions, SHARED_FILE_PERMISSIONS)) {
+            LOG.warning("zuliprc file " + zulipRcFile.getAbsolutePath()
+                    + " is accessible to other users. It contains an API key and its permissions should be"
+                    + " restricted to the file owner");
         }
     }
 }
