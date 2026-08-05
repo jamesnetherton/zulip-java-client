@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,6 +18,7 @@ import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipRateLimitExceededException;
 import com.github.jamesnetherton.zulip.client.http.ZulipConfiguration;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -149,7 +152,7 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
 
     @Test
     public void certBundle() throws Exception {
-        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
+        WireMockServer httpsServer = new WireMockServer(secureOptions());
         httpsServer.start();
 
         try {
@@ -174,8 +177,37 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void certBundleWithHostnameMismatch() throws Exception {
+        WireMockServer httpsServer = new WireMockServer(secureOptions());
+        httpsServer.start();
+
+        try {
+            X509Certificate cert = getServerCertificate("localhost", httpsServer.httpsPort());
+            File certFile = writeCertToPem(cert);
+
+            httpsServer.stubFor(request("GET", urlPathEqualTo("/api/v1/messages"))
+                    .willReturn(aResponse()
+                            .withStatus(200)
+                            .withBody("{\"result\":\"success\",\"msg\":\"\"}")));
+
+            // The certificate is trusted but was issued for localhost, so connecting via 127.0.0.1 must be rejected
+            ZulipConfiguration configuration = new ZulipConfiguration(
+                    new URL("https://127.0.0.1:" + httpsServer.httpsPort()), "test@test.com", "abc123");
+            configuration.setCertBundle(certFile.getAbsolutePath());
+
+            ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+            ZulipClientException exception = assertThrows(ZulipClientException.class, () -> {
+                client.get("messages", Collections.emptyMap(), ZulipApiResponse.class);
+            });
+            assertInstanceOf(SSLPeerUnverifiedException.class, exception.getCause());
+        } finally {
+            httpsServer.stop();
+        }
+    }
+
+    @Test
     public void certBundleWithUntrustedServer() throws Exception {
-        WireMockServer httpsServer = new WireMockServer(options().dynamicHttpsPort());
+        WireMockServer httpsServer = new WireMockServer(secureOptions());
         httpsServer.start();
 
         try {
@@ -193,6 +225,15 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
         } finally {
             httpsServer.stop();
         }
+    }
+
+    private WireMockConfiguration secureOptions() {
+        return options()
+                .dynamicHttpsPort()
+                .keystorePath(getClass().getResource("/ssl/wiremock-localhost.p12").toString())
+                .keystoreType("PKCS12")
+                .keystorePassword("password")
+                .keyManagerPassword("password");
     }
 
     private X509Certificate getServerCertificate(String host, int port) throws Exception {

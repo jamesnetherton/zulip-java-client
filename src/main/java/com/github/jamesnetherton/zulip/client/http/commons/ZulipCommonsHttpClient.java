@@ -167,8 +167,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
                     SSLContext sslContext = new SSLContextBuilder()
                             .loadTrustMaterial(ks, null)
                             .build();
-                    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                            NoopHostnameVerifier.INSTANCE);
+                    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
                     HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
                             .create()
                             .setSSLSocketFactory(sslConnectionSocketFactory)
