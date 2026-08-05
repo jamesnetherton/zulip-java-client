@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.response.GetFileTemporaryUrlApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for getting a temporary URL for access to an uploaded file without authentication.
@@ -39,7 +40,8 @@ public class GetFileTemporaryUrlApiRequest extends ZulipApiRequest implements Ex
      */
     @Override
     public String execute() throws ZulipClientException {
-        String path = String.format(USER_UPLOADS_TEMPORARY_URL_API_PATH, realmIdStr, filename);
+        String path = String.format(USER_UPLOADS_TEMPORARY_URL_API_PATH, ZulipUrlUtils.pathSegment(realmIdStr),
+                ZulipUrlUtils.pathSegments(filename));
         return client().get(path, getParams(), GetFileTemporaryUrlApiResponse.class).getUrl();
     }
 }

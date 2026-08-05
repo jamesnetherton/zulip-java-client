@@ -6,6 +6,7 @@ import com.github.jamesnetherton.zulip.client.api.core.VoidExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder to update a user by their email address.
@@ -34,7 +35,7 @@ public class UpdateUserByEmailApiRequest extends UpdateUserApiRequest implements
     @Override
     public void execute() throws ZulipClientException {
         addProfileDataToParams();
-        String path = String.format(USERS_WITH_EMAIL, email);
+        String path = String.format(USERS_WITH_EMAIL, ZulipUrlUtils.pathSegment(email));
         client().patch(path, getParams(), ZulipApiResponse.class);
     }
 }

@@ -151,6 +151,18 @@ public class ZulipCommonsHttpClientTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void relativePathSegmentsAreRejected() throws Exception {
+        URL zulipUrl = new URL(server.baseUrl());
+        ZulipConfiguration configuration = new ZulipConfiguration(zulipUrl, "test@test.com", "abc123");
+        ZulipCommonsHttpClient client = new ZulipCommonsHttpClient(configuration);
+
+        ZulipClientException exception = assertThrows(ZulipClientException.class, () -> {
+            client.get("users/../../../json/users/me/subscriptions", Collections.emptyMap(), ZulipApiResponse.class);
+        });
+        assertTrue(exception.getMessage().contains("must not contain relative path segments"));
+    }
+
+    @Test
     public void certBundle() throws Exception {
         WireMockServer httpsServer = new WireMockServer(secureOptions());
         httpsServer.start();

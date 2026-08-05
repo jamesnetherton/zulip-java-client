@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.response.CheckThumbnailStatusApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for checking whether a thumbnail exists for a user-uploaded file.
@@ -39,7 +40,8 @@ public class CheckThumbnailStatusApiRequest extends ZulipApiRequest implements E
      */
     @Override
     public Boolean execute() throws ZulipClientException {
-        String path = String.format(THUMBNAIL_STATUS_API_PATH, realmIdStr, filename);
+        String path = String.format(THUMBNAIL_STATUS_API_PATH, ZulipUrlUtils.pathSegment(realmIdStr),
+                ZulipUrlUtils.pathSegments(filename));
         CheckThumbnailStatusApiResponse response = client().get(path, getParams(), CheckThumbnailStatusApiResponse.class);
         return response.isHasThumbnail();
     }

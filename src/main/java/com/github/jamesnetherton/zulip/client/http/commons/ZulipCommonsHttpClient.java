@@ -298,6 +298,10 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
     }
 
     private URI getRequestUri(String path, Map<String, Object> parameters) throws ZulipClientException {
+        if (ZulipUrlUtils.containsRelativePathSegment(path)) {
+            throw new ZulipClientException("Zulip API request path must not contain relative path segments: " + path);
+        }
+
         URL zulipUrl = configuration.getZulipUrl();
         URIBuilder builder = new URIBuilder()
                 .setScheme(zulipUrl.getProtocol())

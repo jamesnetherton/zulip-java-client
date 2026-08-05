@@ -7,6 +7,7 @@ import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 
 /**
  * Zulip API request builder for deactivating a custom emoji.
@@ -35,7 +36,7 @@ public class DeactivateEmojiApiRequest extends ZulipApiRequest implements VoidEx
      */
     @Override
     public void execute() throws ZulipClientException {
-        String path = String.format(REALM_EMOJI_WITH_NAME, emojiName);
+        String path = String.format(REALM_EMOJI_WITH_NAME, ZulipUrlUtils.pathSegment(emojiName));
         client().delete(path, getParams(), ZulipApiResponse.class);
     }
 }
