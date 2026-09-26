@@ -3,6 +3,7 @@
 .project
 .settings
 .idea
+.claude
 *.iml
 *.log
 target
