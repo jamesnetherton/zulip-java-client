@@ -82,3 +82,5 @@ com.github.jamesnetherton.zulip.client
 Unit tests extend `ZulipApiTestBase`, which starts a WireMock server before each test class and configures a `Zulip` client pointed at it. Tests stub responses using `stubZulipResponse()` helpers backed by JSON fixture files in `src/test/resources/`. `UrlEncodedEntityMatcher` is a custom WireMock matcher for verifying form-encoded request bodies.
 
 The `EmojiEnumGenerator` test generates `Emoji.java` from the upstream Zulip emoji map; run it manually with `-Demoji.generate` when Zulip adds new emojis.
+
+The `EventTypeEnumGenerator` test generates `EventType.java` from the upstream Zulip OpenAPI spec; run it manually with `-Devent.type.generate` when Zulip adds new event types. Event types are mapped to an `Event` subclass named `<PascalCaseType>Event` if one exists in the `api.event` package, so compile any new event classes before running it.

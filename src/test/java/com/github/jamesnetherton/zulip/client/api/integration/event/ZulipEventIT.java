@@ -1,11 +1,17 @@
 package com.github.jamesnetherton.zulip.client.api.integration.event;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.jamesnetherton.zulip.client.api.event.DeleteMessageEvent;
+import com.github.jamesnetherton.zulip.client.api.event.EventOperation;
 import com.github.jamesnetherton.zulip.client.api.event.EventPoller;
+import com.github.jamesnetherton.zulip.client.api.event.MessageEvent;
 import com.github.jamesnetherton.zulip.client.api.event.MessageEventListener;
+import com.github.jamesnetherton.zulip.client.api.event.ReactionEvent;
+import com.github.jamesnetherton.zulip.client.api.event.UpdateMessageEvent;
 import com.github.jamesnetherton.zulip.client.api.integration.ZulipIntegrationTestBase;
 import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
@@ -80,6 +86,60 @@ public class ZulipEventIT extends ZulipIntegrationTestBase {
 
             assertTrue(Collections.disjoint(messages, notExpected),
                     "Messages not matching the event narrow were captured: " + messages);
+        } finally {
+            eventPoller.stop();
+        }
+    }
+
+    @Test
+    public void messageLifecycleEvents() throws Exception {
+        List<MessageEvent> messageEvents = new CopyOnWriteArrayList<>();
+        List<UpdateMessageEvent> updateMessageEvents = new CopyOnWriteArrayList<>();
+        List<ReactionEvent> reactionEvents = new CopyOnWriteArrayList<>();
+        List<DeleteMessageEvent> deleteMessageEvents = new CopyOnWriteArrayList<>();
+
+        String streamName = randomStreamName();
+        subscribeToStreams(streamName);
+
+        EventPoller eventPoller = zulip.events().captureEvents()
+                .onMessage(messageEvents::add)
+                .onUpdateMessage(updateMessageEvents::add)
+                .onReaction(reactionEvents::add)
+                .onDeleteMessage(deleteMessageEvents::add)
+                .withIdleQueueTimeout(3600)
+                .build();
+
+        try {
+            eventPoller.start();
+
+            long messageId = zulip.messages().sendStreamMessage("Original content", streamName, TOPIC).execute();
+            await().atMost(EVENT_DELIVERY_TIMEOUT)
+                    .until(() -> messageEvents.stream().anyMatch(event -> event.getMessage().getId() == messageId));
+
+            zulip.messages().editMessage(messageId).withContent("Edited content").execute();
+            await().atMost(EVENT_DELIVERY_TIMEOUT)
+                    .until(() -> updateMessageEvents.stream()
+                            .anyMatch(
+                                    event -> event.getMessageId() == messageId && "Edited content".equals(event.getContent())));
+
+            UpdateMessageEvent updateMessageEvent = updateMessageEvents.stream()
+                    .filter(event -> "Edited content".equals(event.getContent()))
+                    .findFirst()
+                    .get();
+            assertEquals("Original content", updateMessageEvent.getOrigContent());
+            assertTrue(updateMessageEvent.getMessageIds().contains(messageId));
+
+            zulip.messages().addEmojiReaction(messageId, "tada").execute();
+            await().atMost(EVENT_DELIVERY_TIMEOUT)
+                    .until(() -> reactionEvents.stream().anyMatch(event -> event.getMessageId() == messageId));
+
+            ReactionEvent reactionEvent = reactionEvents.get(0);
+            assertEquals(EventOperation.ADD, reactionEvent.getOperation());
+            assertEquals("tada", reactionEvent.getEmojiName());
+
+            zulip.messages().deleteMessage(messageId).execute();
+            await().atMost(EVENT_DELIVERY_TIMEOUT)
+                    .until(() -> deleteMessageEvents.stream().anyMatch(event -> event.getMessageIds().contains(messageId)));
         } finally {
             eventPoller.stop();
         }

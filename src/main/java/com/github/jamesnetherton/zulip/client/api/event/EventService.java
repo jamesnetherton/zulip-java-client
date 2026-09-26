@@ -24,6 +24,24 @@ public class EventService implements ZulipService {
     }
 
     /**
+     * Capture events of one or more types.
+     *
+     * <pre>
+     * {@code
+     * EventPoller poller = zulip.events().captureEvents()
+     *         .onMessage(event -> ...)
+     *         .onReaction(event -> ...)
+     *         .build();
+     * }
+     * </pre>
+     *
+     * @return {@link EventPollerBuilder} to configure the event types to capture
+     */
+    public EventPollerBuilder captureEvents() {
+        return new EventPollerBuilder(this.client);
+    }
+
+    /**
      * Capture message events.
      *
      * @param  listener The {@link MessageEventListener} to be invoked on each message event

@@ -166,9 +166,9 @@ try {
 
 == Real time events API
 
-There is some limited and experimental support for the Zulip https://zulip.com/api/real-time-events[real-time events API].
+There is experimental support for the Zulip https://zulip.com/api/real-time-events[real-time events API].
 
-At present it is only possible to consume events whenever new messages are posted.
+=== Capturing new messages
 
 To consume messages posted to all streams.
 
@@ -205,3 +205,102 @@ eventPoller.start();
 
 eventPoller.stop();
 ----
+
+=== Capturing other event types
+
+The `captureEvents()` builder registers listeners for one or more event types. The event queue is only subscribed to the event types that have a listener.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureEvents()
+        .onMessage(event -> System.out.println(event.getMessage().getContent()))
+        .onUpdateMessage(event -> System.out.println("Message " + event.getMessageId() + " edited: " + event.getContent()))
+        .onDeleteMessage(event -> System.out.println("Messages deleted: " + event.getMessageIds()))
+        .onReaction(event -> System.out.println(event.getOperation() + " reaction " + event.getEmojiName()))
+        .build();
+
+eventPoller.start();
+
+// Do useful app work
+
+eventPoller.stop();
+----
+
+Listeners with dedicated event classes are available for the following event types.
+
+[cols="1,1,1"]
+|===
+|Builder method |Event type |Event class
+
+|`onMessage`
+|`message`
+|`MessageEvent`
+
+|`onUpdateMessage`
+|`update_message`
+|`UpdateMessageEvent`
+
+|`onDeleteMessage`
+|`delete_message`
+|`DeleteMessageEvent`
+
+|`onReaction`
+|`reaction`
+|`ReactionEvent`
+
+|`onUpdateMessageFlags`
+|`update_message_flags`
+|`UpdateMessageFlagsEvent`
+
+|`onTyping`
+|`typing`
+|`TypingEvent`
+
+|`onTypingEditMessage`
+|`typing_edit_message`
+|`TypingEditMessageEvent`
+
+|`onSubmessage`
+|`submessage`
+|`SubmessageEvent`
+|===
+
+Any other https://zulip.com/api/get-events#events-by-type[event type] can be consumed with the `on` method and the `EventType` enum. The event payload is available from `Event.getProperties()`.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureEvents()
+        .on(EventType.SUBSCRIPTION, event -> System.out.println(event.getProperties().get("op")))
+        .build();
+----
+
+Event types introduced in newer Zulip versions that are not yet defined by `EventType` can be consumed by passing the event type name.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureEvents()
+        .on("some_new_event_type", event -> System.out.println(event.getProperties()))
+        .build();
+----
+
+The builder also supports some additional options.
+
+[source,java]
+----
+EventPoller eventPoller = zulip.events().captureEvents()
+        .onMessage(event -> System.out.println(event.getMessage().getContent()))
+        .withNarrows(Narrow.of("channel", "my-channel-name")) <1>
+        .withAllPublicStreams(true) <2>
+        .withIdleQueueTimeout(3600) <3>
+        .withExecutorService(Executors.newFixedThreadPool(2)) <4>
+        .build();
+----
+<1> Filters which messages are captured. Note that narrows only apply to `message` events. Other event types, such as `update_message` or `reaction`, are received for all messages that the user has access to.
+
+<2> Captures message events from all public channels, not only the channels that the user is subscribed to.
+
+<3> The minimum number of seconds that the Zulip server keeps the event queue alive when it is not being polled. Requires Zulip 12 or later.
+
+<4> A custom `ExecutorService` for invoking event listeners. If not specified, a cached thread pool is used and shut down when the `EventPoller` is stopped.
+
+Listeners are invoked asynchronously, so events are not guaranteed to be processed in the order they were received. Keep listener implementations lightweight to avoid tying up the executor.

@@ -13,8 +13,10 @@ import java.util.List;
 /**
  * Zulip API request builder for receiving events from an event queue.
  *
- * @see <a href="https://zulip.com/api/get-events">https://zulip.com/api/get-events</a>
+ * @see        <a href="https://zulip.com/api/get-events">https://zulip.com/api/get-events</a>
+ * @deprecated Use {@link GetEventsApiRequest} instead
  */
+@Deprecated
 public class GetMessageEventsApiRequest extends ZulipApiRequest implements TimeoutableApiRequest<List<MessageEvent>> {
 
     public static final String QUEUE_ID = "queue_id";

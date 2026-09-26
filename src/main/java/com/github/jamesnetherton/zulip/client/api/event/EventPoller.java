@@ -1,9 +1,8 @@
 package com.github.jamesnetherton.zulip.client.api.event;
 
 import com.github.jamesnetherton.zulip.client.api.event.request.DeleteEventQueueApiRequest;
-import com.github.jamesnetherton.zulip.client.api.event.request.GetMessageEventsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.event.request.GetEventsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.request.RegisterEventQueueApiRequest;
-import com.github.jamesnetherton.zulip.client.api.message.Message;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
- * Polls Zulip for real-time events. At present this is limited to consuming new message events.
+ * Polls Zulip for real-time events and dispatches them to the configured {@link EventListener} instances.
  *
  * Note that this implementation is highly experimental and subject to change or removal.
  *
@@ -51,10 +50,21 @@ public class EventPoller {
 
             CountDownLatch latch = new CountDownLatch(1);
             RegisterEventQueueApiRequest createQueue = new RegisterEventQueueApiRequest(configuration.getClient(),
-                    configuration.getNarrows());
-            GetMessageEventsApiRequest getEvents = new GetMessageEventsApiRequest(configuration.getClient());
+                    configuration.getNarrows())
+                            .withEventTypes(configuration.getListeners().keySet())
+                            .withAllPublicStreams(configuration.isAllPublicStreams());
+            if (configuration.getIdleQueueTimeout() != null) {
+                createQueue.withIdleQueueTimeout(configuration.getIdleQueueTimeout());
+            }
+            GetEventsApiRequest getEvents = new GetEventsApiRequest(configuration.getClient());
 
-            queue = createQueue.execute();
+            try {
+                queue = createQueue.execute();
+            } catch (ZulipClientException e) {
+                status = Status.STOPPED;
+                throw e;
+            }
+
             executor = Executors.newSingleThreadExecutor();
 
             if (eventListenerExecutorService == null) {
@@ -72,18 +82,17 @@ public class EventPoller {
                             getEvents.withLastEventId(lastEventId);
                             latch.countDown();
 
-                            List<MessageEvent> messageEvents = getEvents.execute(queue.getTimeout());
-                            for (MessageEvent event : messageEvents) {
-                                eventListenerExecutorService.submit(() -> {
-                                    Message message = event.getMessage();
-                                    if (message == null) {
-                                        return;
+                            List<Event> events = getEvents.execute(queue.getTimeout());
+                            for (Event event : events) {
+                                List<EventListener<Event>> listeners = configuration.getListeners().get(event.getType());
+                                if (listeners != null) {
+                                    for (EventListener<Event> listener : listeners) {
+                                        eventListenerExecutorService.submit(() -> listener.onEvent(event));
                                     }
-                                    configuration.getListener().onEvent(message);
-                                });
+                                }
                             }
 
-                            messageEvents.stream()
+                            events.stream()
                                     .max(Comparator.comparing(Event::getId))
                                     .ifPresent(event -> lastEventId = event.getId());
                         } catch (ZulipClientException e) {
@@ -132,7 +141,7 @@ public class EventPoller {
                     executor.shutdown();
                 }
 
-                if (configuration.getEventListenerExecutorService() == null) {
+                if (configuration.getEventListenerExecutorService() == null && eventListenerExecutorService != null) {
                     eventListenerExecutorService.shutdown();
                     eventListenerExecutorService = null;
                 }
