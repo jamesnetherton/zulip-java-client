@@ -1,5 +1,7 @@
 package com.github.jamesnetherton.zulip.client.api.message;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * Defines the Zulip message edit propagation mode and determines which message(s) should be edited.
  */
@@ -16,6 +18,11 @@ public enum PropagateMode {
      * Changes all messages.
      */
     CHANGE_ALL;
+
+    @JsonCreator
+    public static PropagateMode fromString(String mode) {
+        return PropagateMode.valueOf(mode.toUpperCase());
+    }
 
     @Override
     public String toString() {

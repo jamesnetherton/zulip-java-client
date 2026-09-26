@@ -1,0 +1,144 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "id": 0,
+      "flags": ["read", "mentioned"],
+      "message": {
+        "avatar_url": null,
+        "client": "ZulipPython",
+        "content": "Test content",
+        "content_type": "text/x-markdown",
+        "display_recipient": "Denmark",
+        "id": 31,
+        "is_me_message": false,
+        "reactions": [],
+        "recipient_id": 23,
+        "sender_email": "user10@zulip.testserver",
+        "sender_full_name": "King Hamlet",
+        "sender_id": 10,
+        "sender_realm_str": "zulip",
+        "stream_id": 1,
+        "subject": "test",
+        "submessages": [],
+        "timestamp": 1594825416,
+        "topic_links": [],
+        "type": "stream"
+      }
+    },
+    {
+      "type": "update_message",
+      "id": 1,
+      "user_id": 10,
+      "rendering_only": false,
+      "message_id": 31,
+      "message_ids": [31, 32],
+      "flags": ["read"],
+      "edit_timestamp": 1594825451,
+      "stream_name": "Denmark",
+      "stream_id": 1,
+      "new_stream_id": 2,
+      "propagate_mode": "change_later",
+      "orig_subject": "test",
+      "subject": "new topic",
+      "topic_links": [],
+      "orig_content": "Old content",
+      "orig_rendered_content": "<p>Old content</p>",
+      "content": "New content",
+      "rendered_content": "<p>New content</p>",
+      "is_me_message": false
+    },
+    {
+      "type": "delete_message",
+      "id": 2,
+      "message_ids": [31, 32],
+      "message_type": "stream",
+      "stream_id": 1,
+      "topic": ""
+    },
+    {
+      "type": "reaction",
+      "id": 3,
+      "op": "add",
+      "user_id": 10,
+      "message_id": 32,
+      "emoji_name": "tada",
+      "emoji_code": "1f389",
+      "reaction_type": "unicode_emoji"
+    },
+    {
+      "type": "update_message_flags",
+      "id": 4,
+      "op": "add",
+      "operation": "add",
+      "flag": "starred",
+      "messages": [63, 64],
+      "all": false
+    },
+    {
+      "type": "typing",
+      "id": 5,
+      "op": "start",
+      "message_type": "direct",
+      "sender": {
+        "user_id": 10,
+        "email": "user10@zulip.testserver"
+      },
+      "recipients": [
+        {
+          "user_id": 8,
+          "email": "user8@zulip.testserver"
+        },
+        {
+          "user_id": 10,
+          "email": "user10@zulip.testserver"
+        }
+      ]
+    },
+    {
+      "type": "typing_edit_message",
+      "id": 6,
+      "op": "stop",
+      "sender_id": 10,
+      "message_id": 31,
+      "recipient": {
+        "type": "channel",
+        "channel_id": 1,
+        "topic": "test"
+      }
+    },
+    {
+      "type": "submessage",
+      "id": 7,
+      "msg_type": "widget",
+      "content": "{\"type\":\"vote\"}",
+      "message_id": 31,
+      "sender_id": 10,
+      "submessage_id": 42
+    },
+    {
+      "type": "heartbeat",
+      "id": 8
+    },
+    {
+      "type": "subscription",
+      "id": 9,
+      "op": "peer_add",
+      "stream_ids": [1],
+      "user_ids": [10]
+    },
+    {
+      "type": "reaction",
+      "id": 10,
+      "op": "invalid",
+      "user_id": 10,
+      "message_id": 32,
+      "emoji_name": "tada",
+      "emoji_code": "1f389",
+      "reaction_type": "unicode_emoji"
+    }
+  ],
+  "msg": "",
+  "result": "success",
+  "queue_id": "fb67bf8a-c031-47cc-84cf-ed80accacda8"
+}

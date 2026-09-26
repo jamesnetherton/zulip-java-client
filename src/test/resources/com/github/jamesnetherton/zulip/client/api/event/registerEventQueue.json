@@ -1,0 +1,9 @@
+{
+  "event_queue_longpoll_timeout_seconds": 90,
+  "last_event_id": -1,
+  "msg": "",
+  "queue_id": "fb67bf8a-c031-47cc-84cf-ed80accacda8",
+  "result": "success",
+  "zulip_feature_level": 491,
+  "zulip_version": "12.3"
+}

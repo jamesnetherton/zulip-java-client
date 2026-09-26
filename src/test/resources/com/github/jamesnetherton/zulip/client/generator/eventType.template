@@ -1,0 +1,47 @@
+package com.github.jamesnetherton.zulip.client.api.event;
+
+/**
+ * Defines the Zulip event types.
+ *
+ * Event types that have a dedicated {@link Event} implementation are mapped to it. All other event types are mapped to
+ * {@link Event}, with the event payload available from {@link Event#getProperties()}.
+ *
+ * @see <a href="https://zulip.com/api/get-events#events-by-type">https://zulip.com/api/get-events#events-by-type</a>
+ */
+public enum EventType {
+    {values}
+    private final Class<? extends Event> eventClass;
+
+    EventType() {
+        this(Event.class);
+    }
+
+    EventType(Class<? extends Event> eventClass) {
+        this.eventClass = eventClass;
+    }
+
+    public Class<? extends Event> getEventClass() {
+        return eventClass;
+    }
+
+    /**
+     * Gets the {@link Event} class to use for the given Zulip event type name.
+     *
+     * @param  type The Zulip event type name. E.g. {@code update_message}
+     * @return      The {@link Event} implementation for the event type or {@link Event} if the type has no dedicated
+     *              implementation
+     */
+    public static Class<? extends Event> getEventClass(String type) {
+        for (EventType eventType : values()) {
+            if (eventType.toString().equals(type)) {
+                return eventType.getEventClass();
+            }
+        }
+        return Event.class;
+    }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
+}
