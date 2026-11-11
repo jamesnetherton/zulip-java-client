@@ -1,13 +1,12 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * Custom Jackson deserializer for presence maps that filters out non-object entries.
@@ -25,10 +24,10 @@ public class UserPresenceDetailMapDeserializer extends StdDeserializer<Map<Strin
     }
 
     @Override
-    public Map<String, UserPresenceDetail> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.getCodec().readTree(p);
+    public Map<String, UserPresenceDetail> deserialize(JsonParser p, DeserializationContext ctxt) {
+        JsonNode node = ctxt.readTree(p);
         Map<String, UserPresenceDetail> result = new LinkedHashMap<>();
-        Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+        Iterator<Map.Entry<String, JsonNode>> fields = node.properties().iterator();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> entry = fields.next();
             if (entry.getValue().isObject()) {

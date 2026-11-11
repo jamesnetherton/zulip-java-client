@@ -1,7 +1,5 @@
 package com.github.jamesnetherton.zulip.client.generator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +14,8 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class EmojiEnumGenerator {
     private static final String ENUM_VALUE_INDENT = " ".repeat(4);
@@ -28,11 +28,11 @@ public class EmojiEnumGenerator {
         Assumptions.assumeTrue(System.getProperty("emoji.generate") != null);
 
         ObjectMapper mapper = JsonUtils.getMapper();
-        JsonNode node = mapper.readTree(new URL(ZULIP_EMOJI_JSON));
+        JsonNode node = mapper.readTree(new URL(ZULIP_EMOJI_JSON).openStream());
         StringBuilder builder = new StringBuilder();
 
         Map<String, String> emoji = new TreeMap<>();
-        node.fieldNames().forEachRemaining(fieldName -> {
+        node.propertyNames().forEach(fieldName -> {
             String name = fieldName.toUpperCase().replace("-", "_");
             if (name.equals("+1")) {
                 name = "PLUS_ONE";

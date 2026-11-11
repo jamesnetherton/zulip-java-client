@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.request;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
@@ -26,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import tools.jackson.core.JacksonException;
 
 public class ZulipApiTestBase {
 
@@ -158,7 +158,7 @@ public class ZulipApiTestBase {
             return this;
         }
 
-        public QueryParams addAsRawJsonString(String name, Object value) throws JsonProcessingException {
+        public QueryParams addAsRawJsonString(String name, Object value) throws JacksonException {
             params.put(name, new EqualToPattern(JsonUtils.getMapper().writeValueAsString(value)));
             return this;
         }

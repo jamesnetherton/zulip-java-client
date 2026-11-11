@@ -1,10 +1,10 @@
 package com.github.jamesnetherton.zulip.client.api.event.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Zulip API response class for receiving events from an event queue.

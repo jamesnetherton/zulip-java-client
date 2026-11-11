@@ -1,10 +1,10 @@
 package com.github.jamesnetherton.zulip.client.api.core;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import java.util.HashMap;
 import java.util.Map;
+import tools.jackson.core.JacksonException;
 
 /**
  * The default Zulip REST API request object with common behaviour for all API request types.
@@ -81,7 +81,7 @@ public class ZulipApiRequest {
     protected void putParamAsJsonString(String key, Object value) {
         try {
             params.put(key, JsonUtils.getMapper().writeValueAsString(value));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException(e);
         }
     }
