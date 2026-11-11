@@ -1,21 +1,20 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class UserGroupSettingSerializer extends JsonSerializer<UserGroupSetting> {
+public class UserGroupSettingSerializer extends ValueSerializer<UserGroupSetting> {
     @Override
-    public void serialize(UserGroupSetting userGroupSetting, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-            throws IOException {
+    public void serialize(UserGroupSetting userGroupSetting, JsonGenerator jsonGenerator,
+            SerializationContext serializationContext) {
         if (userGroupSetting != null) {
             if (userGroupSetting.getUserGroupId() > 0) {
                 jsonGenerator.writeNumber(userGroupSetting.getUserGroupId());
             } else {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeObjectField("direct_members", userGroupSetting.getDirectMembers());
-                jsonGenerator.writeObjectField("direct_subgroups", userGroupSetting.getDirectSubGroups());
+                jsonGenerator.writePOJOProperty("direct_members", userGroupSetting.getDirectMembers());
+                jsonGenerator.writePOJOProperty("direct_subgroups", userGroupSetting.getDirectSubGroups());
                 jsonGenerator.writeEndObject();
             }
         }

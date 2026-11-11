@@ -1,19 +1,16 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
-class UserGroupSettingDeserializer extends JsonDeserializer<UserGroupSetting> {
+class UserGroupSettingDeserializer extends ValueDeserializer<UserGroupSetting> {
     @Override
-    public UserGroupSetting deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-            throws IOException, JacksonException {
-        JsonNode node = jsonParser.readValueAsTree();
+    public UserGroupSetting deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+        JsonNode node = deserializationContext.readTree(jsonParser);
         if (node.isInt()) {
             return new UserGroupSetting(node.asInt());
         }

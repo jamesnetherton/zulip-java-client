@@ -1,8 +1,5 @@
 package com.github.jamesnetherton.zulip.client.generator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.jamesnetherton.zulip.client.api.event.Event;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +15,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 public class EventTypeEnumGenerator {
     private static final String ENUM_VALUE_INDENT = " ".repeat(4);
@@ -31,7 +31,7 @@ public class EventTypeEnumGenerator {
         Assumptions.assumeTrue(System.getProperty("event.type.generate") != null);
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        JsonNode spec = mapper.readTree(new URL(ZULIP_OPENAPI_YAML));
+        JsonNode spec = mapper.readTree(new URL(ZULIP_OPENAPI_YAML).openStream());
         JsonNode events = spec
                 .at("/paths/~1events/get/responses/200/content/application~1json/schema/allOf/1/properties/events/items/oneOf");
 

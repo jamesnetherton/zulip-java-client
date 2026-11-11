@@ -2,9 +2,6 @@ package com.github.jamesnetherton.zulip.client.api.event.request;
 
 import static com.github.jamesnetherton.zulip.client.api.event.request.EventRequestConstants.EVENTS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jamesnetherton.zulip.client.api.core.TimeoutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.event.Event;
@@ -16,6 +13,9 @@ import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Zulip API request builder for receiving events from an event queue.
@@ -80,11 +80,11 @@ public class GetEventsApiRequest extends ZulipApiRequest implements TimeoutableA
             Class<? extends Event> eventClass = EventType.getEventClass(node.path("type").asText());
             try {
                 events.add(mapper.treeToValue(node, eventClass));
-            } catch (JsonProcessingException | IllegalArgumentException e) {
+            } catch (JacksonException | IllegalArgumentException e) {
                 LOG.warning("Unable to map event to " + eventClass.getSimpleName() + " - " + e.getMessage());
                 try {
                     events.add(mapper.treeToValue(node, Event.class));
-                } catch (JsonProcessingException ex) {
+                } catch (JacksonException ex) {
                     throw new ZulipClientException(ex);
                 }
             }

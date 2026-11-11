@@ -67,6 +67,7 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+import tools.jackson.core.JacksonException;
 
 /**
  * A {@link ZulipHttpClient} implementation that uses the Apache Commons HTTP Client.
@@ -290,7 +291,7 @@ class ZulipCommonsHttpClient implements ZulipHttpClient {
             }
 
             return responseAs.cast(zulipApiResponse);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new ZulipClientException(e);
         }
     }

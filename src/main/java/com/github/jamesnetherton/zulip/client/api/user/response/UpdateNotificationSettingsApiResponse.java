@@ -19,11 +19,11 @@ import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNoti
 import static com.github.jamesnetherton.zulip.client.api.user.request.UpdateNotificationSettingsApiRequest.WILDCARD_MENTIONS_NOTIFY;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiResponse;
 import com.github.jamesnetherton.zulip.client.api.user.DesktopIconCountDisplay;
 import java.util.HashMap;
 import java.util.Map;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Zulip API response class for updating user notification settings.

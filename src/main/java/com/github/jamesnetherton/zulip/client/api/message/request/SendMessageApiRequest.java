@@ -2,7 +2,6 @@ package com.github.jamesnetherton.zulip.client.api.message.request;
 
 import static com.github.jamesnetherton.zulip.client.api.message.request.MessageRequestConstants.MESSAGES_API_PATH;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
@@ -12,6 +11,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import java.util.HashMap;
 import java.util.Map;
+import tools.jackson.core.JacksonException;
 
 /**
  * Zulip API request builder for sending a message.
@@ -188,7 +188,7 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
             if (type.equals(MessageType.DIRECT.toString())) {
                 try {
                     modified.put(TO, JsonUtils.getMapper().writeValueAsString(params.get(TO_DIRECT)));
-                } catch (JsonProcessingException e) {
+                } catch (JacksonException e) {
                     throw new ZulipClientException(e);
                 }
             } else {

@@ -1,9 +1,9 @@
 package com.github.jamesnetherton.zulip.client.api.user;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents a user group setting. Depending on the Zulip API response either the userGroupId will be populated or one / both

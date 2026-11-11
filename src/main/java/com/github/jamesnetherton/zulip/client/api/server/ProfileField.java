@@ -2,12 +2,12 @@ package com.github.jamesnetherton.zulip.client.api.server;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.jamesnetherton.zulip.client.util.JsonUtils;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Defines a Zulip custom profile field.
@@ -62,7 +62,7 @@ public class ProfileField {
         if (this.type.equals(ProfileFieldType.LIST_OF_OPTIONS)) {
             try {
                 JsonNode parsedData = JsonUtils.getMapper().readTree(fieldDataNode.asText());
-                Iterator<Map.Entry<String, JsonNode>> fields = parsedData.fields();
+                Iterator<Map.Entry<String, JsonNode>> fields = parsedData.properties().iterator();
 
                 Map<String, Map<String, String>> data = new LinkedHashMap<>();
                 while (fields.hasNext()) {
@@ -70,7 +70,7 @@ public class ProfileField {
 
                     Map.Entry<String, JsonNode> next = fields.next();
                     JsonNode parent = next.getValue();
-                    Iterator<Map.Entry<String, JsonNode>> parentFields = parent.fields();
+                    Iterator<Map.Entry<String, JsonNode>> parentFields = parent.properties().iterator();
                     while (parentFields.hasNext()) {
                         Map.Entry<String, JsonNode> parentEntry = parentFields.next();
                         object.put(parentEntry.getKey(), parentEntry.getValue().asText());
@@ -78,13 +78,13 @@ public class ProfileField {
                     data.put(next.getKey(), object);
                 }
                 this.fieldData = data;
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 this.fieldData = "";
             }
         } else if (this.type.equals(ProfileFieldType.EXTERNAL_ACCOUNT)) {
             try {
                 JsonNode parsedData = JsonUtils.getMapper().readTree(fieldDataNode.asText());
-                Iterator<Map.Entry<String, JsonNode>> fields = parsedData.fields();
+                Iterator<Map.Entry<String, JsonNode>> fields = parsedData.properties().iterator();
 
                 Map<String, String> data = new LinkedHashMap<>();
                 while (fields.hasNext()) {
@@ -92,7 +92,7 @@ public class ProfileField {
                     data.put(next.getKey(), next.getValue().asText());
                 }
                 this.fieldData = data;
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 this.fieldData = "";
             }
         } else {

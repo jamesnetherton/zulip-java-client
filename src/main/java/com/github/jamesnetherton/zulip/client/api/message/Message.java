@@ -2,11 +2,11 @@ package com.github.jamesnetherton.zulip.client.api.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Defines a Zulip message
@@ -86,7 +86,7 @@ public class Message {
         }
 
         if (node.isArray()) {
-            Iterator<JsonNode> elements = node.elements();
+            Iterator<JsonNode> elements = node.values().iterator();
             while (elements.hasNext()) {
                 JsonNode next = elements.next();
                 MessageRecipient recipient = new MessageRecipient(
