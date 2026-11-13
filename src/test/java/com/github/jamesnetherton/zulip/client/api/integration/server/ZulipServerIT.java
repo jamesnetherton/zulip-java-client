@@ -94,6 +94,36 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
     }
 
     @Test
+    public void linkifierWithReverseTemplate() throws ZulipClientException {
+        Long id = zulip.server().addLinkifier("#(?P<id>[0-9]+)", "https://github.com/zulip/zulip/issues/{id}")
+                .withExampleInput("#123")
+                .withReverseTemplate("#{id}")
+                .withAlternativeUrlTemplates("https://github.com/zulip/zulip/pull/{id}")
+                .execute();
+
+        try {
+            List<Linkifier> linkifiers = zulip.server().getLinkifiers().execute();
+            assertEquals(1, linkifiers.size());
+
+            Linkifier linkifier = linkifiers.get(0);
+            assertEquals("#123", linkifier.getExampleInput());
+            assertEquals("#{id}", linkifier.getReverseTemplate());
+            assertEquals(List.of("https://github.com/zulip/zulip/pull/{id}"), linkifier.getAlternativeUrlTemplates());
+
+            zulip.server().updateLinkifier(id, "#(?P<id>[0-9]+)", "https://github.com/zulip/zulip/issues/{id}")
+                    .withExampleInput("#456")
+                    .withReverseTemplate("#{id}")
+                    .execute();
+
+            linkifier = zulip.server().getLinkifiers().execute().get(0);
+            assertEquals("#456", linkifier.getExampleInput());
+            assertEquals(List.of("https://github.com/zulip/zulip/pull/{id}"), linkifier.getAlternativeUrlTemplates());
+        } finally {
+            zulip.server().deleteLinkifier(id).execute();
+        }
+    }
+
+    @Test
     public void emoji() throws ZulipClientException {
         File file = new File("./src/test/resources/com/github/jamesnetherton/zulip/client/api/server/emoji/smile.png");
 
@@ -220,6 +250,20 @@ public class ZulipServerIT extends ZulipIntegrationTestBase {
 
         Collections.reverse(order);
         zulip.server().reorderCustomProfileFields(order.get(0), order.get(1), order.get(2)).execute();
+
+        zulip.server().updateCustomProfileField(simpleId)
+                .withName("Updated Long Name")
+                .withHint("Updated Long Hint")
+                .withRequired(true)
+                .execute();
+
+        ProfileField updated = zulip.server().getCustomProfileFields().execute()
+                .stream()
+                .filter(field -> field.getId() == simpleId)
+                .findFirst()
+                .orElseThrow();
+        assertEquals("Updated Long Name", updated.getName());
+        assertEquals("Updated Long Hint", updated.getHint());
 
         zulip.server().deleteCustomProfileField(simpleId).execute();
         zulip.server().deleteCustomProfileField(listId).execute();

@@ -9,7 +9,8 @@ import java.util.Map;
 /**
  * Zulip API response class for checking if a set of messages matches a narrow.
  *
- * @see <a href="https://zulip.com/api/check-narrow-matches#response">https://zulip.com/api/check-narrow-matches#response</a>
+ * @see <a href=
+ *      "https://zulip.com/api/check-messages-match-narrow#response">https://zulip.com/api/check-messages-match-narrow#response</a>
  */
 public class MatchesNarrowApiResponse extends ZulipApiResponse {
 

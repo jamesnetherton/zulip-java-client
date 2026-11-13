@@ -16,11 +16,18 @@ public class UnsubscribeStreamsApiResponse extends ZulipApiResponse {
     @JsonProperty
     private List<String> removed = new ArrayList<>();
 
+    @JsonProperty
+    private boolean messagesSentToRemovedSubscribers;
+
     public List<String> getNotRemoved() {
         return notRemoved;
     }
 
     public List<String> getRemoved() {
         return removed;
+    }
+
+    public boolean isMessagesSentToRemovedSubscribers() {
+        return messagesSentToRemovedSubscribers;
     }
 }

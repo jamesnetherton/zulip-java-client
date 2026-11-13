@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Zulip API request builder for removing user alert words.
  *
- * @see <a href="https://zulip.com/api/v1/users/me/alert_words">https://zulip.com/api/v1/users/me/alert_wordsr</a>
+ * @see <a href="https://zulip.com/api/remove-alert-words">https://zulip.com/api/remove-alert-words</a>
  */
 public class RemoveAlertWordsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<List<String>> {
 

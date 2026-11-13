@@ -11,7 +11,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 /**
  * Zulip API request builder for getting the email address of a stream.
  *
- * @see <a href="https://zulip.com/api/get-subscribers">https://zulip.com/api/get-subscribers</a>
+ * @see <a href="https://zulip.com/api/get-stream-email-address">https://zulip.com/api/get-stream-email-address</a>
  */
 public class GetStreamEmailAddressApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String> {
     public static final String SENDER_ID = "sender_id";

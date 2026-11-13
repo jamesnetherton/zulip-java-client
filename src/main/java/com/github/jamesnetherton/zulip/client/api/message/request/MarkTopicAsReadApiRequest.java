@@ -11,9 +11,9 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 /**
  * Zulip API request builder for marking a topic as read.
  *
- * @see <a href=
- *      "https://zulip.com/api/mark-all-as-read#mark-messages-in-a-topic-as-read">https://zulip.com/api/mark-all-as-read#mark-messages-in-a-topic-as-read</a>
+ * @see <a href="https://zulip.com/api/mark-topic-as-read">https://zulip.com/api/mark-topic-as-read</a>
  */
+@Deprecated
 public class MarkTopicAsReadApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
     public static final String STREAM_ID = "stream_id";

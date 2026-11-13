@@ -29,6 +29,7 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
     public static final String DISPLAY_IN_PROFILE_SUMMARY = "display_in_profile_summary";
     public static final String REQUIRED = "required";
     public static final String EDITABLE_BY_USER = "editable_by_user";
+    public static final String USE_FOR_USER_MATCHING = "use_for_user_matching";
 
     /**
      * Constructs a {@link CreateProfileFieldApiRequest}.
@@ -130,6 +131,20 @@ public class CreateProfileFieldApiRequest extends ZulipApiRequest implements Exe
      */
     public CreateProfileFieldApiRequest withEditableByUser(boolean editableByUser) {
         putParam(EDITABLE_BY_USER, editableByUser);
+        return this;
+    }
+
+    /**
+     * Sets whether the profile field can be used to match users, for example when importing users.
+     *
+     * @see                       <a href=
+     *                            "https://zulip.com/api/create-custom-profile-field#parameter-use_for_user_matching">https://zulip.com/api/create-custom-profile-field#parameter-use_for_user_matching</a>
+     *
+     * @param  useForUserMatching {@code true} to use the field for user matching
+     * @return                    This {@link CreateProfileFieldApiRequest} instance
+     */
+    public CreateProfileFieldApiRequest withUseForUserMatching(boolean useForUserMatching) {
+        putParam(USE_FOR_USER_MATCHING, useForUserMatching);
         return this;
     }
 

@@ -17,6 +17,9 @@ public class AddLinkifierApiRequest extends ZulipApiRequest implements Executabl
 
     public static final String PATTERN = "pattern";
     public static final String URL_TEMPLATE = "url_template";
+    public static final String EXAMPLE_INPUT = "example_input";
+    public static final String REVERSE_TEMPLATE = "reverse_template";
+    public static final String ALTERNATIVE_URL_TEMPLATES = "alternative_url_templates";
 
     /**
      * Constrtucts a {@link AddLinkifierApiRequest}.
@@ -29,6 +32,48 @@ public class AddLinkifierApiRequest extends ZulipApiRequest implements Executabl
         super(client);
         putParam(PATTERN, pattern);
         putParam(URL_TEMPLATE, urlTemplate);
+    }
+
+    /**
+     * Sets an example input string that matches the linkifier pattern. Required when setting a reverse template.
+     *
+     * @see                 <a href=
+     *                      "https://zulip.com/api/add-linkifier#parameter-example_input">https://zulip.com/api/add-linkifier#parameter-example_input</a>
+     *
+     * @param  exampleInput The example input
+     * @return              This {@link AddLinkifierApiRequest} instance
+     */
+    public AddLinkifierApiRequest withExampleInput(String exampleInput) {
+        putParam(EXAMPLE_INPUT, exampleInput);
+        return this;
+    }
+
+    /**
+     * Sets the template used to convert a URL back into the text that the linkifier pattern matches.
+     *
+     * @see                    <a href=
+     *                         "https://zulip.com/api/add-linkifier#parameter-reverse_template">https://zulip.com/api/add-linkifier#parameter-reverse_template</a>
+     *
+     * @param  reverseTemplate The reverse template
+     * @return                 This {@link AddLinkifierApiRequest} instance
+     */
+    public AddLinkifierApiRequest withReverseTemplate(String reverseTemplate) {
+        putParam(REVERSE_TEMPLATE, reverseTemplate);
+        return this;
+    }
+
+    /**
+     * Sets additional RFC 6570 compliant URL templates used for reverse linkification.
+     *
+     * @see                            <a href=
+     *                                 "https://zulip.com/api/add-linkifier#parameter-alternative_url_templates">https://zulip.com/api/add-linkifier#parameter-alternative_url_templates</a>
+     *
+     * @param  alternativeUrlTemplates The alternative URL templates
+     * @return                         This {@link AddLinkifierApiRequest} instance
+     */
+    public AddLinkifierApiRequest withAlternativeUrlTemplates(String... alternativeUrlTemplates) {
+        putParamAsJsonString(ALTERNATIVE_URL_TEMPLATES, alternativeUrlTemplates);
+        return this;
     }
 
     /**

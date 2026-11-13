@@ -13,7 +13,9 @@ import java.util.Map;
 /**
  * Zulip API request builder for updating user notification settings.
  *
- * @see <a href="https://zulip.com/api/update-notification-settings">https://zulip.com/api/update-notification-settings</a>
+ * @see        <a href="https://zulip.com/api/update-settings">https://zulip.com/api/update-settings</a>
+ *
+ * @deprecated use {@link UpdateOwnUserSettingsApiRequest} instead.
  */
 @Deprecated
 public class UpdateNotificationSettingsApiRequest extends ZulipApiRequest implements ExecutableApiRequest<Map<String, Object>> {

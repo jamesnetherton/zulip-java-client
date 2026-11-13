@@ -1,4 +1,5 @@
 {
+  "messages_sent_to_removed_subscribers": true,
   "msg": "",
   "not_removed": [
     "cheese",

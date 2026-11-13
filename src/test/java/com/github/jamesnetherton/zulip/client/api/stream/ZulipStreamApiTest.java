@@ -27,6 +27,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.request.GetStreamsApiRe
 import com.github.jamesnetherton.zulip.client.api.stream.request.GetSubscribedStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.MuteTopicApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.SubscribeStreamsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.stream.request.UnsubscribeStreamsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateStreamSubscriptionSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.request.UpdateUserTopicPreferencesApiRequest;
@@ -67,6 +68,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Denmark", subscriptionA.getName());
         assertFalse(subscriptionA.isPinToTop());
         assertFalse(subscriptionA.isPushNotifications());
+        assertTrue(subscriptionA.isDefaultPushNotifications());
         assertEquals(1, subscriptionA.getStreamId());
         assertTrue(subscriptionA.isWebPublic());
         assertFalse(subscriptionA.isWildcardMentionsNotify());
@@ -93,6 +95,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals("Scotland", subscriptionB.getName());
         assertFalse(subscriptionB.isPinToTop());
         assertFalse(subscriptionB.isPushNotifications());
+        assertFalse(subscriptionB.isDefaultPushNotifications());
         assertEquals(3, subscriptionB.getStreamId());
         assertTrue(subscriptionB.isWebPublic());
         assertFalse(subscriptionB.isWildcardMentionsNotify());
@@ -136,6 +139,9 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(SubscribeStreamsApiRequest.CAN_SUBSCRIBE_GROUP, "8")
                 .add(SubscribeStreamsApiRequest.CAN_REMOVE_SUBSCRIBERS_GROUP, "9")
                 .add(SubscribeStreamsApiRequest.CAN_RESOLVE_TOPICS_GROUP, "10")
+                .add(SubscribeStreamsApiRequest.CAN_CREATE_TOPIC_GROUP, "11")
+                .add(SubscribeStreamsApiRequest.DEFAULT_PUSH_NOTIFICATIONS, "true")
+                .add(SubscribeStreamsApiRequest.SEND_NEW_SUBSCRIPTION_MESSAGES, "true")
                 .add(SubscribeStreamsApiRequest.TOPICS_POLICY, "\"inherit\"")
                 .add(SubscribeStreamsApiRequest.FOLDER_ID, "1")
                 .add(SubscribeStreamsApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
@@ -167,6 +173,9 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withCanSubscribeGroup(UserGroupSetting.of(8))
                 .withCanRemoveSubscribersGroup(9)
                 .withCanResolveTopicsGroup(UserGroupSetting.of(10))
+                .withCanCreateTopicGroup(UserGroupSetting.of(11))
+                .withDefaultPushNotifications(true)
+                .withSendNewSubscriptionMessages(true)
                 .withTopicPolicy(TopicPolicy.INHERIT)
                 .withFolderId(1)
                 .withHistoryPublicToSubscribers(true)
@@ -264,13 +273,17 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(SubscribeStreamsApiRequest.PRINCIPALS, "[1,2,3]")
                 .add(SubscribeStreamsApiRequest.SUBSCRIPTIONS, "[\"foo\",\"bar\"]")
+                .add(UnsubscribeStreamsApiRequest.SEND_MESSAGES_TO_REMOVED_SUBSCRIBERS, "true")
                 .get();
 
         stubZulipResponse(DELETE, "/users/me/subscriptions", params, "unsubscribe.json");
 
         StreamUnsubscribeResult result = zulip.channels().unsubscribe("foo", "bar")
                 .withPrincipals(1, 2, 3)
+                .withSendMessagesToRemovedSubscribers(true)
                 .execute();
+
+        assertTrue(result.isMessagesSentToRemovedSubscribers());
 
         List<String> removed = result.getRemoved();
         assertEquals(2, removed.size());
@@ -369,6 +382,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .addAsRawJsonString(UpdateStreamApiRequest.CAN_MOVE_MESSAGES_OUT_OF_CHANNEL_GROUP, Map.of("new", 7))
                 .addAsRawJsonString(UpdateStreamApiRequest.CAN_MOVE_MESSAGES_WITHIN_CHANNEL_GROUP, Map.of("new", 8))
                 .addAsRawJsonString(UpdateStreamApiRequest.CAN_RESOLVE_TOPICS_GROUP, Map.of("new", 9))
+                .addAsRawJsonString(UpdateStreamApiRequest.CAN_CREATE_TOPIC_GROUP, Map.of("new", 10))
+                .add(UpdateStreamApiRequest.DEFAULT_PUSH_NOTIFICATIONS, "true")
                 .add(UpdateStreamApiRequest.DESCRIPTION, "New description")
                 .add(UpdateStreamApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(UpdateStreamApiRequest.MESSAGE_RETENTION_DAYS, "30")
@@ -394,6 +409,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withCanMoveMessagesOutOfChannelGroup(UserGroupSetting.of(7))
                 .withCanMoveMessagesWithinChannelGroup(UserGroupSetting.of(8))
                 .withCanResolveTopicsGroup(UserGroupSetting.of(9))
+                .withCanCreateTopicGroup(UserGroupSetting.of(10))
+                .withDefaultPushNotifications(true)
                 .withDescription("New description")
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetention(30)
@@ -526,6 +543,7 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
         assertEquals(5, stream.getCanMoveMessagesBetweenChannelsGroup().getUserGroupId());
         assertEquals(6, stream.getCanMoveMessagesBetweenTopicsGroup().getUserGroupId());
         assertEquals(12, stream.getCanCreateTopicGroup().getUserGroupId());
+        assertTrue(stream.isDefaultPushNotifications());
         assertEquals(7, stream.getCanResolveTopicsGroup().getUserGroupId());
         assertEquals(8, stream.getCanSendMessageGroup().getUserGroupId());
         assertEquals(9, stream.getCanAdministerChannelGroup().getUserGroupId());
@@ -723,7 +741,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .add(CreateChannelApiRequest.IS_WEB_PUBLIC, "true")
                 .add(CreateChannelApiRequest.IS_DEFAULT_STREAM, "true")
                 .add(CreateChannelApiRequest.FOLDER_ID, "1")
-                .add(CreateChannelApiRequest.SEND_NEW_SUBSCRIPTION_MESSAGES, "true")
+                .add(CreateChannelApiRequest.DEFAULT_PUSH_NOTIFICATIONS, "true")
+                .add(CreateChannelApiRequest.CAN_CREATE_TOPIC_GROUP, "11")
                 .add(CreateChannelApiRequest.TOPICS_POLICY, "\"allow_empty_topic\"")
                 .add(CreateChannelApiRequest.HISTORY_PUBLIC_TO_SUBSCRIBERS, "true")
                 .add(CreateChannelApiRequest.MESSAGE_RETENTION_DAYS, "30")
@@ -748,7 +767,8 @@ public class ZulipStreamApiTest extends ZulipApiTestBase {
                 .withIsWebPublic(true)
                 .withIsDefaultStream(true)
                 .withFolderId(1)
-                .withSendNewSubscriptionMessages(true)
+                .withDefaultPushNotifications(true)
+                .withCanCreateTopicGroup(UserGroupSetting.of(11))
                 .withTopicPolicy(TopicPolicy.ALLOW_EMPTY_TOPIC)
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetentionDays(30)

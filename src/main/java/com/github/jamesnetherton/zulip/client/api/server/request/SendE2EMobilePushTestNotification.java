@@ -14,7 +14,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
  * @see <a href="https://zulip.com/api/e2ee-test-notify">https://zulip.com/api/e2ee-test-notify</a>
  */
 public class SendE2EMobilePushTestNotification extends ZulipApiRequest implements VoidExecutableApiRequest {
-    public static final String PUSH_ACCOUNT_ID = "push_account_id";
+    public static final String DEVICE_ID = "device_id";
 
     /**
      * Constructs a {@link SendE2EMobilePushTestNotification}.
@@ -26,15 +26,17 @@ public class SendE2EMobilePushTestNotification extends ZulipApiRequest implement
     }
 
     /**
-     * Sets the push account id for the device to send the test notification.
+     * Sets the device to send the test notification to. If not set, test notifications are sent to all of the user's
+     * registered devices.
      *
-     * @see                  <a href="https://zulip.com/api/e2ee-test-notify">https://zulip.com/api/e2ee-test-notify</a>
+     * @see             <a href=
+     *                  "https://zulip.com/api/e2ee-test-notify#parameter-device_id">https://zulip.com/api/e2ee-test-notify#parameter-device_id</a>
      *
-     * @param  pushAccountId The push account id
-     * @return               This {@link SendE2EMobilePushTestNotification} instance
+     * @param  deviceId The id of the device
+     * @return          This {@link SendE2EMobilePushTestNotification} instance
      */
-    public SendE2EMobilePushTestNotification pushAccountId(String pushAccountId) {
-        putParam(PUSH_ACCOUNT_ID, pushAccountId);
+    public SendE2EMobilePushTestNotification withDeviceId(long deviceId) {
+        putParam(DEVICE_ID, deviceId);
         return this;
     }
 

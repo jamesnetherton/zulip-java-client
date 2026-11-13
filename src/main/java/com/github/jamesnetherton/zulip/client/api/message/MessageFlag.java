@@ -15,6 +15,10 @@ public enum MessageFlag {
      */
     HAS_ALERT_WORD,
     /**
+     * Whether link previews for the message should be hidden.
+     */
+    HIDE_LINK_PREVIEWS,
+    /**
      * Messages that are part of the users history.
      */
     HISTORICAL,
@@ -44,11 +48,20 @@ public enum MessageFlag {
      * @deprecated use {@code MessageFlag.STREAM_WILDCARD_MENTIONED} or {@code MessageFlag.TOPIC_WILDCARD_MENTIONED}.
      */
     @Deprecated
-    WILDCARD_MENTIONED;
+    WILDCARD_MENTIONED,
+    /**
+     * A flag not known to this client version.
+     */
+    UNKNOWN;
 
     @JsonCreator
     public static MessageFlag fromString(String flag) {
-        return MessageFlag.valueOf(flag.toUpperCase());
+        for (MessageFlag messageFlag : MessageFlag.values()) {
+            if (messageFlag.name().equalsIgnoreCase(flag)) {
+                return messageFlag;
+            }
+        }
+        return UNKNOWN;
     }
 
     @Override

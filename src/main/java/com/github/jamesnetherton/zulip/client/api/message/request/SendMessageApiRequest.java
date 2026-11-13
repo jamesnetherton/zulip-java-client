@@ -5,6 +5,7 @@ import static com.github.jamesnetherton.zulip.client.api.message.request.Message
 import com.github.jamesnetherton.zulip.client.api.core.ExecutableApiRequest;
 import com.github.jamesnetherton.zulip.client.api.core.ZulipApiRequest;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
+import com.github.jamesnetherton.zulip.client.api.message.SendMessageResult;
 import com.github.jamesnetherton.zulip.client.api.message.response.SendMessageApiResponse;
 import com.github.jamesnetherton.zulip.client.exception.ZulipClientException;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
@@ -174,6 +175,20 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
      */
     @Override
     public Long execute() throws ZulipClientException {
+        return send().getId();
+    }
+
+    /**
+     * Executes the Zulip API request for sending a message, returning details of the sent message.
+     *
+     * @return                      The {@link SendMessageResult} for the sent message
+     * @throws ZulipClientException if the request was not successful
+     */
+    public SendMessageResult executeWithResult() throws ZulipClientException {
+        return new SendMessageResult(send());
+    }
+
+    private SendMessageApiResponse send() throws ZulipClientException {
         final Map<String, Object> params = getParams();
         final Map<String, Object> modified = new HashMap<>();
 
@@ -196,7 +211,6 @@ public class SendMessageApiRequest extends ZulipApiRequest implements Executable
             }
         }
 
-        SendMessageApiResponse response = client().post(MESSAGES_API_PATH, modified, SendMessageApiResponse.class);
-        return response.getId();
+        return client().post(MESSAGES_API_PATH, modified, SendMessageApiResponse.class);
     }
 }

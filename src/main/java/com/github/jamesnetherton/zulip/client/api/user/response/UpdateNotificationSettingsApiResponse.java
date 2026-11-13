@@ -29,7 +29,7 @@ import tools.jackson.databind.JsonNode;
  * Zulip API response class for updating user notification settings.
  *
  * @see <a href=
- *      "https://zulip.com/api/update-notification-settings#response">https://zulip.com/api/update-notification-settings#response</a>
+ *      "https://zulip.com/api/update-settings#response">https://zulip.com/api/update-settings#response</a>
  */
 public class UpdateNotificationSettingsApiResponse extends ZulipApiResponse {
 

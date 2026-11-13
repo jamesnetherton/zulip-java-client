@@ -49,6 +49,9 @@ public class StreamSubscription {
     private UserGroupSetting canCreateTopicGroup;
 
     @JsonProperty
+    private boolean defaultPushNotifications;
+
+    @JsonProperty
     private UserGroupSetting canResolveTopicsGroup;
 
     @JsonProperty
@@ -180,6 +183,16 @@ public class StreamSubscription {
      */
     public UserGroupSetting getCanCreateTopicGroup() {
         return canCreateTopicGroup;
+    }
+
+    /**
+     * Returns whether mobile push notifications are enabled by default when a user first subscribes to this channel.
+     * Requires Zulip 13 or later.
+     *
+     * @return {@code true} if push notifications are enabled by default for new subscribers
+     */
+    public boolean isDefaultPushNotifications() {
+        return defaultPushNotifications;
     }
 
     public UserGroupSetting getCanResolveTopicsGroup() {

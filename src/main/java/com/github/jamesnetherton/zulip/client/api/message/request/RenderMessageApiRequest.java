@@ -16,6 +16,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 public class RenderMessageApiRequest extends ZulipApiRequest implements ExecutableApiRequest<String> {
 
     public static final String CONTENT = "content";
+    public static final String POPULATE_URL_EMBED_DATA = "populate_url_embed_data";
 
     /**
      * Constructs a {@link RenderMessageApiRequest}.
@@ -26,6 +27,22 @@ public class RenderMessageApiRequest extends ZulipApiRequest implements Executab
     public RenderMessageApiRequest(ZulipHttpClient client, String content) {
         super(client);
         putParam(CONTENT, content);
+    }
+
+    /**
+     * Sets whether the server should populate URL embed data for links in the content. Data the server already has is
+     * included in the rendered content. The rest is fetched asynchronously and delivered via a {@code url_embed_data}
+     * event.
+     *
+     * @see                         <a href=
+     *                              "https://zulip.com/api/render-message#parameter-populate_url_embed_data">https://zulip.com/api/render-message#parameter-populate_url_embed_data</a>
+     *
+     * @param  populateUrlEmbedData {@code true} to populate URL embed data for the content's links
+     * @return                      This {@link RenderMessageApiRequest} instance
+     */
+    public RenderMessageApiRequest withPopulateUrlEmbedData(boolean populateUrlEmbedData) {
+        putParam(POPULATE_URL_EMBED_DATA, populateUrlEmbedData);
+        return this;
     }
 
     /**

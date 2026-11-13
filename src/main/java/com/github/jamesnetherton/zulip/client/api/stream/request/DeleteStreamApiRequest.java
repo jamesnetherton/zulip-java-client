@@ -11,7 +11,7 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 /**
  * Zulip API request builder for deleting a stream.
  *
- * @see <a href="https://zulip.com/api/delete-stream">https://zulip.com/api/delete-stream</a>
+ * @see <a href="https://zulip.com/api/archive-stream">https://zulip.com/api/archive-stream</a>
  */
 public class DeleteStreamApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 
