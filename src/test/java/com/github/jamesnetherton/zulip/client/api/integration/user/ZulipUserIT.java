@@ -2,6 +2,7 @@ package com.github.jamesnetherton.zulip.client.api.integration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZulipUserIT extends ZulipIntegrationTestBase {
 
@@ -132,7 +134,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertEquals("test@test.com", user.getEmail());
         assertEquals("tester", user.getFullName());
         assertEquals("Europe/London", user.getTimezone());
-        assertEquals(1, user.getAvatarVersion());
+        assertTrue(user.getAvatarVersion() >= 1);
         assertEquals(ownUser.getUserId(), user.getUserId());
         assertTrue(user.isActive());
         assertTrue(user.isAdmin());
@@ -183,7 +185,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
     }
 
     @Test
-    public void userAttachments() throws Exception {
+    public void userAttachments(@TempDir Path tempDir) throws Exception {
         String streamName = UUID.randomUUID().toString().split("-")[0];
         zulip.streams().subscribe(
                 StreamSubscriptionRequest.of(streamName, streamName))
@@ -192,7 +194,7 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
                 .withInviteOnly(false)
                 .execute();
 
-        Path tmpFile = Files.createTempFile("zulip", ".txt");
+        Path tmpFile = tempDir.resolve("zulip.txt");
         Files.writeString(tmpFile, "test content");
 
         File file = tmpFile.toFile();
@@ -623,5 +625,19 @@ public class ZulipUserIT extends ZulipIntegrationTestBase {
         assertNull(userStatus.getEmojiCode());
         assertNull(userStatus.getEmojiName());
         assertNull(userStatus.getReactionType());
+    }
+
+    @Test
+    public void uploadAndDeleteAvatar() throws ZulipClientException {
+        File avatar = new File("./src/test/resources/com/github/jamesnetherton/zulip/client/api/server/emoji/smile.png");
+
+        String uploadedAvatarUrl = zulip.users().uploadAvatar(avatar).execute();
+        assertNotNull(uploadedAvatarUrl);
+        assertTrue(uploadedAvatarUrl.contains("/user_avatars/"));
+        assertEquals(uploadedAvatarUrl, zulip.users().getOwnUser().execute().getAvatarUrl());
+
+        String defaultAvatarUrl = zulip.users().deleteAvatar().execute();
+        assertNotNull(defaultAvatarUrl);
+        assertNotEquals(uploadedAvatarUrl, defaultAvatarUrl);
     }
 }

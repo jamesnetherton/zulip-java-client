@@ -9,10 +9,13 @@ import com.github.jamesnetherton.zulip.client.api.server.request.AddRealmDomainA
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueButtonVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateConstructorGroupsVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.CreateGoogleMeetVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateNextcloudTalkVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateWebexVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeactivateEmojiApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.DeactivateRealmApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.DeleteDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteLinkifierApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.DeleteRealmDomainApiRequest;
@@ -40,6 +43,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushT
 import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateBotStorageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UploadEmojiApiRequest;
@@ -128,7 +132,7 @@ public class ServerService implements ZulipService {
     /**
      * Uploads a custom emoji image file.
      *
-     * @see              <a href="https://zulip.com/help/add-custom-emoji">https://zulip.com/help/add-custom-emoji</a>
+     * @see              <a href="https://zulip.com/api/upload-custom-emoji">https://zulip.com/api/upload-custom-emoji</a>
      *
      * @param  name      The name of the emoji
      * @param  emojiFile The file containing the emoji image to be uploaded
@@ -204,7 +208,7 @@ public class ServerService implements ZulipService {
      * Removes a domain from the set of allowed email domains in the organization. Requires organization owner permissions.
      *
      * @see           <a href=
-     *                "https://zulip.com/api/remove-realm-domain">https://zulip.com/api/remove-realm-domain</a>
+     *                "https://zulip.com/api/delete-realm-domain">https://zulip.com/api/delete-realm-domain</a>
      *
      * @param  domain The domain to remove
      * @return        The {@link DeleteRealmDomainApiRequest} builder object
@@ -285,11 +289,27 @@ public class ServerService implements ZulipService {
     /**
      * Deletes a custom profile field.
      *
+     * @see                   <a href=
+     *                        "https://zulip.com/api/delete-custom-profile-field">https://zulip.com/api/delete-custom-profile-field</a>
+     *
      * @param  profileFieldId The id of the profile field to delete
      * @return                The {@link DeleteProfileFieldApiRequest} builder object.
      */
     public DeleteProfileFieldApiRequest deleteCustomProfileField(long profileFieldId) {
         return new DeleteProfileFieldApiRequest(this.client, profileFieldId);
+    }
+
+    /**
+     * Updates a custom profile field. Requires Zulip 13 or later.
+     *
+     * @see                   <a href=
+     *                        "https://zulip.com/api/update-custom-profile-field">https://zulip.com/api/update-custom-profile-field</a>
+     *
+     * @param  profileFieldId The id of the profile field to update
+     * @return                The {@link UpdateProfileFieldApiRequest} builder object
+     */
+    public UpdateProfileFieldApiRequest updateCustomProfileField(long profileFieldId) {
+        return new UpdateProfileFieldApiRequest(this.client, profileFieldId);
     }
 
     /**
@@ -493,6 +513,19 @@ public class ServerService implements ZulipService {
     }
 
     /**
+     * Creates a Google Meet video call URL. Requires the Google Meet integration to be configured on the Zulip server and
+     * Zulip 13 or later.
+     *
+     * @see    <a href=
+     *         "https://zulip.com/api/create-google-meet-video-call">https://zulip.com/api/create-google-meet-video-call</a>
+     *
+     * @return The {@link CreateGoogleMeetVideoCallApiRequest} builder object
+     */
+    public CreateGoogleMeetVideoCallApiRequest createGoogleMeetVideoCall() {
+        return new CreateGoogleMeetVideoCallApiRequest(this.client);
+    }
+
+    /**
      * Gets all data exports.
      *
      * @see    <a href="https://zulip.com/api/get-realm-exports">https://zulip.com/api/get-realm-exports</a>
@@ -512,6 +545,29 @@ public class ServerService implements ZulipService {
      */
     public CreateDataExportApiRequest createDataExport() {
         return new CreateDataExportApiRequest(this.client);
+    }
+
+    /**
+     * Deletes a data export. Exports carried across a realm import from a previous server cannot be deleted.
+     *
+     * @see             <a href="https://zulip.com/api/delete-realm-export">https://zulip.com/api/delete-realm-export</a>
+     *
+     * @param  exportId The id of the data export to delete
+     * @return          The {@link DeleteDataExportApiRequest} builder object
+     */
+    public DeleteDataExportApiRequest deleteDataExport(long exportId) {
+        return new DeleteDataExportApiRequest(this.client, exportId);
+    }
+
+    /**
+     * Deactivates the organization, logging out all of its users. Requires organization owner permissions.
+     *
+     * @see    <a href="https://zulip.com/api/deactivate-realm">https://zulip.com/api/deactivate-realm</a>
+     *
+     * @return The {@link DeactivateRealmApiRequest} builder object
+     */
+    public DeactivateRealmApiRequest deactivateRealm() {
+        return new DeactivateRealmApiRequest(this.client);
     }
 
     /**
@@ -550,30 +606,16 @@ public class ServerService implements ZulipService {
     }
 
     /**
-     * Registers a E2E mobile push device.
+     * Registers a device to receive end-to-end encrypted mobile push notifications, or rotates the push key or token of an
+     * existing registration.
      *
-     * @see                              <a href=
-     *                                   "https://zulip.com/api/e2ee-test-notify">https://zulip.com/api/e2ee-test-notify</a>
+     * @see             <a href="https://zulip.com/api/register-push-device">https://zulip.com/api/register-push-device</a>
      *
-     * @param  tokenKind                 The {@link TokenKind} for how the token was generated
-     * @param  pushAccountId             Random integer to be included in mobile push notifications & encrypted payloads to
-     *                                   identify pushes as being related to this registration
-     * @param  pushPublicKey             Push public key encoded using an RFC 4648 standard base64 encoder
-     * @param  bouncerPublicKey          Bouncer public key encoded using an RFC 4648 standard base64 encoder
-     * @param  encryptedPushRegistration Ciphertext generated by encrypting a PushRegistration Map using the bouncer_public_key
-     *                                   field. Encoded using an RFC 4648 standard base64 encoder. The PushRegistration map
-     *                                   contains fields token, token_kind, timestamp, and for iOS devices ios_app_id. The map
-     *                                   must be JSON encoded before encryption.
-     * @return                           The {@link RegisterE2EMobilePushDevice} builder object
+     * @param  deviceId The id of the device returned by {@link #registerClientDevice()}
+     * @return          The {@link RegisterE2EMobilePushDevice} builder object
      */
-    public RegisterE2EMobilePushDevice registerE2EMobilePushDevice(
-            TokenKind tokenKind,
-            int pushAccountId,
-            String pushPublicKey,
-            String bouncerPublicKey,
-            String encryptedPushRegistration) {
-        return new RegisterE2EMobilePushDevice(this.client, tokenKind, pushAccountId, pushPublicKey, bouncerPublicKey,
-                encryptedPushRegistration);
+    public RegisterE2EMobilePushDevice registerE2EMobilePushDevice(long deviceId) {
+        return new RegisterE2EMobilePushDevice(this.client, deviceId);
     }
 
     /**

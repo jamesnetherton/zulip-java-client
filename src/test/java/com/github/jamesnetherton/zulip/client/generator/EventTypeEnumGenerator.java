@@ -22,7 +22,7 @@ import tools.jackson.dataformat.yaml.YAMLFactory;
 public class EventTypeEnumGenerator {
     private static final String ENUM_VALUE_INDENT = " ".repeat(4);
     private static final String EVENT_PACKAGE = Event.class.getPackageName();
-    private static final String ZULIP_OPENAPI_YAML = "https://raw.githubusercontent.com/zulip/zulip/12.3/zerver/openapi/zulip.yaml";
+    private static final String ZULIP_OPENAPI_YAML = "https://raw.githubusercontent.com/zulip/zulip/13.0/zerver/openapi/zulip.yaml";
     private static final Path ZULIP_ENUM_JAVA = Paths
             .get("src/main/java/com/github/jamesnetherton/zulip/client/api/event/EventType.java");
 

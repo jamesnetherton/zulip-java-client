@@ -24,7 +24,7 @@ public class GetMessagesApiRequest extends ZulipApiRequest
     public static final String ALLOW_EMPTY_TOPIC_NAME = "allow_empty_topic_name";
     public static final String ANCHOR = "anchor";
     public static final String ANCHOR_DATE = "anchor_date";
-    public static final String GRAVATAR = "gravatar";
+    public static final String GRAVATAR = "client_gravatar";
     public static final String INCLUDE_ANCHOR = "include_anchor";
     public static final String MARKDOWN = "apply_markdown";
     public static final String MESSAGE_IDS = "message_ids";

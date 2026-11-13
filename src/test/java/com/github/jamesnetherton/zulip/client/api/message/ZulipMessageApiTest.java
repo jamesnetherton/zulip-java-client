@@ -8,6 +8,7 @@ import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZulipMessageApiTest extends ZulipApiTestBase {
 
@@ -215,8 +217,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void fileUpload() throws Exception {
-        Path tmpFile = Files.createTempFile("zulip", ".txt");
+    public void fileUpload(@TempDir Path tempDir) throws Exception {
+        Path tmpFile = tempDir.resolve("zulip.txt");
         Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
 
         stubMultiPartZulipResponse(POST, "/user_uploads", "fileUpload.json");
@@ -227,8 +229,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     }
 
     @Test
-    public void fileUploadWithUnrecognizedFileType() throws Exception {
-        Path tmpFile = Files.createTempFile("zulip", ".zzzunknown");
+    public void fileUploadWithUnrecognizedFileType(@TempDir Path tempDir) throws Exception {
+        Path tmpFile = tempDir.resolve("zulip.zzzunknown");
         Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
         assumeTrue(Files.probeContentType(tmpFile) == null, "Platform recognized the file type");
 
@@ -322,6 +324,8 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
 
         List<MessageFlag> flags = message.getFlags();
         assertEquals(MessageFlag.values().length, flags.size());
+        assertTrue(flags.contains(MessageFlag.HIDE_LINK_PREVIEWS));
+        assertTrue(flags.contains(MessageFlag.UNKNOWN));
 
         List<MessageReaction> reactions = message.getReactions();
         assertEquals(3, reactions.size());
@@ -492,7 +496,7 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .add(GetMessagesApiRequest.NUM_BEFORE, "3")
                 .add(GetMessagesApiRequest.NUM_AFTER, "1")
                 .add(GetMessagesApiRequest.MARKDOWN, "true")
-                .add(GetMessagesApiRequest.GRAVATAR, "true")
+                .add("client_gravatar", "true")
                 .add(GetMessagesApiRequest.NARROW,
                         "[{\"operator\":\"foo\",\"operand\":\"bar\",\"negated\":false},{\"operator\":\"cheese\",\"operand\":\"wine\",\"negated\":true}]")
                 .get();
@@ -757,11 +761,12 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
     public void renderMessage() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(RenderMessageApiRequest.CONTENT, "test")
+                .add(RenderMessageApiRequest.POPULATE_URL_EMBED_DATA, "true")
                 .get();
 
         stubZulipResponse(POST, "/messages/render", params, "renderMessage.json");
 
-        String rendered = zulip.messages().renderMessage("test").execute();
+        String rendered = zulip.messages().renderMessage("test").withPopulateUrlEmbedData(true).execute();
 
         assertEquals("<p><strong>test</strong></p>", rendered);
     }
@@ -944,6 +949,39 @@ public class ZulipMessageApiTest extends ZulipApiTestBase {
                 .execute();
 
         assertEquals(42, messageId);
+    }
+
+    @Test
+    public void sendStreamMessageWithResult() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendMessageApiRequest.CONTENT, "test stream message")
+                .add(SendMessageApiRequest.TO, "test stream")
+                .add(SendMessageApiRequest.TOPIC, "test topic")
+                .add(SendMessageApiRequest.TYPE, MessageType.STREAM.toString())
+                .get();
+
+        stubZulipResponse(POST, "/messages", params, "sendMessageWithLinks.json");
+
+        SendMessageResult result = zulip.messages().sendStreamMessage("test stream message", "test stream", "test topic")
+                .executeWithResult();
+
+        assertEquals(42, result.getId());
+        assertEquals("https://zulip.example.com/#narrow/channel/9-test-stream/topic/test.20topic/near/42",
+                result.getMessageUrl());
+        assertEquals(
+                "[#test stream > test topic @ 💬](https://zulip.example.com/#narrow/channel/9-test-stream/topic/test.20topic/near/42)",
+                result.getMessageLink());
+    }
+
+    @Test
+    public void sendMessageWithResultFromServerWithoutLinks() throws Exception {
+        stubZulipResponse(POST, "/messages", QueryParams.create().get(), "sendMessage.json");
+
+        SendMessageResult result = zulip.messages().sendDirectMessage("test", 1L).executeWithResult();
+
+        assertEquals(42, result.getId());
+        assertNull(result.getMessageUrl());
+        assertNull(result.getMessageLink());
     }
 
     @Test

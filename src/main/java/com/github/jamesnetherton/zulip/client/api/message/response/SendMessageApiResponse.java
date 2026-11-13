@@ -13,7 +13,21 @@ public class SendMessageApiResponse extends ZulipApiResponse {
     @JsonProperty
     private long id;
 
+    @JsonProperty
+    private String messageUrl;
+
+    @JsonProperty
+    private String messageLink;
+
     public long getId() {
         return id;
+    }
+
+    public String getMessageUrl() {
+        return messageUrl;
+    }
+
+    public String getMessageLink() {
+        return messageLink;
     }
 }

@@ -10,6 +10,8 @@ import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
 
 /**
  * Zulip API request builder for deleting a custom profile field.
+ *
+ * @see <a href="https://zulip.com/api/delete-custom-profile-field">https://zulip.com/api/delete-custom-profile-field</a>
  */
 public class DeleteProfileFieldApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 

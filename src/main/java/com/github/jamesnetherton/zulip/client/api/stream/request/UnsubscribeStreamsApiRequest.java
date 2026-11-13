@@ -16,6 +16,7 @@ public class UnsubscribeStreamsApiRequest extends ZulipApiRequest implements Exe
 
     public static final String SUBSCRIPTIONS = "subscriptions";
     public static final String PRINCIPALS = "principals";
+    public static final String SEND_MESSAGES_TO_REMOVED_SUBSCRIBERS = "send_messages_to_removed_subscribers";
 
     /**
      * Constructs a {@link UnsubscribeStreamsApiRequest}.
@@ -47,6 +48,21 @@ public class UnsubscribeStreamsApiRequest extends ZulipApiRequest implements Exe
      */
     public UnsubscribeStreamsApiRequest withPrincipals(long... userIds) {
         putParamAsJsonString(PRINCIPALS, userIds);
+        return this;
+    }
+
+    /**
+     * Sets whether Notification Bot should send a direct message to other users unsubscribed from channels by this request.
+     * Requires Zulip 13 or later.
+     *
+     * <a href=
+     * "https://zulip.com/api/unsubscribe#parameter-send_messages_to_removed_subscribers">https://zulip.com/api/unsubscribe#parameter-send_messages_to_removed_subscribers</a>
+     *
+     * @param  sendMessagesToRemovedSubscribers {@code true} to notify users who were unsubscribed by this request
+     * @return                                  This {@link UnsubscribeStreamsApiRequest} instance
+     */
+    public UnsubscribeStreamsApiRequest withSendMessagesToRemovedSubscribers(boolean sendMessagesToRemovedSubscribers) {
+        putParam(SEND_MESSAGES_TO_REMOVED_SUBSCRIBERS, sendMessagesToRemovedSubscribers);
         return this;
     }
 

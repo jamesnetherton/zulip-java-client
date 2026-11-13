@@ -14,6 +14,7 @@ import com.github.jamesnetherton.zulip.client.api.stream.StreamPostPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscription;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionResult;
+import com.github.jamesnetherton.zulip.client.api.stream.StreamUnsubscribeResult;
 import com.github.jamesnetherton.zulip.client.api.stream.Topic;
 import com.github.jamesnetherton.zulip.client.api.stream.TopicVisibilityPolicy;
 import com.github.jamesnetherton.zulip.client.api.user.UserGroup;
@@ -211,6 +212,9 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         // Create
         zulip.channels().subscribe(
                 StreamSubscriptionRequest.of(streamName, streamName))
+                .withDefaultPushNotifications(true)
+                .withCanCreateTopicGroup(UserGroupSetting.of(14))
+                .withSendNewSubscriptionMessages(false)
                 .execute();
 
         // Check subscriptions
@@ -226,7 +230,7 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertFalse(streamSubscription.isInviteOnly());
         assertFalse(streamSubscription.isMuted());
         assertFalse(streamSubscription.isPinToTop());
-        assertFalse(streamSubscription.isPushNotifications());
+        assertTrue(streamSubscription.isPushNotifications());
         assertFalse(streamSubscription.isWebPublic());
         assertFalse(streamSubscription.isWildcardMentionsNotify());
         assertEquals(TopicPolicy.INHERIT, streamSubscription.getTopicPolicy());
@@ -241,6 +245,8 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertTrue(streamSubscription.getStreamId() > 0);
         assertEquals(0, streamSubscription.getStreamWeeklyTraffic());
         assertEquals(11, streamSubscription.getCanRemoveSubscribersGroup().getUserGroupId());
+        assertEquals(14, streamSubscription.getCanCreateTopicGroup().getUserGroupId());
+        assertTrue(streamSubscription.isDefaultPushNotifications());
         assertEquals(1, streamSubscription.getSubscriberCount());
 
         List<String> subscribers = streamSubscription.getSubscribers();
@@ -256,7 +262,10 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertTrue(zulip.channels().isSubscribed(ownUser.getUserId(), streamId).execute());
 
         // Unsubscribe
-        zulip.channels().unsubscribe(streamName).execute();
+        StreamUnsubscribeResult unsubscribeResult = zulip.channels().unsubscribe(streamName)
+                .withSendMessagesToRemovedSubscribers(false)
+                .execute();
+        assertFalse(unsubscribeResult.isMessagesSentToRemovedSubscribers());
         assertFalse(zulip.channels().isSubscribed(ownUser.getUserId(), streamId).execute());
     }
 
@@ -396,6 +405,8 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
                 .withTopicPolicy(TopicPolicy.ALLOW_EMPTY_TOPIC)
                 .withHistoryPublicToSubscribers(true)
                 .withMessageRetentionDays(30)
+                .withDefaultPushNotifications(true)
+                .withCanCreateTopicGroup(UserGroupSetting.of(14))
                 .execute();
 
         assertTrue(channelId > 0);
@@ -408,6 +419,17 @@ public class ZulipStreamIT extends ZulipIntegrationTestBase {
         assertEquals(30, channel.getMessageRetentionDays());
         assertTrue(channel.isInviteOnly());
         assertTrue(channel.isHistoryPublicToSubscribers());
+        assertTrue(channel.isDefaultPushNotifications());
+        assertEquals(14, channel.getCanCreateTopicGroup().getUserGroupId());
+
+        zulip.channels().updateStream(channelId)
+                .withDefaultPushNotifications(false)
+                .withCanCreateTopicGroup(UserGroupSetting.of(15))
+                .execute();
+
+        channel = zulip.channels().getStream(channelId).execute();
+        assertFalse(channel.isDefaultPushNotifications());
+        assertEquals(15, channel.getCanCreateTopicGroup().getUserGroupId());
 
         zulip.streams().delete(channelId).execute();
 

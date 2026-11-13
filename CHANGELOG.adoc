@@ -1,5 +1,37 @@
 = Changelog
 
+== 0.11.0
+
+==== Enhancements
+
+* Zulip 13 support
+* `SendMessageApiRequest.executeWithResult()` returns a `SendMessageResult` with the message URL and Markdown link
+* `MessageFlag.HIDE_LINK_PREVIEWS` added; unrecognized message flags now deserialize to `MessageFlag.UNKNOWN` instead of failing
+* New endpoints: `createGoogleMeetVideoCall()`, `updateCustomProfileField()`, `deleteDataExport()`, `deactivateRealm()`, `uploadAvatar()`, `deleteAvatar()`
+* `withDefaultPushNotifications()` on create channel, subscribe and update stream requests; `isDefaultPushNotifications()` on `Stream` and `StreamSubscription`
+* `withCanCreateTopicGroup()` on create channel, subscribe and update stream requests
+* `withExampleInput()`, `withReverseTemplate()` and `withAlternativeUrlTemplates()` on add and update linkifier requests
+* `withUseForUserMatching()` on create custom profile field requests
+* `withPopulateUrlEmbedData()` on render message requests
+* `withSendMessagesToRemovedSubscribers()` on unsubscribe requests and `StreamUnsubscribeResult.isMessagesSentToRemovedSubscribers()`
+* `DataExport.isExportFromPriorServer()`
+* `SubscribeStreamsApiRequest.withSendNewSubscriptionMessages()` restored
+* `EventType.HAS_GOOGLE_MEET_TOKEN` and `EventType.URL_EMBED_DATA` added
+
+==== Bug fixes
+
+* `GetMessagesApiRequest.withGravatar()` sent `gravatar` instead of `client_gravatar`, so the setting was ignored by the server
+
+==== Breaking changes
+
+* `RegisterE2EMobilePushDevice` updated for the redesigned Zulip API. `registerE2EMobilePushDevice()` now takes a device id, with the push key and token set via `withPushKey()` and `withToken()`
+* `SendE2EMobilePushTestNotification.pushAccountId()` removed; replaced by `withDeviceId()`
+* `CreateChannelApiRequest.withSendNewSubscriptionMessages()` removed; the parameter is not supported by the create channel endpoint. Use `SubscribeStreamsApiRequest.withSendNewSubscriptionMessages()` instead
+
+==== Deprecations
+
+* `MessageService.markStreamAsRead()` and `MessageService.markTopicAsRead()` are deprecated; use `updateMessageFlagsForNarrow()` instead
+
 == 0.10.1
 
 ==== Bug fixes

@@ -13,7 +13,7 @@ import java.io.File;
 /**
  * Zulip API request builder for uploading custom emoji images.
  *
- * @see <a href="https://zulip.com/help/add-custom-emoji">https://zulip.com/help/add-custom-emoji</a>
+ * @see <a href="https://zulip.com/api/upload-custom-emoji">https://zulip.com/api/upload-custom-emoji</a>
  */
 public class UploadEmojiApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 

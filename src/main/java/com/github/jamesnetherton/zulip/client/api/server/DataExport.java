@@ -28,6 +28,9 @@ public class DataExport {
     @JsonProperty
     private DataExportType exportType;
 
+    @JsonProperty
+    private boolean exportFromPriorServer;
+
     public long getId() {
         return id;
     }
@@ -58,5 +61,15 @@ public class DataExport {
 
     public DataExportType getExportType() {
         return exportType;
+    }
+
+    /**
+     * Returns whether the export was carried across a realm import from a previous server, in which case its data is not
+     * stored on this server. Requires Zulip 13 or later, or Zulip 12.1 or later.
+     *
+     * @return {@code true} if the export happened on a previous server
+     */
+    public boolean isExportFromPriorServer() {
+        return exportFromPriorServer;
     }
 }

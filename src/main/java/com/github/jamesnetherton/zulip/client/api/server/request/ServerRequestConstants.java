@@ -5,12 +5,14 @@ final class ServerRequestConstants {
     public static final String CALLS_CONSTRUCTOR_GROUPS = "calls/constructorgroups/create";
     public static final String CALLS_NEXTCLOUD_TALK = "calls/nextcloud_talk/create";
     public static final String CALLS_WEBEX = "calls/webex/create";
+    public static final String CALLS_GOOGLE_MEET = "calls/google_meet/create";
     public static final String REGISTER_CLIENT_DEVICE = "register_client_device";
     public static final String REMOVE_CLIENT_DEVICE = "remove_client_device";
     public static final String BOT_STORAGE = "bot_storage";
     public static final String DEV_FETCH_API_KEY = "dev_fetch_api_key";
     public static final String EXPORT_REALM = "export/realm";
     public static final String EXPORT_REALM_CONSENTS = "export/realm/consents";
+    public static final String EXPORT_REALM_WITH_ID = EXPORT_REALM + "/%d";
     public static final String FETCH_API_KEY = "fetch_api_key";
     public static final String JWT_FETCH_API_KEY = "jwt/fetch_api_key";
     public static final String MOBILE_PUSH = "mobile_push";
@@ -18,6 +20,7 @@ final class ServerRequestConstants {
     public static final String MOBILE_PUSH_TEST = MOBILE_PUSH + "/test_notification";
     public static final String MOBILE_E2E_PUSH_TEST = MOBILE_PUSH + "/e2ee/test_notification";
     public static final String REALM = "realm";
+    public static final String REALM_DEACTIVATE = REALM + "/deactivate";
     public static final String REALM_EMOJI = REALM + "/emoji";
     public static final String REALM_EMOJI_WITH_NAME = REALM_EMOJI + "/%s";
     public static final String REALM_FILTERS = REALM + "/filters";

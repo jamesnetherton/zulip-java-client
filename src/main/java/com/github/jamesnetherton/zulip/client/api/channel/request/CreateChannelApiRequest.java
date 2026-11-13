@@ -24,7 +24,8 @@ public class CreateChannelApiRequest extends ZulipApiRequest implements Executab
     public static final String IS_WEB_PUBLIC = "is_web_public";
     public static final String IS_DEFAULT_STREAM = "is_default_stream";
     public static final String FOLDER_ID = "folder_id";
-    public static final String SEND_NEW_SUBSCRIPTION_MESSAGES = "send_new_subscription_messages";
+    public static final String DEFAULT_PUSH_NOTIFICATIONS = "default_push_notifications";
+    public static final String CAN_CREATE_TOPIC_GROUP = "can_create_topic_group";
     public static final String TOPICS_POLICY = "topics_policy";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
@@ -135,23 +136,6 @@ public class CreateChannelApiRequest extends ZulipApiRequest implements Executab
     }
 
     /**
-     * Sets whether any other users newly subscribed via this request should be sent a notification bot direct message notifying
-     * them about their new subscription.
-     *
-     * @see                                <a href=
-     *                                     "https://zulip.com/api/create-channel#parameter-send_new_subscription_messages">https://zulip.com/api/create-channel#parameter-send_new_subscription_messages</a>
-     *
-     * @param  sendNewSubscriptionMessages {@code true} to have any other users newly subscribed via this request be sent a
-     *                                     notification bot direct message. {@code false} to not have newly subscribed users
-     *                                     notified
-     * @return                             This {@link CreateChannelApiRequest} instance
-     */
-    public CreateChannelApiRequest withSendNewSubscriptionMessages(boolean sendNewSubscriptionMessages) {
-        putParam(SEND_NEW_SUBSCRIPTION_MESSAGES, sendNewSubscriptionMessages);
-        return this;
-    }
-
-    /**
      * Sets whether named topics and the empty topic are enabled in this channel.
      *
      * <a href=
@@ -193,6 +177,35 @@ public class CreateChannelApiRequest extends ZulipApiRequest implements Executab
      */
     public CreateChannelApiRequest withMessageRetentionDays(int messageRetentionDays) {
         putParam(MESSAGE_RETENTION_DAYS, messageRetentionDays);
+        return this;
+    }
+
+    /**
+     * Sets whether mobile push notifications are enabled by default when a user first subscribes to the channel. Requires
+     * Zulip 13 or later.
+     *
+     * <a href=
+     * "https://zulip.com/api/create-channel#parameter-default_push_notifications">https://zulip.com/api/create-channel#parameter-default_push_notifications</a>
+     *
+     * @param  defaultPushNotifications {@code true} to enable push notifications by default for new subscribers
+     * @return                          This {@link CreateChannelApiRequest} instance
+     */
+    public CreateChannelApiRequest withDefaultPushNotifications(boolean defaultPushNotifications) {
+        putParam(DEFAULT_PUSH_NOTIFICATIONS, defaultPushNotifications);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to create new topics in this channel.
+     *
+     * <a href=
+     * "https://zulip.com/api/create-channel#parameter-can_create_topic_group">https://zulip.com/api/create-channel#parameter-can_create_topic_group</a>
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to create new topics
+     * @return                  This {@link CreateChannelApiRequest} instance
+     */
+    public CreateChannelApiRequest withCanCreateTopicGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_CREATE_TOPIC_GROUP, userGroupSetting);
         return this;
     }
 

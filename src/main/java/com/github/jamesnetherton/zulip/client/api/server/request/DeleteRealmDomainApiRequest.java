@@ -12,7 +12,7 @@ import com.github.jamesnetherton.zulip.client.util.ZulipUrlUtils;
 /**
  * Zulip API request builder for removing an allowed domain from the organization.
  *
- * @see <a href="https://zulip.com/api/remove-realm-domain">https://zulip.com/api/remove-realm-domain</a>
+ * @see <a href="https://zulip.com/api/delete-realm-domain">https://zulip.com/api/delete-realm-domain</a>
  */
 public class DeleteRealmDomainApiRequest extends ZulipApiRequest implements VoidExecutableApiRequest {
 

@@ -144,7 +144,7 @@ public class StreamService implements ZulipService {
     /**
      * Deletes a stream.
      *
-     * @see             <a href="https://zulip.com/api/delete-stream">https://zulip.com/api/delete-stream</a>
+     * @see             <a href="https://zulip.com/api/archive-stream">https://zulip.com/api/archive-stream</a>
      *
      * @param  streamId The id of the stream to delete
      * @return          The {@link DeleteStreamApiRequest} builder object

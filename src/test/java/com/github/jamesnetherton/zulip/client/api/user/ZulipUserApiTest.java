@@ -40,11 +40,15 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupAp
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserStatusApiRequest;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -1034,5 +1038,26 @@ public class ZulipUserApiTest extends ZulipApiTestBase {
 
         List<Long> channelIds = zulip.users().getUserChannels(5).execute();
         assertEquals(List.of(3L, 5L, 10L), channelIds);
+    }
+
+    @Test
+    public void uploadAvatar(@TempDir Path tempDir) throws Exception {
+        Path tmpFile = tempDir.resolve("avatar.txt");
+        Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
+
+        stubMultiPartZulipResponse(POST, "/users/me/avatar", "avatar.json");
+
+        String avatarUrl = zulip.users().uploadAvatar(tmpFile.toFile()).execute();
+
+        assertEquals("https://zulip.example.com/user_avatars/2/avatar.png?version=2", avatarUrl);
+    }
+
+    @Test
+    public void deleteAvatar() throws Exception {
+        stubZulipResponse(DELETE, "/users/me/avatar", Collections.emptyMap(), "deleteAvatar.json");
+
+        String avatarUrl = zulip.users().deleteAvatar().execute();
+
+        assertEquals("https://secure.gravatar.com/avatar/abc123?d=identicon&version=3", avatarUrl);
     }
 }

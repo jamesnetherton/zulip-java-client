@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Zulip API request builder for checking if a set of messages matches a narrow.
  *
- * @see <a href="https://zulip.com/api/check-narrow-matches">https://zulip.com/api/check-narrow-matches</a>
+ * @see <a href="https://zulip.com/api/check-messages-match-narrow">https://zulip.com/api/check-messages-match-narrow</a>
  * @see <a href="https://zulip.com/api/construct-narrow">https://zulip.com/api/construct-narrow</a>
  */
 public class MatchesNarrowApiRequest extends ZulipApiRequest
@@ -37,7 +37,7 @@ public class MatchesNarrowApiRequest extends ZulipApiRequest
      * Sets the mandatory message ids to check.
      *
      * @see               <a href=
-     *                    "https://zulip.com/api/check-narrow-matches#parameter-msg_ids">https://zulip.com/api/check-narrow-matches#parameter-msg_ids</a>
+     *                    "https://zulip.com/api/check-messages-match-narrow#parameter-msg_ids">https://zulip.com/api/check-messages-match-narrow#parameter-msg_ids</a>
      *
      * @param  messageIds One or message ids to check
      * @return            This {@link MatchesNarrowApiRequest} instance
@@ -51,7 +51,7 @@ public class MatchesNarrowApiRequest extends ZulipApiRequest
      * Sets the narrow expressions to check.
      *
      * @see            <a href=
-     *                 "https://zulip.com/api/check-narrow-matches#parameter-narrow">https://zulip.com/api/check-narrow-matches#parameter-narrow</a>
+     *                 "https://zulip.com/api/check-messages-match-narrow#parameter-narrow">https://zulip.com/api/check-messages-match-narrow#parameter-narrow</a>
      *
      * @param  narrows One or {@link Narrow} expressions to check
      * @return         This {@link MatchesNarrowApiRequest} instance

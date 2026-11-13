@@ -24,6 +24,9 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
     public static final String ANNOUNCE = "announce";
     public static final String INVITE_ONLY = "invite_only";
     public static final String IS_DEFAULT_STREAM = "is_default_stream";
+    public static final String SEND_NEW_SUBSCRIPTION_MESSAGES = "send_new_subscription_messages";
+    public static final String DEFAULT_PUSH_NOTIFICATIONS = "default_push_notifications";
+    public static final String CAN_CREATE_TOPIC_GROUP = "can_create_topic_group";
     public static final String IS_WEB_PUBLIC = "is_web_public";
     public static final String HISTORY_PUBLIC_TO_SUBSCRIBERS = "history_public_to_subscribers";
     public static final String MESSAGE_RETENTION_DAYS = "message_retention_days";
@@ -166,6 +169,50 @@ public class SubscribeStreamsApiRequest extends ZulipApiRequest implements Execu
      */
     public SubscribeStreamsApiRequest withMessageRetention(RetentionPolicy messageRetentionPolicy) {
         putParamAsJsonString(MESSAGE_RETENTION_DAYS, messageRetentionPolicy.toString());
+        return this;
+    }
+
+    /**
+     * Sets whether mobile push notifications are enabled by default when a user first subscribes to the channel. Requires
+     * Zulip 13 or later.
+     *
+     * <a href=
+     * "https://zulip.com/api/subscribe#parameter-default_push_notifications">https://zulip.com/api/subscribe#parameter-default_push_notifications</a>
+     *
+     * @param  defaultPushNotifications {@code true} to enable push notifications by default for new subscribers
+     * @return                          This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withDefaultPushNotifications(boolean defaultPushNotifications) {
+        putParam(DEFAULT_PUSH_NOTIFICATIONS, defaultPushNotifications);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to create new topics in this channel.
+     *
+     * <a href=
+     * "https://zulip.com/api/subscribe#parameter-can_create_topic_group">https://zulip.com/api/subscribe#parameter-can_create_topic_group</a>
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to create new topics
+     * @return                  This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withCanCreateTopicGroup(UserGroupSetting userGroupSetting) {
+        putParamAsJsonString(CAN_CREATE_TOPIC_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets whether other users newly subscribed via this request should be sent a Notification Bot direct message about
+     * their new subscription.
+     *
+     * <a href=
+     * "https://zulip.com/api/subscribe#parameter-send_new_subscription_messages">https://zulip.com/api/subscribe#parameter-send_new_subscription_messages</a>
+     *
+     * @param  sendNewSubscriptionMessages {@code true} to notify newly subscribed users. {@code false} to not notify them
+     * @return                             This {@link SubscribeStreamsApiRequest} instance
+     */
+    public SubscribeStreamsApiRequest withSendNewSubscriptionMessages(boolean sendNewSubscriptionMessages) {
+        putParam(SEND_NEW_SUBSCRIPTION_MESSAGES, sendNewSubscriptionMessages);
         return this;
     }
 

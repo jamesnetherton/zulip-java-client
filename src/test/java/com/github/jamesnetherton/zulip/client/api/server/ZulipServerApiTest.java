@@ -21,6 +21,7 @@ import com.github.jamesnetherton.zulip.client.api.server.request.CreateBigBlueBu
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateDataExportApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateNextcloudTalkVideoCallApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.CreateProfileFieldApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.DeactivateRealmApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetApiKeyApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.GetBotStorageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.JwtFetchApiKeyApiRequest;
@@ -31,9 +32,12 @@ import com.github.jamesnetherton.zulip.client.api.server.request.RemoveClientDev
 import com.github.jamesnetherton.zulip.client.api.server.request.RemoveFcmRegistrationTokenApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderLinkifiersApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.ReorderProfileFieldsApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.SendE2EMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.SendMobilePushTestNotification;
 import com.github.jamesnetherton.zulip.client.api.server.request.TestWelcomeBotCustomMessageApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateBotStorageApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateLinkifierApiRequest;
+import com.github.jamesnetherton.zulip.client.api.server.request.UpdateProfileFieldApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmDomainApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.request.UpdateRealmNewUserDefaultSettingsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.server.response.JwtFetchApiKeyResponse;
@@ -71,15 +75,42 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void addLinkifierWithReverseTemplate() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(AddLinkifierApiRequest.PATTERN, "#(?P<id>[0-9]+)")
+                .add(AddLinkifierApiRequest.URL_TEMPLATE, "https://github.com/zulip/zulip/issues/{id}")
+                .add(AddLinkifierApiRequest.EXAMPLE_INPUT, "#123")
+                .add(AddLinkifierApiRequest.REVERSE_TEMPLATE, "#{id}")
+                .add(AddLinkifierApiRequest.ALTERNATIVE_URL_TEMPLATES, "[\"https://github.com/zulip/zulip/pull/{id}\"]")
+                .get();
+
+        stubZulipResponse(POST, "/realm/filters", params, "addLinkifier.json");
+
+        Long id = zulip.server().addLinkifier("#(?P<id>[0-9]+)", "https://github.com/zulip/zulip/issues/{id}")
+                .withExampleInput("#123")
+                .withReverseTemplate("#{id}")
+                .withAlternativeUrlTemplates("https://github.com/zulip/zulip/pull/{id}")
+                .execute();
+        assertEquals(42, id);
+    }
+
+    @Test
     public void updateLinkifier() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
-                .add(AddLinkifierApiRequest.PATTERN, "updated regex")
-                .add(AddLinkifierApiRequest.URL_TEMPLATE, "https://github.com/zulip/zulip-updated/issues/%s")
+                .add(UpdateLinkifierApiRequest.PATTERN, "updated regex")
+                .add(UpdateLinkifierApiRequest.URL_TEMPLATE, "https://github.com/zulip/zulip-updated/issues/%s")
+                .add(UpdateLinkifierApiRequest.EXAMPLE_INPUT, "#123")
+                .add(UpdateLinkifierApiRequest.REVERSE_TEMPLATE, "#{id}")
+                .add(UpdateLinkifierApiRequest.ALTERNATIVE_URL_TEMPLATES, "[\"https://a.com/{id}\",\"https://b.com/{id}\"]")
                 .get();
 
         stubZulipResponse(PATCH, "/realm/filters/1", params);
 
-        zulip.server().updateLinkifier(1, "updated regex", "https://github.com/zulip/zulip-updated/issues/%s").execute();
+        zulip.server().updateLinkifier(1, "updated regex", "https://github.com/zulip/zulip-updated/issues/%s")
+                .withExampleInput("#123")
+                .withReverseTemplate("#{id}")
+                .withAlternativeUrlTemplates("https://a.com/{id}", "https://b.com/{id}")
+                .execute();
     }
 
     @Test
@@ -280,6 +311,31 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void updateProfileField() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(UpdateProfileFieldApiRequest.NAME, "New Name")
+                .add(UpdateProfileFieldApiRequest.HINT, "New Hint")
+                .add(UpdateProfileFieldApiRequest.FIELD_DATA, "{\"subtype\":\"github\"}")
+                .add(UpdateProfileFieldApiRequest.DISPLAY_IN_PROFILE_SUMMARY, "true")
+                .add(UpdateProfileFieldApiRequest.REQUIRED, "false")
+                .add(UpdateProfileFieldApiRequest.EDITABLE_BY_USER, "true")
+                .add(UpdateProfileFieldApiRequest.USE_FOR_USER_MATCHING, "true")
+                .get();
+
+        stubZulipResponse(PATCH, "/realm/profile_fields/1", params);
+
+        zulip.server().updateCustomProfileField(1)
+                .withName("New Name")
+                .withHint("New Hint")
+                .withFieldData(Map.of("subtype", "github"))
+                .withDisplayInProfileSummary(true)
+                .withRequired(false)
+                .withEditableByUser(true)
+                .withUseForUserMatching(true)
+                .execute();
+    }
+
+    @Test
     public void createSimpleCustomProfileField() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
                 .add(CreateProfileFieldApiRequest.NAME, "Test Name")
@@ -288,12 +344,14 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
                 .add(CreateProfileFieldApiRequest.DISPLAY_IN_PROFILE_SUMMARY, "true")
                 .add(CreateProfileFieldApiRequest.REQUIRED, "true")
                 .add(CreateProfileFieldApiRequest.EDITABLE_BY_USER, "true")
+                .add(CreateProfileFieldApiRequest.USE_FOR_USER_MATCHING, "true")
                 .get();
 
         stubZulipResponse(POST, "/realm/profile_fields", params, "createProfileField.json");
 
         long id = zulip.server().createCustomProfileField()
                 .withEditableByUser(true)
+                .withUseForUserMatching(true)
                 .withSimpleFieldType(ProfileFieldType.LONG_TEXT, "Test Name", "Test Hint")
                 .withDisplayInProfileSummary(true)
                 .withRequired(true)
@@ -781,6 +839,14 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void createGoogleMeetVideoCall() throws Exception {
+        stubZulipResponse(POST, "/calls/google_meet/create", Collections.emptyMap(), "createGoogleMeetVideoCall.json");
+
+        String url = zulip.server().createGoogleMeetVideoCall().execute();
+        assertEquals("https://meet.google.com/abc-defg-hij", url);
+    }
+
+    @Test
     public void registerClientDevice() throws Exception {
         stubZulipResponse(POST, "/register_client_device", Collections.emptyMap(), "registerClientDevice.json");
 
@@ -815,6 +881,7 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals(1, dataExport.getId());
         assertEquals(DataExportType.PUBLIC, dataExport.getExportType());
         assertFalse(dataExport.isPending());
+        assertFalse(dataExport.isExportFromPriorServer());
 
         dataExport = dataExports.get(1);
         assertTrue(dataExport.getExportTime().toEpochMilli() > 0);
@@ -825,6 +892,36 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
         assertEquals(2, dataExport.getId());
         assertEquals(DataExportType.FULL_WITH_CONSENT, dataExport.getExportType());
         assertTrue(dataExport.isPending());
+        assertTrue(dataExport.isExportFromPriorServer());
+    }
+
+    @Test
+    public void deleteDataExport() throws Exception {
+        stubZulipResponse(DELETE, "/export/realm/1", Collections.emptyMap());
+
+        zulip.server().deleteDataExport(1).execute();
+    }
+
+    @Test
+    public void deactivateRealm() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeactivateRealmApiRequest.DELETION_DELAY_DAYS, "30")
+                .get();
+
+        stubZulipResponse(POST, "/realm/deactivate", params);
+
+        zulip.server().deactivateRealm().withDeletionDelayDays(30).execute();
+    }
+
+    @Test
+    public void deactivateRealmRetainingDataIndefinitely() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(DeactivateRealmApiRequest.DELETION_DELAY_DAYS, "null")
+                .get();
+
+        stubZulipResponse(POST, "/realm/deactivate", params);
+
+        zulip.server().deactivateRealm().withDeletionDelayDays(null).execute();
     }
 
     @Test
@@ -902,17 +999,48 @@ public class ZulipServerApiTest extends ZulipApiTestBase {
     }
 
     @Test
+    public void mobilePushE2EPushTestNotificationForDevice() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(SendE2EMobilePushTestNotification.DEVICE_ID, "42")
+                .get();
+
+        stubZulipResponse(POST, "/mobile_push/e2ee/test_notification", params);
+
+        zulip.server().sendE2EMobilePushTestNotification().withDeviceId(42).execute();
+    }
+
+    @Test
     public void registerE2EMobilePushDevice() throws Exception {
         Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RegisterE2EMobilePushDevice.DEVICE_ID, "42")
+                .add(RegisterE2EMobilePushDevice.PUSH_KEY_ID, "7")
+                .add(RegisterE2EMobilePushDevice.PUSH_KEY, "push-key")
                 .add(RegisterE2EMobilePushDevice.TOKEN_KIND, "fcm")
-                .add(RegisterE2EMobilePushDevice.PUSH_ACCOUNT_ID, "123")
-                .add(RegisterE2EMobilePushDevice.PUSH_PUBLIC_KEY, "push-public")
+                .add(RegisterE2EMobilePushDevice.TOKEN_ID, "token-id")
                 .add(RegisterE2EMobilePushDevice.BOUNCER_PUBLIC_KEY, "bouncer-public")
                 .add(RegisterE2EMobilePushDevice.ENCRYPTED_PUSH_REGISTRATION, "djd282j9j")
                 .get();
 
         stubZulipResponse(POST, "/mobile_push/register", params);
 
-        zulip.server().registerE2EMobilePushDevice(TokenKind.FCM, 123, "push-public", "bouncer-public", "djd282j9j").execute();
+        zulip.server().registerE2EMobilePushDevice(42)
+                .withPushKey(7, "push-key")
+                .withToken(TokenKind.FCM, "token-id", "bouncer-public", "djd282j9j")
+                .execute();
+    }
+
+    @Test
+    public void rotateE2EMobilePushKey() throws Exception {
+        Map<String, StringValuePattern> params = QueryParams.create()
+                .add(RegisterE2EMobilePushDevice.DEVICE_ID, "42")
+                .add(RegisterE2EMobilePushDevice.PUSH_KEY_ID, "8")
+                .add(RegisterE2EMobilePushDevice.PUSH_KEY, "new-push-key")
+                .get();
+
+        stubZulipResponse(POST, "/mobile_push/register", params);
+
+        zulip.server().registerE2EMobilePushDevice(42)
+                .withPushKey(8, "new-push-key")
+                .execute();
     }
 }

@@ -8,6 +8,7 @@ import com.github.jamesnetherton.zulip.client.api.user.request.CreateUserGroupAp
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateOwnUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeactivateUserGroupApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.DeleteAvatarApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteOwnProfileDataApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.DeleteUserAttachmentApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.GetAllAlertWordsApiRequest;
@@ -43,7 +44,9 @@ import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserByEmail
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserGroupSubGroupsApiRequest;
 import com.github.jamesnetherton.zulip.client.api.user.request.UpdateUserStatusApiRequest;
+import com.github.jamesnetherton.zulip.client.api.user.request.UploadAvatarApiRequest;
 import com.github.jamesnetherton.zulip.client.http.ZulipHttpClient;
+import java.io.File;
 
 /**
  * Zulip user APIs.
@@ -272,10 +275,11 @@ public class UserService implements ZulipService {
     /**
      * Update user notification settings.
      *
-     * @see    <a href=
-     *         "https://zulip.com/api/update-notification-settings">https://zulip.com/api/update-notification-settings</a>
+     * @see        <a href="https://zulip.com/api/update-settings">https://zulip.com/api/update-settings</a>
      *
-     * @return The {@link UpdateNotificationSettingsApiRequest} builder object
+     * @return     The {@link UpdateNotificationSettingsApiRequest} builder object
+     *
+     * @deprecated use {@code updateOwnUserSettings} instead.
      */
     @Deprecated
     public UpdateNotificationSettingsApiRequest updateNotificationSettings() {
@@ -431,6 +435,29 @@ public class UserService implements ZulipService {
      */
     public UpdateOwnUserStatusApiRequest updateOwnUserStatus() {
         return new UpdateOwnUserStatusApiRequest(this.client);
+    }
+
+    /**
+     * Uploads an avatar image for the user. Requires Zulip 13 or later.
+     *
+     * @see               <a href="https://zulip.com/api/upload-avatar">https://zulip.com/api/upload-avatar</a>
+     *
+     * @param  avatarFile The avatar image file to upload
+     * @return            The {@link UploadAvatarApiRequest} builder object
+     */
+    public UploadAvatarApiRequest uploadAvatar(File avatarFile) {
+        return new UploadAvatarApiRequest(this.client, avatarFile);
+    }
+
+    /**
+     * Deletes the user avatar, reverting to the default avatar. Requires Zulip 13 or later.
+     *
+     * @see    <a href="https://zulip.com/api/delete-avatar">https://zulip.com/api/delete-avatar</a>
+     *
+     * @return The {@link DeleteAvatarApiRequest} builder object
+     */
+    public DeleteAvatarApiRequest deleteAvatar() {
+        return new DeleteAvatarApiRequest(this.client);
     }
 
     /**

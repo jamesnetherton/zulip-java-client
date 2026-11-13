@@ -1,0 +1,7 @@
+{
+  "id": 42,
+  "message_link": "[#test stream > test topic @ 💬](https://zulip.example.com/#narrow/channel/9-test-stream/topic/test.20topic/near/42)",
+  "message_url": "https://zulip.example.com/#narrow/channel/9-test-stream/topic/test.20topic/near/42",
+  "msg": "",
+  "result": "success"
+}

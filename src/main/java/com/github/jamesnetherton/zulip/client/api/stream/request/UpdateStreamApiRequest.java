@@ -28,6 +28,8 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
     public static final String IS_ARCHIVED = "is_archived";
     public static final String FOLDER_ID = "folder_id";
     public static final String TOPICS_POLICY = "topics_policy";
+    public static final String DEFAULT_PUSH_NOTIFICATIONS = "default_push_notifications";
+    public static final String CAN_CREATE_TOPIC_GROUP = "can_create_topic_group";
     public static final String CAN_ADD_SUBSCRIBERS_GROUP = "can_add_subscribers_group";
     public static final String CAN_REMOVE_SUBSCRIBERS_GROUP = "can_remove_subscribers_group";
     public static final String CAN_ADMINISTER_CHANNEL_GROUP = "can_administer_channel_group";
@@ -189,6 +191,35 @@ public class UpdateStreamApiRequest extends ZulipApiRequest implements VoidExecu
      */
     public UpdateStreamApiRequest withCanRemoveSubscribersGroup(UserGroupSetting userGroupSetting) {
         putParamAsWrappedObject("new", CAN_REMOVE_SUBSCRIBERS_GROUP, userGroupSetting);
+        return this;
+    }
+
+    /**
+     * Sets whether mobile push notifications are enabled by default when a user first subscribes to the channel. Requires
+     * Zulip 13 or later.
+     *
+     * <a href=
+     * "https://zulip.com/api/update-stream#parameter-default_push_notifications">https://zulip.com/api/update-stream#parameter-default_push_notifications</a>
+     *
+     * @param  defaultPushNotifications {@code true} to enable push notifications by default for new subscribers
+     * @return                          This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withDefaultPushNotifications(boolean defaultPushNotifications) {
+        putParam(DEFAULT_PUSH_NOTIFICATIONS, defaultPushNotifications);
+        return this;
+    }
+
+    /**
+     * Sets the user group settings for users who have permission to create new topics in this channel.
+     *
+     * <a href=
+     * "https://zulip.com/api/update-stream#parameter-can_create_topic_group">https://zulip.com/api/update-stream#parameter-can_create_topic_group</a>
+     *
+     * @param  userGroupSetting The {@link UserGroupSetting} for users who have permission to create new topics
+     * @return                  This {@link UpdateStreamApiRequest} instance
+     */
+    public UpdateStreamApiRequest withCanCreateTopicGroup(UserGroupSetting userGroupSetting) {
+        putParamAsWrappedObject("new", CAN_CREATE_TOPIC_GROUP, userGroupSetting);
         return this;
     }
 

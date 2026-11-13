@@ -28,6 +28,7 @@ final class UserRequestConstants {
     public static final String USERS_STATUS = USERS_WITH_ID + "/status";
     public static final String USERS_OWN_STATUS = USERS_WITH_ME + "/status";
     public static final String USERS_ALERT_WORDS = USERS_WITH_ME + "/alert_words";
+    public static final String USERS_AVATAR = USERS_WITH_ME + "/avatar";
     public static final String USERS_WITH_ID_CHANNELS = USERS_WITH_ID + "/channels";
     public static final String USERS_WITH_ME_API_KEY_REGENERATE = USERS_WITH_ME + "/api_key/regenerate";
     public static final String USERS_WITH_ME_PROFILE_DATA = USERS_WITH_ME + "/profile_data";

@@ -2,6 +2,8 @@
 -- PostgreSQL database dump
 --
 
+\restrict 0bs4tpyoI0FH3rY7Vlt3bGj88L2KfmxjBXhgd2i6beAfau5EFwxardcBLiCbgYL
+
 -- Dumped from database version 14.19
 -- Dumped by pg_dump version 14.19
 
@@ -34,7 +36,7 @@ CREATE EXTENSION IF NOT EXISTS pgroonga WITH SCHEMA zulip;
 
 
 --
--- Name: EXTENSION pgroonga; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION pgroonga; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION pgroonga IS 'Super fast and all languages supported full text search index based on Groonga';
@@ -2027,8 +2029,8 @@ CREATE TABLE zulip.zerver_preregistrationuser (
     realm_id integer,
     welcome_message_custom_text text,
     is_realm_importer boolean NOT NULL,
-    external_auth_id character varying(255),
-    external_auth_method_name character varying(100),
+    external_auth_id text,
+    external_auth_method_name text,
     CONSTRAINT zerver_preregistrationuser_invited_as_check CHECK ((invited_as >= 0))
 );
 
@@ -2965,6 +2967,7 @@ CREATE TABLE zulip.zerver_stream (
     can_delete_any_message_group_id bigint NOT NULL,
     can_delete_own_message_group_id bigint NOT NULL,
     can_create_topic_group_id bigint NOT NULL,
+    default_push_notifications boolean DEFAULT false NOT NULL,
     CONSTRAINT zerver_stream_subscriber_count_check CHECK ((subscriber_count >= 0)),
     CONSTRAINT zerver_stream_topics_policy_check CHECK ((topics_policy >= 0))
 );
@@ -4876,6 +4879,21 @@ COPY zulip.django_migrations (id, app, name, applied) FROM stdin;
 873	social_django	0003_alter_email_max_length	2026-04-28 14:38:02.118433+00
 874	phonenumber	0001_squashed_0001_initial	2026-04-28 14:38:02.118814+00
 875	analytics	0001_squashed_0021_alter_fillstate_id	2026-04-28 14:38:02.119223+00
+876	zerver	0801_realmexport_backfill_export_from_prior_server_status	2026-11-13 07:57:48.328818+00
+877	zerver	0814_backfill_userprofile_is_deleted	2026-11-13 08:22:13.894194+00
+878	zerver	0802_realmexport_restore_command_line_export_status	2026-11-13 08:22:13.896593+00
+879	zerver	0803_delete_orphan_recipients_and_huddles	2026-11-13 08:22:13.90204+00
+880	zerver	0804_backfill_user_created_audit_logs	2026-11-13 08:22:13.906259+00
+881	zerver	0805_fix_deleteduser_email	2026-11-13 08:22:13.908527+00
+882	zerver	0806_stream_default_push_notifications	2026-11-13 08:22:13.999872+00
+883	zerver	0807_usertopic_zerver_usertopic_user_visibility_recipient_idx	2026-11-13 08:22:14.026646+00
+884	zerver	0808_message_topic_indexes_nulls_first	2026-11-13 08:22:14.230714+00
+885	zerver	0809_remove_message_nulls_last_topic_indexes	2026-11-13 08:22:14.405102+00
+886	zerver	0810_delete_unused_anonymous_groups	2026-11-13 08:22:14.443561+00
+887	zerver	0811_usermessage_add_hide_link_previews	2026-11-13 08:22:14.480934+00
+888	zerver	0812_delete_inaccessible_user_topics	2026-11-13 08:22:14.507194+00
+889	zerver	0813_alter_preregistrationuser_external_auth_id_and_more	2026-11-13 08:22:14.553235+00
+890	zerver	0815_merge	2026-11-13 08:22:14.554026+00
 \.
 
 
@@ -5621,8 +5639,6 @@ COPY zulip.zerver_savedsnippet (id, title, content, date_created, realm_id, user
 --
 
 COPY zulip.zerver_scheduledemail (id, scheduled_timestamp, data, address, type, realm_id) FROM stdin;
-1	2026-04-30 13:41:14.923673+00	{"template_prefix":"zerver/emails/onboarding_zulip_topics","from_name":null,"from_address":"SUPPORT","language":null,"context":{"realm_url":"https://localhost","realm_name":"testing","root_domain_url":"https://localhost","external_url_scheme":"https://","external_host":"localhost","user_name":"tester","corporate_enabled":false,"unsubscribe_link":"https://localhost/accounts/unsubscribe/welcome/rmyqwa4xhrpibey3d3kzvjgg","move_messages_link":"https://localhost/help/move-content-to-another-topic","rename_topics_link":"https://localhost/help/rename-a-topic","move_channels_link":"https://localhost/help/move-content-to-another-channel"}}	\N	1	2
-2	2026-05-06 13:41:14.924916+00	{"template_prefix":"zerver/emails/onboarding_team_to_zulip","from_name":null,"from_address":"SUPPORT","language":null,"context":{"realm_url":"https://localhost","realm_name":"testing","root_domain_url":"https://localhost","external_url_scheme":"https://","external_host":"localhost","user_name":"tester","corporate_enabled":false,"unsubscribe_link":"https://localhost/accounts/unsubscribe/welcome/rmyqwa4xhrpibey3d3kzvjgg","get_organization_started":"https://localhost/help/moving-to-zulip","invite_users":"https://localhost/help/invite-users-to-join","trying_out_zulip":"https://localhost/help/trying-out-zulip","why_zulip":"https://zulip.com/why-zulip/"}}	\N	1	2
 \.
 
 
@@ -5631,8 +5647,6 @@ COPY zulip.zerver_scheduledemail (id, scheduled_timestamp, data, address, type, 
 --
 
 COPY zulip.zerver_scheduledemail_users (id, scheduledemail_id, userprofile_id) FROM stdin;
-1	1	8
-2	2	8
 \.
 
 
@@ -5664,10 +5678,10 @@ COPY zulip.zerver_service (id, name, base_url, token, interface, user_profile_id
 -- Data for Name: zerver_stream; Type: TABLE DATA; Schema: zulip; Owner: zulip
 --
 
-COPY zulip.zerver_stream (id, name, date_created, deactivated, description, rendered_description, invite_only, history_public_to_subscribers, is_web_public, message_retention_days, first_message_id, can_remove_subscribers_group_id, creator_id, realm_id, recipient_id, is_recently_active, can_administer_channel_group_id, can_send_message_group_id, can_add_subscribers_group_id, can_subscribe_group_id, subscriber_count, folder_id, topics_policy, can_move_messages_within_channel_group_id, can_move_messages_out_of_channel_group_id, can_resolve_topics_group_id, can_delete_any_message_group_id, can_delete_own_message_group_id, can_create_topic_group_id) FROM stdin;
-2	sandbox	2026-04-28 14:41:14.65327+00	f	Experiment with Zulip here. :test_tube:	<p>Experiment with Zulip here. <span aria-label="test tube" class="emoji emoji-1f9ea" role="img" title="test tube">:test_tube:</span></p>	f	t	f	\N	7	11	\N	2	2	t	9	15	9	9	1	\N	1	9	9	9	9	9	15
-3	general	2026-04-28 14:41:14.659702+00	f	For team-wide conversations	<p>For team-wide conversations</p>	f	t	f	\N	9	11	\N	2	3	t	9	15	9	9	1	\N	1	9	9	9	9	9	15
-1	Zulip	2026-04-28 14:41:14.592652+00	f	Questions and discussion about using Zulip.	<p>Questions and discussion about using Zulip.</p>	f	t	f	\N	12	11	\N	2	1	t	9	15	9	9	1	\N	1	9	9	9	9	9	15
+COPY zulip.zerver_stream (id, name, date_created, deactivated, description, rendered_description, invite_only, history_public_to_subscribers, is_web_public, message_retention_days, first_message_id, can_remove_subscribers_group_id, creator_id, realm_id, recipient_id, is_recently_active, can_administer_channel_group_id, can_send_message_group_id, can_add_subscribers_group_id, can_subscribe_group_id, subscriber_count, folder_id, topics_policy, can_move_messages_within_channel_group_id, can_move_messages_out_of_channel_group_id, can_resolve_topics_group_id, can_delete_any_message_group_id, can_delete_own_message_group_id, can_create_topic_group_id, default_push_notifications) FROM stdin;
+2	sandbox	2026-04-28 14:41:14.65327+00	f	Experiment with Zulip here. :test_tube:	<p>Experiment with Zulip here. <span aria-label="test tube" class="emoji emoji-1f9ea" role="img" title="test tube">:test_tube:</span></p>	f	t	f	\N	7	11	\N	2	2	t	9	15	9	9	1	\N	1	9	9	9	9	9	15	f
+3	general	2026-04-28 14:41:14.659702+00	f	For team-wide conversations	<p>For team-wide conversations</p>	f	t	f	\N	9	11	\N	2	3	t	9	15	9	9	1	\N	1	9	9	9	9	9	15	f
+1	Zulip	2026-04-28 14:41:14.592652+00	f	Questions and discussion about using Zulip.	<p>Questions and discussion about using Zulip.</p>	f	t	f	\N	12	11	\N	2	1	t	9	15	9	9	1	\N	1	9	9	9	9	9	15	f
 \.
 
 
@@ -5737,18 +5751,6 @@ COPY zulip.zerver_usergroup (id, realm_id) FROM stdin;
 14	2
 15	2
 16	2
-17	1
-18	1
-19	1
-20	1
-21	1
-22	1
-23	1
-24	1
-25	1
-26	1
-27	1
-28	1
 \.
 
 
@@ -5772,18 +5774,6 @@ COPY zulip.zerver_usergroupmembership (id, user_group_id, user_profile_id) FROM 
 13	6	7
 14	5	7
 15	10	8
-16	17	7
-17	18	7
-18	19	7
-19	20	7
-20	21	7
-21	22	7
-22	23	7
-23	24	7
-24	25	7
-25	26	7
-26	27	7
-27	28	7
 \.
 
 
@@ -5940,7 +5930,7 @@ SELECT pg_catalog.setval('zulip.django_content_type_id_seq', 85, true);
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: zulip; Owner: zulip
 --
 
-SELECT pg_catalog.setval('zulip.django_migrations_id_seq', 875, true);
+SELECT pg_catalog.setval('zulip.django_migrations_id_seq', 890, true);
 
 
 --
@@ -8877,7 +8867,7 @@ CREATE INDEX zerver_message_realm_date_sent ON zulip.zerver_message USING btree 
 -- Name: zerver_message_realm_id; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
-CREATE INDEX zerver_message_realm_id ON zulip.zerver_message USING btree (realm_id, id DESC NULLS LAST);
+CREATE INDEX zerver_message_realm_id ON zulip.zerver_message USING btree (realm_id, id DESC);
 
 
 --
@@ -8905,14 +8895,14 @@ CREATE INDEX zerver_message_realm_recipient_id ON zulip.zerver_message USING btr
 -- Name: zerver_message_realm_recipient_subject; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
-CREATE INDEX zerver_message_realm_recipient_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, subject, id DESC NULLS LAST) WHERE is_channel_message;
+CREATE INDEX zerver_message_realm_recipient_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, subject, id DESC) WHERE is_channel_message;
 
 
 --
 -- Name: zerver_message_realm_recipient_upper_subject; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
-CREATE INDEX zerver_message_realm_recipient_upper_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, upper((subject)::text), id DESC NULLS LAST) WHERE is_channel_message;
+CREATE INDEX zerver_message_realm_recipient_upper_subject ON zulip.zerver_message USING btree (realm_id, recipient_id, upper((subject)::text), id DESC) WHERE is_channel_message;
 
 
 --
@@ -8926,7 +8916,7 @@ CREATE INDEX zerver_message_realm_sender_recipient ON zulip.zerver_message USING
 -- Name: zerver_message_realm_upper_subject; Type: INDEX; Schema: zulip; Owner: zulip
 --
 
-CREATE INDEX zerver_message_realm_upper_subject ON zulip.zerver_message USING btree (realm_id, upper((subject)::text), id DESC NULLS LAST) WHERE is_channel_message;
+CREATE INDEX zerver_message_realm_upper_subject ON zulip.zerver_message USING btree (realm_id, upper((subject)::text), id DESC) WHERE is_channel_message;
 
 
 --
@@ -10432,6 +10422,13 @@ CREATE INDEX zerver_usertopic_user_profile_id_28608df1 ON zulip.zerver_usertopic
 --
 
 CREATE INDEX zerver_usertopic_user_visibility_idx ON zulip.zerver_usertopic USING btree (user_profile_id, visibility_policy, stream_id, topic_name);
+
+
+--
+-- Name: zerver_usertopic_user_visibility_recipient_idx; Type: INDEX; Schema: zulip; Owner: zulip
+--
+
+CREATE INDEX zerver_usertopic_user_visibility_recipient_idx ON zulip.zerver_usertopic USING btree (user_profile_id, visibility_policy, recipient_id, upper((topic_name)::text));
 
 
 --
@@ -12152,5 +12149,5 @@ ALTER TABLE ONLY zulip.zerver_usertopic
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 4g7YMjQJkJrJbRaQ2kTROKbg8SQrbgfUuqDAbU7VaCkx1s4tXDgAyr9WFeQS2Ou
+\unrestrict 0bs4tpyoI0FH3rY7Vlt3bGj88L2KfmxjBXhgd2i6beAfau5EFwxardcBLiCbgYL
 

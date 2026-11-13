@@ -307,12 +307,14 @@ public class MessageService implements ZulipService {
     /**
      * Marks a stream as read.
      *
-     * @see             <a href=
-     *                  "https://zulip.com/api/mark-all-as-read#mark-messages-in-a-stream-as-read">https://zulip.com/api/mark-all-as-read#mark-messages-in-a-stream-as-read</a>
+     * @see                 <a href="https://zulip.com/api/mark-stream-as-read">https://zulip.com/api/mark-stream-as-read</a>
      *
-     * @param  streamId The id of the stream to mark as read
-     * @return          The {@link MarkStreamAsReadApiRequest} builder object
+     * @param      streamId The id of the stream to mark as read
+     * @return              The {@link MarkStreamAsReadApiRequest} builder object
+     *
+     * @deprecated          use {@code updateMessageFlagsForNarrow} instead.
      */
+    @Deprecated
     public MarkStreamAsReadApiRequest markStreamAsRead(long streamId) {
         return new MarkStreamAsReadApiRequest(this.client, streamId);
     }
@@ -320,13 +322,15 @@ public class MessageService implements ZulipService {
     /**
      * Marks a topic as read.
      *
-     * @see              <a href=
-     *                   "https://zulip.com/api/mark-all-as-read#mark-messages-in-a-topic-as-read">https://zulip.com/api/mark-all-as-read#mark-messages-in-a-topic-as-read</a>
+     * @see                  <a href="https://zulip.com/api/mark-topic-as-read">https://zulip.com/api/mark-topic-as-read</a>
      *
-     * @param  streamId  The id of the stream wher the topic resides
-     * @param  topicName The name of the topic to mark as read
-     * @return           The {@link MarkTopicAsReadApiRequest} builder object
+     * @param      streamId  The id of the stream wher the topic resides
+     * @param      topicName The name of the topic to mark as read
+     * @return               The {@link MarkTopicAsReadApiRequest} builder object
+     *
+     * @deprecated           use {@code updateMessageFlagsForNarrow} instead.
      */
+    @Deprecated
     public MarkTopicAsReadApiRequest markTopicAsRead(long streamId, String topicName) {
         return new MarkTopicAsReadApiRequest(this.client, streamId, topicName);
     }
@@ -334,7 +338,7 @@ public class MessageService implements ZulipService {
     /**
      * Searches for and matches messages with a narrow.
      *
-     * @see    <a href="https://zulip.com/api/check-narrow-matches">https://zulip.com/api/check-narrow-matches</a>
+     * @see    <a href="https://zulip.com/api/check-messages-match-narrow">https://zulip.com/api/check-messages-match-narrow</a>
      *
      * @return The {@link MatchesNarrowApiRequest} builder object
      */

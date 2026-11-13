@@ -31,4 +31,14 @@ public class StreamUnsubscribeResult {
     public List<String> getRemoved() {
         return delegate.getRemoved();
     }
+
+    /**
+     * Gets whether Notification Bot messages were sent to users unsubscribed by the request. Only {@code true} when
+     * requested via {@code withSendMessagesToRemovedSubscribers(true)} on Zulip 13 or later.
+     *
+     * @return {@code true} if messages were sent to the removed subscribers
+     */
+    public boolean isMessagesSentToRemovedSubscribers() {
+        return delegate.isMessagesSentToRemovedSubscribers();
+    }
 }

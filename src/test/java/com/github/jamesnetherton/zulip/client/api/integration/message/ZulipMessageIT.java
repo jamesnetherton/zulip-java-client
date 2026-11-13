@@ -23,6 +23,7 @@ import com.github.jamesnetherton.zulip.client.api.message.MessageReportReason;
 import com.github.jamesnetherton.zulip.client.api.message.MessageType;
 import com.github.jamesnetherton.zulip.client.api.message.PropagateMode;
 import com.github.jamesnetherton.zulip.client.api.message.ScheduledMessage;
+import com.github.jamesnetherton.zulip.client.api.message.SendMessageResult;
 import com.github.jamesnetherton.zulip.client.api.narrow.Narrow;
 import com.github.jamesnetherton.zulip.client.api.stream.RetentionPolicy;
 import com.github.jamesnetherton.zulip.client.api.stream.StreamSubscriptionRequest;
@@ -37,6 +38,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
@@ -314,13 +316,13 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
     }
 
     @Test
-    public void fileUpload() throws IOException, ZulipClientException {
-        Path tmpFile = Files.createTempFile("zulip", ".txt");
+    public void fileUpload(@TempDir Path tempDir) throws IOException, ZulipClientException {
+        Path tmpFile = tempDir.resolve("zulip.txt");
         Files.write(tmpFile, "test content".getBytes(StandardCharsets.UTF_8));
 
         String url = zulip.messages().fileUpload(tmpFile.toFile()).execute();
 
-        assertTrue(url.matches("/user_uploads/.*/.*/.*/zulip[0-9]+.txt"));
+        assertTrue(url.matches("/user_uploads/.*/.*/.*/zulip[0-9]*\\.txt"));
 
         // Extract path_id from url: strip "/user_uploads/" prefix
         String pathId = url.substring("/user_uploads/".length());
@@ -552,6 +554,46 @@ public class ZulipMessageIT extends ZulipIntegrationTestBase {
 
         String rendered = zulip.messages().renderMessage("**content**").execute();
         assertEquals("<p><strong>content</strong></p>", rendered);
+
+        rendered = zulip.messages().renderMessage("**content**").withPopulateUrlEmbedData(true).execute();
+        assertEquals("<p><strong>content</strong></p>", rendered);
+    }
+
+    @Test
+    public void sendMessageWithResult() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+        zulip.channels().subscribe(StreamSubscriptionRequest.of(streamName, streamName)).execute();
+
+        SendMessageResult result = zulip.messages()
+                .sendStreamMessage("Test Content", streamName, "Test Topic")
+                .executeWithResult();
+
+        assertTrue(result.getId() > 0);
+        assertNotNull(result.getMessageUrl());
+        assertTrue(result.getMessageUrl().endsWith("/near/" + result.getId()));
+        assertNotNull(result.getMessageLink());
+        assertTrue(result.getMessageLink().contains(result.getMessageUrl()));
+    }
+
+    @Test
+    public void hideLinkPreviewsFlag() throws ZulipClientException {
+        String streamName = UUID.randomUUID().toString();
+        zulip.channels().subscribe(StreamSubscriptionRequest.of(streamName, streamName)).execute();
+
+        long messageId = zulip.messages()
+                .sendStreamMessage("https://zulip.com", streamName, "Test Topic")
+                .execute();
+
+        zulip.messages().updateMessageFlags(MessageFlag.HIDE_LINK_PREVIEWS, Operation.ADD, messageId).execute();
+
+        Message message = zulip.messages().getMessage(messageId).execute();
+        assertTrue(message.getFlags().contains(MessageFlag.HIDE_LINK_PREVIEWS));
+
+        List<Message> messages = zulip.messages().getMessages(1, 0, Anchor.NEWEST)
+                .withGravatar(true)
+                .execute();
+        assertEquals(1, messages.size());
+        assertTrue(messages.get(0).getFlags().contains(MessageFlag.HIDE_LINK_PREVIEWS));
     }
 
     @Test
