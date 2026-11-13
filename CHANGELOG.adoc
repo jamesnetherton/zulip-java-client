@@ -27,6 +27,7 @@
 * `RegisterE2EMobilePushDevice` updated for the redesigned Zulip API. `registerE2EMobilePushDevice()` now takes a device id, with the push key and token set via `withPushKey()` and `withToken()`
 * `SendE2EMobilePushTestNotification.pushAccountId()` removed; replaced by `withDeviceId()`
 * `CreateChannelApiRequest.withSendNewSubscriptionMessages()` removed; the parameter is not supported by the create channel endpoint. Use `SubscribeStreamsApiRequest.withSendNewSubscriptionMessages()` instead
+* Upgraded to Jackson 3. Public APIs exposing Jackson types (e.g. `JsonUtils.getMapper()`, `GetEventsApiResponse.getEvents()`) now use the `tools.jackson` packages, and Jackson 2 (`com.fasterxml.jackson.core:jackson-databind`) is no longer a transitive dependency
 
 ==== Deprecations
 
